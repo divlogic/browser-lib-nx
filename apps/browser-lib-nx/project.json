@@ -1,0 +1,8 @@
+{
+  "name": "browser-lib-nx",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/browser-lib-nx/src",
+  "projectType": "application",
+  "targets": {},
+  "tags": []
+}

@@ -1,0 +1,8 @@
+{
+  "name": "browser-lib-nx-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/browser-lib-nx-e2e/src",
+  "targets": {},
+  "implicitDependencies": ["browser-lib-nx"]
+}
