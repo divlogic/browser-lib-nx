@@ -1,0 +1,8 @@
+{
+  "name": "tagger",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tagger/src",
+  "projectType": "application",
+  "targets": {},
+  "tags": []
+}
