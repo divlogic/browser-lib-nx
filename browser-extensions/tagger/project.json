@@ -1,0 +1,8 @@
+{
+  "name": "tagger",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "browser-extensions/tagger/src",
+  "projectType": "application",
+  "targets": {},
+  "tags": []
+}
