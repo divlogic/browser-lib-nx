@@ -24,6 +24,7 @@ export default defineConfig({
   // },
 
   build: {
+    outDir: '../../dist/tagger',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
