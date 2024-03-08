@@ -1,42 +1,48 @@
 import { test as base, chromium, type BrowserContext } from '@playwright/test';
 import path from 'path';
 
-export const fixtures = (extensionName) => {
-  return base.extend<{
-    context: BrowserContext;
-    extensionId: string;
-  }>({
-    context: async ({}, use) => {
-      console.log(path.resolve());
-      const pathToExtension = path.join(
-        path.resolve(),
-        '../../dist',
-        extensionName
-      );
-      const context = await chromium.launchPersistentContext('', {
-        headless: false,
-        args: [
-          `--disable-extensions-except=${pathToExtension}`,
-          `--load-extension=${pathToExtension}`,
-        ],
-      });
-      await use(context);
-      await context.close();
-    },
-    extensionId: async ({ context }, use) => {
-      /*
+// export const fixtures = (extensionName) => {
+const extensionName = 'tagger';
+export const test = base.extend<{
+  context: BrowserContext;
+  extensionId: string;
+}>({
+  context: async ({}, use) => {
+    const pathToExtension = path.join(
+      path.resolve(),
+      '../../dist/browser-extensions/',
+      extensionName
+    );
+    const context = await chromium.launchPersistentContext('', {
+      headless: false,
+      args: [
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ],
+    });
+    await use(context);
+    await context.close();
+  },
+  extensionId: async ({ context }, use) => {
+    /**
+     * This all only works if the extension uses a service worker.
+     */
     // for manifest v2:
-    let [background] = context.backgroundPages()
-    if (!background)
-      background = await context.waitForEvent('backgroundpage')
-    */
+    // let [background] = context.backgroundPages();
+    // if (!background) {
+    //   // background = await context.waitForEvent('backgroundpage');
+    // }
 
-      // for manifest v3:
-      let [background] = context.serviceWorkers();
-      if (!background) background = await context.waitForEvent('serviceworker');
+    // for manifest v3:
+    let [background] = context.serviceWorkers();
+    if (!background) {
+      background = await context.waitForEvent('serviceworker');
+    }
 
-      const extensionId = background.url().split('/')[2];
-      await use(extensionId);
-    },
-  });
-};
+    const extensionId = background.url().split('/')[2];
+
+    // const extensionId = 'testing';
+    await use(extensionId);
+  },
+});
+// };
