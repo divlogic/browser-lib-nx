@@ -1,19 +1,19 @@
-import { expect } from '@playwright/test';
-import { fixtures } from './fixtures';
-const test = fixtures('tagger');
+// import { expect } from '@playwright/test';
+import { test } from './fixtures';
+const expect = test.expect;
 
 // This might change from time to time in the early stages.
-const extension_id = 'eicmofgbobjihgidpnnagkceijhfeocg';
 
-test('Example test', async ({ page }) => {
-  await page.goto(`chrome-extension://${extension_id}/index.html`);
+test('Example test', async ({ page, extensionId }) => {
+  await page.goto(`chrome-extension://${extensionId}/index.html`);
   await expect(page).toHaveTitle('Tagger');
 });
 
-test('Can add labels', async ({ page }) => {
-  await page.goto(`chrome-extension://${extension_id}/index.html`);
+test('Can add labels', async ({ page, extensionId }) => {
+  await page.goto(`chrome-extension://${extensionId}/index.html`);
   await page.getByLabel('Add tag:').click();
   await page.getByLabel('Add tag:').fill('test');
   await page.getByLabel('Add tag:').press('Enter');
-  await expect(page.getByText('test')).toBeDefined();
+
+  await expect(page.locator('mark', { hasText: 'test' }).first()).toBeVisible();
 });
