@@ -24,7 +24,7 @@ export default defineConfig({
   // },
 
   build: {
-    outDir: '../../dist/tagger',
+    outDir: '../../dist/browser-extensions/tagger',
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
@@ -33,7 +33,6 @@ export default defineConfig({
       output: {
         entryFileNames: 'index.iife.js',
         format: 'iife',
-        dir: '../../dist/tagger',
       },
     },
   },

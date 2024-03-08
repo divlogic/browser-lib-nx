@@ -2,7 +2,17 @@
   "name": "tagger",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "browser-extensions/tagger/src",
-  "projectType": "application",
-  "targets": {},
+  "targets": {
+    "build-watch": {
+      "inputs": ["default"],
+      "executor": "@nx/vite:build",
+      "options": {
+        "watch": true,
+        "outputPath": "{projectRoot}/../../dist/browser-extensions/tagger",
+        "configFile": "{projectRoot}/vite.config.ts",
+        "tsConfig": "{projectRoot}/tsconfig.json"
+      }
+    }
+  },
   "tags": []
 }
