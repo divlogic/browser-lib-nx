@@ -24,12 +24,13 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npx nx serve tagger',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
-    cwd: workspaceRoot,
-  },
+  // Since this is for a plugin, a server is a bit tricky.
+  // webServer: {
+  //   command: 'npx nx build-watch tagger && nx preview tagger',
+  //   url: 'http://localhost:4300',
+  //   reuseExistingServer: !process.env.CI,
+  //   cwd: workspaceRoot,
+  // },
   projects: [
     {
       name: 'chromium',
