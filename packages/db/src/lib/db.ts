@@ -165,12 +165,17 @@ export abstract class Model<T> {
           log.info('onsuccess');
           const target = event.target as IDBOpenDBRequest;
           const db = target.result;
-          resolve(
-            db
-              .transaction(this.store, 'readwrite')
-              .objectStore(this.store)
-              .add(item)
-          );
+          const transaction = db
+            .transaction(this.store, 'readwrite')
+            .objectStore(this.store)
+            .add(item);
+          transaction.onerror = (e) => {
+            log.error(e);
+            reject(e);
+          };
+          transaction.onsuccess = (e) => {
+            resolve((e.target as IDBRequest).result);
+          };
         };
       } else {
         throw new Error('Model requires store to be set to add items');
