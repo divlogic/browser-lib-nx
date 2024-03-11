@@ -1,5 +1,4 @@
-import { Logger, ILogObj } from 'tslog';
-const log: Logger<ILogObj> = new Logger({ hideLogPositionForProduction: true });
+import { log } from './logs';
 
 export abstract class Model<T> {
   abstract store: string;
@@ -43,7 +42,7 @@ export abstract class Model<T> {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
-        this.getDB().then((db: IDBDatabase) => {
+        return this.getDB().then((db: IDBDatabase) => {
           if (!db.objectStoreNames.contains(this.store)) {
             db.onclose = (e) => {
               log.info('db is closed');
