@@ -157,17 +157,16 @@ export abstract class Model<T> {
   getAll() {
     if (typeof this.store === 'string') {
       log.info('initiating getAll');
-      const store = this.store;
       return new Promise((resolve, reject) => {
-        const retrieval_request = window.indexedDB.open(this.store);
-        retrieval_request.onsuccess = (event) => {
+        const retrievalRequest = window.indexedDB.open(this.store);
+        retrievalRequest.onsuccess = (event) => {
           log.info('onsuccess');
           if (event) {
             const target = event.target as IDBOpenDBRequest;
             const db = target.result;
             const retrieval = db
-              .transaction([store])
-              .objectStore(store)
+              .transaction([this.store])
+              .objectStore(this.store)
               .getAll();
 
             retrieval.onerror = (event) => {
@@ -180,6 +179,23 @@ export abstract class Model<T> {
         };
       });
     }
+  }
+
+  delete(key: IDBValidKey | IDBKeyRange): Promise<undefined> {
+    log.info('initiating delete');
+    return new Promise((resolve, reject) => {
+      return this.getStore().then((store) => {
+        const deletionRequest = store.delete(key);
+        deletionRequest.onerror = (event) => {
+          log.info('onerror');
+          reject(event);
+        };
+        deletionRequest.onsuccess = (event) => {
+          log.info('onsuccess');
+          resolve((event.target as IDBRequest).result);
+        };
+      });
+    });
   }
 }
 
