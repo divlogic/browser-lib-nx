@@ -84,6 +84,20 @@ export abstract class Model<T> {
     });
   }
 
+  put(item: T, key: IDBValidKey): Promise<IDBValidKey> {
+    return new Promise((resolve, reject) => {
+      return this.getStore().then((store) => {
+        const request = store.put(item, key);
+        request.onerror = (event) => {
+          reject(event);
+        };
+        request.onsuccess = (event) => {
+          resolve((event.target as IDBRequest).result);
+        };
+      });
+    });
+  }
+
   getStore(): Promise<IDBObjectStore> {
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
