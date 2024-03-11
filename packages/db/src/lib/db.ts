@@ -1,3 +1,5 @@
+import { Logger, ILogObj } from 'tslog';
+const log: Logger<ILogObj> = new Logger();
 export abstract class Model<T> {
   abstract store: string;
 
@@ -9,15 +11,23 @@ export abstract class Model<T> {
       request.onupgradeneeded = (event) => {
         const target = event.target as IDBOpenDBRequest;
         const db = target.result;
+        log.info('onupgradeneeded');
+        db.onclose = () => {
+          log.info('db closed from getDB');
+        };
+        db.close();
         resolve(db);
       };
       request.onerror = (event) => {
-        reject(event);
+        log.error('onerror', event);
+        reject((event.target as IDBOpenDBRequest).error);
       };
       request.onblocked = (event) => {
+        log.error('onblocked');
         reject(event);
       };
       request.onsuccess = (event) => {
+        log.info('onsuccess');
         const db = (event.target as IDBOpenDBRequest).result as IDBDatabase;
         resolve(db);
       };
@@ -29,21 +39,32 @@ export abstract class Model<T> {
   }
 
   createStore(): Promise<IDBObjectStore> {
+    log.info('creating the store');
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
         this.getDB().then((db: IDBDatabase) => {
           if (!db.objectStoreNames.contains(this.store)) {
-            console.log('Upgrading version');
-            db.close();
-            db.onclose = () => {
-              console.log('closed the db');
+            db.onclose = (e) => {
+              log.info('db is closed');
             };
-
+            db.onabort = () => {
+              log.info('db is aborted');
+            };
+            db.onerror = (e) => {
+              log.error(e);
+              reject(e);
+            };
+            db.close();
             const upgradedDBRequest = window.indexedDB.open(
               this.store,
               db.version + 1
             );
+            upgradedDBRequest.onblocked = (event) => {
+              // Database needs to acknowledge the request
+              log.info('onblocked', event);
+            };
             upgradedDBRequest.onupgradeneeded = (event) => {
+              log.info('onupgradeneeded', event);
               const upgradeableDB = (event.target as IDBOpenDBRequest)
                 .result as IDBDatabase;
               resolve(
@@ -52,6 +73,8 @@ export abstract class Model<T> {
                 })
               );
             };
+          } else {
+            reject(new Error('Store already exists'));
           }
         });
       } else {
@@ -84,10 +107,10 @@ export abstract class Model<T> {
       if (typeof this.store === 'string') {
         this.getDB().then((db: IDBDatabase) => {
           if (db.objectStoreNames.contains(this.store)) {
-            console.log('Upgrading version');
+            log.info('upgrading version');
             db.close();
             db.onclose = () => {
-              console.log('closed the db');
+              log.info('db closed');
             };
 
             const upgradedDBRequest = window.indexedDB.open(
@@ -96,7 +119,7 @@ export abstract class Model<T> {
             );
             upgradedDBRequest.onupgradeneeded = (event) => {
               const upgradeableDB = event.target.result as IDBDatabase;
-              console.log('onupgrade needed');
+              log.info('onupgradeneeded');
               resolve(upgradeableDB.deleteObjectStore(this.store));
             };
           }
@@ -154,10 +177,8 @@ export abstract class Model<T> {
               reject(event);
             };
             retrieval.onsuccess = (event) => {
-              // console.log('retrieval.onsuccess: ', event.target.result);
               resolve((event.target as IDBOpenDBRequest).result);
             };
-            // console.log('event.target.result is: ', db);
           }
         };
       });
