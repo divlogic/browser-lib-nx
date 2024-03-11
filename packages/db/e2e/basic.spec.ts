@@ -38,6 +38,32 @@ test('testModel.createStore() successfully creates a store', async ({
   expect(isStoreInstance).toBe(true);
 });
 
+test('testModel.createStore() successfully creates a store based on config', async ({
+  page,
+}) => {
+  await page.goto('/');
+
+  const storeIsConfigured = await page.evaluate(async () => {
+    const store = await window.testModel.createStore({
+      autoIncrement: true,
+      keyPath: 'id',
+    });
+
+    return (
+      store instanceof IDBObjectStore &&
+      store.autoIncrement === true &&
+      store.keyPath === 'id'
+    );
+  });
+  expect(storeIsConfigured).toBe(true);
+  const items = await page.evaluate(async () => {
+    await window.testModel.add({ text: 'test' });
+    const items = await window.testModel.getAll();
+    return items;
+  });
+  expect(items).toMatchObject([{ id: 1, text: 'test' }]);
+});
+
 test('testModel.createStore() throws if store exists', async ({ page }) => {
   await page.goto('/');
 
