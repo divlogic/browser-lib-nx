@@ -1,5 +1,6 @@
 import { Logger, ILogObj } from 'tslog';
 const log: Logger<ILogObj> = new Logger();
+
 export abstract class Model<T> {
   abstract store: string;
 
@@ -38,7 +39,9 @@ export abstract class Model<T> {
     return new Error('Model requires store to be set.');
   }
 
-  createStore(): Promise<IDBObjectStore> {
+  createStore(
+    options: IDBObjectStoreParameters = { autoIncrement: true }
+  ): Promise<IDBObjectStore> {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
@@ -67,11 +70,7 @@ export abstract class Model<T> {
               log.info('onupgradeneeded', event);
               const upgradeableDB = (event.target as IDBOpenDBRequest)
                 .result as IDBDatabase;
-              resolve(
-                upgradeableDB.createObjectStore(this.store, {
-                  autoIncrement: true,
-                })
-              );
+              resolve(upgradeableDB.createObjectStore(this.store, options));
             };
           } else {
             reject(new Error('Store already exists'));
