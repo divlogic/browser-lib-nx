@@ -156,7 +156,7 @@ export abstract class Model<T> {
     });
   }
 
-  add(item: T) {
+  add(item: T): Promise<number> {
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
         log.info('opening db');
@@ -183,7 +183,7 @@ export abstract class Model<T> {
     });
   }
 
-  getAll() {
+  getAll(): Promise<T[]> {
     if (typeof this.store === 'string') {
       log.info('initiating getAll');
       return new Promise((resolve, reject) => {
@@ -202,11 +202,15 @@ export abstract class Model<T> {
               reject(event);
             };
             retrieval.onsuccess = (event) => {
-              resolve((event.target as IDBOpenDBRequest).result);
+              resolve(
+                (event.target as IDBOpenDBRequest).result as unknown as T[]
+              );
             };
           }
         };
       });
+    } else {
+      throw this.storeNotSetError();
     }
   }
 
