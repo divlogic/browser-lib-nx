@@ -1,10 +1,8 @@
 import { Logger, ILogObj } from 'tslog';
-const log: Logger<ILogObj> = new Logger();
+const log: Logger<ILogObj> = new Logger({ hideLogPositionForProduction: true });
 
 export abstract class Model<T> {
   abstract store: string;
-
-  timeout = 3000;
 
   getDB = (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
@@ -134,9 +132,19 @@ export abstract class Model<T> {
               this.store,
               db.version + 1
             );
+            upgradedDBRequest.onblocked = () => {
+              log.info('onblocked, delete');
+            };
+            upgradedDBRequest.onerror = (event) => {
+              reject(event);
+            };
+            upgradedDBRequest.onsuccess = (event) => {
+              log.info('onsuccess');
+            };
             upgradedDBRequest.onupgradeneeded = (event) => {
-              const upgradeableDB = event.target.result as IDBDatabase;
-              log.info('onupgradeneeded');
+              log.info('onupgradeneeded, delete');
+              const upgradeableDB = (event.target as IDBOpenDBRequest)
+                .result as IDBDatabase;
               resolve(upgradeableDB.deleteObjectStore(this.store));
             };
           }
@@ -214,8 +222,4 @@ export abstract class Model<T> {
       });
     });
   }
-}
-
-export class Tag extends Model<{ text: string }> {
-  store = 'tags';
 }
