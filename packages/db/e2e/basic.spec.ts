@@ -16,7 +16,7 @@ test('testModel is defined', async ({ page }) => {
   expect(testModel).toBeDefined();
 });
 
-test('testModel.getDB() returns indexedDB', async ({ page }) => {
+test('Model.getDB() returns indexedDB', async ({ page }) => {
   await page.goto('/');
 
   const isDBInstance = await page.evaluate(async () => {
@@ -26,9 +26,7 @@ test('testModel.getDB() returns indexedDB', async ({ page }) => {
   expect(isDBInstance).toBe(true);
 });
 
-test('testModel.createStore() successfully creates a store', async ({
-  page,
-}) => {
+test('Model.createStore() successfully creates a store', async ({ page }) => {
   await page.goto('/');
 
   const isStoreInstance = await page.evaluate(async () => {
@@ -38,7 +36,7 @@ test('testModel.createStore() successfully creates a store', async ({
   expect(isStoreInstance).toBe(true);
 });
 
-test('testModel.createStore() successfully creates a store based on config', async ({
+test('Model.createStore() successfully creates a store based on config', async ({
   page,
 }) => {
   await page.goto('/');
@@ -64,7 +62,7 @@ test('testModel.createStore() successfully creates a store based on config', asy
   expect(items).toMatchObject([{ id: 1, text: 'test' }]);
 });
 
-test('testModel.createStore() throws if store exists', async ({ page }) => {
+test('Model.createStore() throws if store exists', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -94,7 +92,7 @@ test('testModel.createStore() throws if store exists', async ({ page }) => {
   expect(storeIsPlaywrightTest).toBe(true);
 });
 
-test('testModel.add(item) adds items to store', async ({ page }) => {
+test('Model.add(item) adds items to store', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -137,7 +135,7 @@ test('testModel.add(item) adds items to store', async ({ page }) => {
   expect(items).toMatchObject([{ text: 'playwright test' }]);
 });
 
-test('testModel.getAll() fetches all items', async ({ page }) => {
+test('Model.getAll() fetches all items', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -173,7 +171,7 @@ test('testModel.getAll() fetches all items', async ({ page }) => {
   ]);
 });
 
-test('testModel.delete(id) deletes items', async ({ page }) => {
+test('Model.delete(id) deletes items', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -208,7 +206,7 @@ test('testModel.delete(id) deletes items', async ({ page }) => {
   expect(items).toMatchObject([{ text: 'playwright test 2' }]);
 });
 
-test('testModel.put(id) deletes items', async ({ page }) => {
+test('Model.put(id) deletes items', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -249,4 +247,30 @@ test('testModel.put(id) deletes items', async ({ page }) => {
     { text: 'updated text' },
     { text: 'playwright test 3' },
   ]);
+});
+
+test('Model.deleteStore() successfully deletes a store', async ({ page }) => {
+  await page.goto('/');
+
+  const isStoreInstance = await page.evaluate(async () => {
+    const store = await window.testModel.createStore();
+    return store instanceof IDBObjectStore;
+  });
+  expect(isStoreInstance).toBe(true);
+
+  const storeNames = await page.evaluate(async () => {
+    const db = await window.testModel.getDB();
+    return Array.from(db.objectStoreNames);
+  });
+
+  expect(storeNames).toMatchObject(['test_model']);
+
+  const updatedStoreNames = await page.evaluate(async () => {
+    const deleteStoreResults = await window.testModel.deleteStore();
+    console.log('delete store results: ', deleteStoreResults);
+    const db = await window.testModel.getDB();
+    console.log('db: ', db);
+    return Array.from(db.objectStoreNames);
+  });
+  expect(updatedStoreNames).toMatchObject([]);
 });
