@@ -135,22 +135,18 @@ export abstract class Model<T> {
   add(item: T) {
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
+        log.info('opening db');
         const request = indexedDB.open(this.store);
         request.onsuccess = (event) => {
-          if (typeof this.store === 'string') {
-            const target = event.target as IDBOpenDBRequest;
-            const db = target.result;
-            resolve(
-              db
-                .transaction(this.store, 'readwrite')
-                .objectStore(this.store)
-                .add(item)
-            );
-          } else {
-            throw new Error(
-              'Model requires store to be set to create object store'
-            );
-          }
+          log.info('onsuccess');
+          const target = event.target as IDBOpenDBRequest;
+          const db = target.result;
+          resolve(
+            db
+              .transaction(this.store, 'readwrite')
+              .objectStore(this.store)
+              .add(item)
+          );
         };
       } else {
         throw new Error('Model requires store to be set to add items');
@@ -160,10 +156,12 @@ export abstract class Model<T> {
 
   getAll() {
     if (typeof this.store === 'string') {
+      log.info('initiating getAll');
       const store = this.store;
       return new Promise((resolve, reject) => {
         const retrieval_request = window.indexedDB.open(this.store);
         retrieval_request.onsuccess = (event) => {
+          log.info('onsuccess');
           if (event) {
             const target = event.target as IDBOpenDBRequest;
             const db = target.result;
@@ -171,7 +169,6 @@ export abstract class Model<T> {
               .transaction([store])
               .objectStore(store)
               .getAll();
-            resolve(retrieval);
 
             retrieval.onerror = (event) => {
               reject(event);
