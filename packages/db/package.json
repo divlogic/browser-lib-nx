@@ -8,5 +8,9 @@
       "import": "./index.mjs",
       "require": "./index.js"
     }
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "tslog": "^4.9.2"
   }
 }
