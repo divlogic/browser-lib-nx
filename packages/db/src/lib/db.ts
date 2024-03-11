@@ -1,7 +1,9 @@
 export abstract class Model<T> {
-  store: string | null = null;
+  abstract store: string;
+
   timeout = 3000;
-  getDB(): Promise<IDBDatabase> {
+
+  getDB = (): Promise<IDBDatabase> => {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.store);
       request.onupgradeneeded = (event) => {
@@ -16,13 +18,17 @@ export abstract class Model<T> {
         reject(event);
       };
       request.onsuccess = (event) => {
-        const db = event.target.result as IDBDatabase;
+        const db = (event.target as IDBOpenDBRequest).result as IDBDatabase;
         resolve(db);
       };
     });
+  };
+
+  storeNotSetError() {
+    return new Error('Model requires store to be set.');
   }
 
-  createStore() {
+  createStore(): Promise<IDBObjectStore> {
     return new Promise((resolve, reject) => {
       if (typeof this.store === 'string') {
         this.getDB().then((db: IDBDatabase) => {
@@ -38,8 +44,8 @@ export abstract class Model<T> {
               db.version + 1
             );
             upgradedDBRequest.onupgradeneeded = (event) => {
-              const upgradeableDB = event.target.result as IDBDatabase;
-              console.log('onupgrade needed');
+              const upgradeableDB = (event.target as IDBOpenDBRequest)
+                .result as IDBDatabase;
               resolve(
                 upgradeableDB.createObjectStore(this.store, {
                   autoIncrement: true,
@@ -149,7 +155,7 @@ export abstract class Model<T> {
             };
             retrieval.onsuccess = (event) => {
               // console.log('retrieval.onsuccess: ', event.target.result);
-              resolve(event.target.result);
+              resolve((event.target as IDBOpenDBRequest).result);
             };
             // console.log('event.target.result is: ', db);
           }
