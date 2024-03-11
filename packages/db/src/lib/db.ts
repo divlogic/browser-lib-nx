@@ -40,7 +40,7 @@ export abstract class Model<T> {
   }
 
   createStore(
-    options: IDBObjectStoreParameters = { autoIncrement: true }
+    options: IDBObjectStoreParameters = { autoIncrement: true, keyPath: 'id' }
   ): Promise<IDBObjectStore> {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
@@ -84,16 +84,20 @@ export abstract class Model<T> {
     });
   }
 
-  put(item: T, key: IDBValidKey): Promise<IDBValidKey> {
+  put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
     return new Promise((resolve, reject) => {
       return this.getStore().then((store) => {
-        const request = store.put(item, key);
-        request.onerror = (event) => {
-          reject(event);
-        };
-        request.onsuccess = (event) => {
-          resolve((event.target as IDBRequest).result);
-        };
+        try {
+          const request = store.put(item, key);
+          request.onerror = (event) => {
+            reject(event);
+          };
+          request.onsuccess = (event) => {
+            resolve((event.target as IDBRequest).result);
+          };
+        } catch (e) {
+          reject(e);
+        }
       });
     });
   }

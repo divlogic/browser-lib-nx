@@ -5,7 +5,7 @@ declare const window: {
   Model: Model;
 };
 
-class TestModel extends Model<{ text: string }> {
+class TestModel extends Model<{ id?: IDBValidKey; text: string }> {
   store = 'test_model';
 }
 

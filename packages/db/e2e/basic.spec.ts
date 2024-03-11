@@ -234,7 +234,7 @@ test('testModel.put(id) deletes items', async ({ page }) => {
     const result = await window.pwModel.add(item1);
     const result2 = await window.pwModel.add(item2);
     const result3 = await window.pwModel.add(item3);
-    const updated = await window.pwModel.put({ text: 'updated text' }, 2);
+    const updated = await window.pwModel.put({ id: 2, text: 'updated text' });
     return updated;
   });
 
