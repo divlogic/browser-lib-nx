@@ -1,21 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  Skeleton,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Container, Heading, Text } from '@chakra-ui/react';
 import MarkJS from 'mark.js';
 import { AddTagForm } from './components/form';
 import { useEffect, useReducer } from 'react';
-import { tagsReducer, TagState } from './form-reducer';
+import { tagsReducer } from './form-reducer';
 import { tag } from '../db';
 
 export function App() {
@@ -28,18 +16,22 @@ export function App() {
     tag.getAll()?.then((tags) => {
       dispatch({ type: 'loaded', payload: { data: tags } });
     });
+  }, []);
+
+  useEffect(() => {
     // There is a sideffect of overlap marking.
     // if you have the tags: test, test1, test12
     // And they are in that order,
     // test12 will have more marks, or depending on how it's configured,
     // it will be excluded because the test portion of it is already marked
     // May or may not be a problem.
-
-    const instance = new MarkJS(document.querySelector('body'));
+    const instance = new MarkJS(document.querySelectorAll('body')[0]);
     tags.data.forEach((tag) => {
-      instance.mark(tag.text, { acrossElements: true });
+      if (typeof tag.text === 'string') {
+        instance.mark(tag.text, { acrossElements: true });
+      }
     });
-  }, []);
+  });
 
   return (
     <Container>
