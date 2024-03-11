@@ -146,3 +146,38 @@ test('testModel.getAll() fetches all items', async ({ page }) => {
     { text: 'playwright test 2' },
   ]);
 });
+
+test('testModel.delete(id) deletes items', async ({ page }) => {
+  await page.goto('/');
+
+  const noStoresExist = await page.evaluate(async () => {
+    class PlaywrightTestModel extends Model<{ text: string }> {
+      store = 'playwright_test';
+    }
+    const pwModel = new PlaywrightTestModel();
+    window.pwModel = pwModel;
+    const db = await pwModel.getDB();
+    return db.objectStoreNames.length === 0;
+  });
+  expect(noStoresExist).toBe(true);
+
+  const storeIsPlaywrightTest = await page.evaluate(async () => {
+    const store = await window.pwModel.createStore();
+    return store?.name === 'playwright_test';
+  });
+
+  const addItems = await page.evaluate(async () => {
+    const item1 = { text: 'playwright test' };
+    const item2 = { text: 'playwright test 2' };
+    const result = await window.pwModel.add(item1);
+    const result2 = await window.pwModel.add(item2);
+    const deleted = await window.pwModel.delete(1);
+    return deleted;
+  });
+
+  const items = await page.evaluate(async () => {
+    const results = await window.pwModel.getAll();
+    return results;
+  });
+  expect(items).toMatchObject([{ text: 'playwright test 2' }]);
+});
