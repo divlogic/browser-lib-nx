@@ -38,7 +38,7 @@ test('testModel.createStore() successfully creates a store', async ({
   expect(isStoreInstance).toBe(true);
 });
 
-test('testModel.createStore() store ', async ({ page }) => {
+test('testModel.createStore() throws if store exists', async ({ page }) => {
   await page.goto('/');
 
   const noStoresExist = await page.evaluate(async () => {
@@ -54,7 +54,59 @@ test('testModel.createStore() store ', async ({ page }) => {
 
   const storeIsPlaywrightTest = await page.evaluate(async () => {
     const store = await window.pwModel.createStore();
-    return store.name === 'playwright_test';
+    return store?.name === 'playwright_test';
+  });
+  const modelThrowsIfStoreExists = await page.evaluate(async () => {
+    let errored = false;
+    try {
+      const store2 = await window.pwModel.createStore();
+    } catch (e) {
+      errored = true;
+    }
+    return errored;
   });
   expect(storeIsPlaywrightTest).toBe(true);
+});
+
+test('testModel.add(item) adds items to store', async ({ page }) => {
+  await page.goto('/');
+
+  const noStoresExist = await page.evaluate(async () => {
+    class PlaywrightTestModel extends Model<{ text: string }> {
+      store = 'playwright_test';
+    }
+    const pwModel = new PlaywrightTestModel();
+    window.pwModel = pwModel;
+    const db = await pwModel.getDB();
+    return db.objectStoreNames.length === 0;
+  });
+  expect(noStoresExist).toBe(true);
+
+  const storeIsPlaywrightTest = await page.evaluate(async () => {
+    const store = await window.pwModel.createStore();
+    return store?.name === 'playwright_test';
+  });
+
+  const addItem = await page.evaluate(async () => {
+    const item = { text: 'playwright test' };
+    const result = await window.pwModel.add(item);
+    return result;
+  });
+  const items = await page.evaluate(async () => {
+    return new Promise((resolve, reject) => {
+      const dbRequest = indexedDB.open(window.pwModel.store);
+      dbRequest.onsuccess = (e) => {
+        const db = (e.target as IDBOpenDBRequest).result;
+        const itemsTransaction = db
+          .transaction(window.pwModel.store)
+          .objectStore(window.pwModel.store)
+          .getAll();
+        itemsTransaction.onsuccess = (e) => {
+          const items = (e.target as IDBRequest).result;
+          resolve(items);
+        };
+      };
+    });
+  });
+  expect(items).toMatchObject([{ text: 'playwright test' }]);
 });
