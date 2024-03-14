@@ -24,6 +24,7 @@ export default defineConfig({
   // },
 
   build: {
+    sourcemap: 'inline',
     outDir: '../../dist/browser-extensions/tagger',
     reportCompressedSize: true,
     commonjsOptions: {
@@ -37,6 +38,7 @@ export default defineConfig({
       },
       output: {
         entryFileNames: '[name].js',
+        format: 'es',
       },
     },
   },

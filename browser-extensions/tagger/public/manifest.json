@@ -3,6 +3,7 @@
   "name": "tagger",
   "version": "1.0",
   "description": "use tags for things",
+  "permissions": ["storage"],
   "icons": {
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",
@@ -11,20 +12,20 @@
   },
   "action": {
     "default_popup": "index.html",
-    "js": ["index.iife.js"]
+    "js": ["main.js"]
   },
   "content_scripts": [
     {
-      "js": ["index.iife.js"],
+      "js": ["main.js"],
       "matches": [
         "https://developer.chrome.com/docs/extensions/*",
         "https://developer.chrome.com/docs/webstore/*",
-        "https://*/*"
+        "*://*/*"
       ]
     }
   ],
   "background": {
-    "service_worker": "index.iife.js",
+    "service_worker": "web-worker.js",
     "type": "module"
   }
 }

@@ -1,12 +1,23 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
+import MarkJS from 'mark.js';
 
 import App from './app/app';
 import { tag } from './db';
-window.tag = tag;
-function initializeReact() {
-  const el = document.getElementById('root') as HTMLElement;
+import { TagType } from './app/form-reducer';
+
+async function initializeDB() {
+  const tags = await tag.get();
+  console.log('initial tags: ', tags);
+  if (typeof tags === 'undefined') {
+    console.log('initializing tags');
+    await tag.set([]);
+  }
+}
+
+async function initializeReact() {
+  const el = document.getElementById('tagger-ext-root') as HTMLElement;
 
   if (el) {
     const root = ReactDOM.createRoot(el);
@@ -19,21 +30,24 @@ function initializeReact() {
       </StrictMode>
     );
   } else {
-    console.error('root element not found');
+    const tags = await tag.get();
+    const instance = new MarkJS(document.querySelectorAll('body')[0]);
+    console.log('tags is: ', tags);
+    tags.forEach((tag: TagType) => {
+      if (typeof tag.text === 'string') {
+        instance.mark(tag.text, {
+          acrossElements: true,
+          ignoreJoiners: true,
+          separateWordSearch: false,
+        });
+      }
+    });
   }
 }
 
-async function initializeDB() {
-  const db = await tag.getDB();
-  db.close();
-  if (db.objectStoreNames.contains(tag.store)) {
-    console.log('contains it');
-    initializeReact();
-  } else {
-    console.log('doesnt contain');
-    await tag.createStore();
-    initializeReact();
-  }
+async function initialization() {
+  await initializeDB();
+  await initializeReact();
 }
 
-initializeDB();
+initialization();

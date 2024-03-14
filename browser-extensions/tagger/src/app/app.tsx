@@ -13,7 +13,8 @@ export function App() {
   });
 
   useEffect(() => {
-    tag.getAll()?.then((tags) => {
+    tag.get()?.then((tags) => {
+      console.log('tags is: ');
       dispatch({ type: 'loaded', payload: { data: tags } });
     });
   }, []);
@@ -28,11 +29,16 @@ export function App() {
     const instance = new MarkJS(document.querySelectorAll('body')[0]);
     tags.data.forEach((tag) => {
       if (typeof tag.text === 'string') {
-        instance.mark(tag.text, { acrossElements: true });
+        instance.mark(tag.text, {
+          acrossElements: true,
+          ignoreJoiners: true,
+          separateWordSearch: false,
+        });
       }
     });
   });
 
+  console.log('tags is:', tags);
   return (
     <Container>
       <Heading m={2}>tagger</Heading>

@@ -27,7 +27,7 @@ test('Added tags persist', async ({ extensionId, context }) => {
   await page.getByLabel('Add tag:').press('Enter');
   await expect(page.locator('mark', { hasText: 'test' }).first()).toBeVisible();
   await page.close();
-  // newPage is opening a new context?
+
   const newPage = await context.newPage();
   await newPage.goto(`chrome-extension://${extensionId}/index.html`);
   await expect(
@@ -39,7 +39,7 @@ test('Tags highlight on arbitrary websites', async ({
   extensionId,
   context,
 }) => {
-  const testString = "I'm feeling lucky";
+  const testString = 'Business';
   const page = await context.newPage();
 
   await page.goto(`chrome-extension://${extensionId}/index.html`);
@@ -49,8 +49,6 @@ test('Tags highlight on arbitrary websites', async ({
   await expect(
     page.locator('mark', { hasText: testString }).first()
   ).toBeVisible();
-  await page.close();
-  // newPage is opening a new context?
   const newPage = await context.newPage();
   await newPage.goto('https://google.com');
   await expect(
