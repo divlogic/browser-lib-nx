@@ -1,5 +1,6 @@
 // import { expect } from '@playwright/test';
 import { test } from './fixtures';
+import { TaggerDevPage } from './tagger-dev-page';
 const expect = test.expect;
 
 // This might change from time to time in the early stages.
@@ -54,4 +55,29 @@ test('Tags highlight on arbitrary websites', async ({
   await expect(
     newPage.locator('mark', { hasText: testString }).first()
   ).toBeVisible();
+});
+
+test('Can delete tags', async ({ page, extensionId }) => {
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1' });
+  await tagger.addTag({ text: 'item2' });
+  await tagger.addTag({ text: 'item3' });
+
+  await expect(
+    page.locator('mark', { hasText: 'item1' }).first()
+  ).toBeVisible();
+  await expect(
+    page.locator('mark', { hasText: 'item2' }).first()
+  ).toBeVisible();
+  await expect(
+    page.locator('mark', { hasText: 'item3' }).first()
+  ).toBeVisible();
+
+  await page.getByRole('button', { name: 'delete' }).click();
+
+  await expect(
+    page.locator('mark', { hasText: 'item2' }).first()
+  ).toBeUndefined();
 });
