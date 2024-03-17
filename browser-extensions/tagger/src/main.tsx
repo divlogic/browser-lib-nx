@@ -9,9 +9,7 @@ import { TagType } from './app/form-reducer';
 
 async function initializeDB() {
   const tags = await tag.get();
-  console.log('initial tags: ', tags);
   if (typeof tags === 'undefined') {
-    console.log('initializing tags');
     await tag.set([]);
   }
 }

@@ -11,8 +11,6 @@ export abstract class StoreModel<T> {
 
   get(): Promise<T[]> {
     return browser.storage.local.get(this.key).then((results) => {
-      console.log('get results: ', results);
-      console.log('returned results: ', results[this.key]);
       return results[this.key];
     });
   }
