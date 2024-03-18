@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
@@ -13,7 +14,8 @@
     "framer-motion": "^11.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "^7.51.0"
+    "react-hook-form": "^7.51.0",
+    "tslog": "^4.9.2"
   },
   "devDependencies": {
     "@nx/cypress": "18.0.7",
