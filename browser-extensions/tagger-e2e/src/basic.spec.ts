@@ -11,29 +11,28 @@ test('Example test', async ({ page, extensionId }) => {
 });
 
 test('Can add tags', async ({ page, extensionId }) => {
-  await page.goto(`chrome-extension://${extensionId}/index.html`);
-  await page.getByLabel('Add tag:').click();
-  await page.getByLabel('Add tag:').fill('test');
-  await page.getByLabel('Add tag:').press('Enter');
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+  await tagger.addTag({ text: 'test' });
 
-  await expect(page.locator('mark', { hasText: 'test' }).first()).toBeVisible();
+  const highlights = await tagger.getHighlightRegistryTextContents();
+
+  expect(highlights).toContain('test');
 });
 
 test('Added tags persist', async ({ extensionId, context }) => {
   const page = await context.newPage();
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+  await tagger.addTag({ text: 'test' });
 
-  await page.goto(`chrome-extension://${extensionId}/index.html`);
-  await page.getByLabel('Add tag:').click();
-  await page.getByLabel('Add tag:').fill('test');
-  await page.getByLabel('Add tag:').press('Enter');
-  await expect(page.locator('mark', { hasText: 'test' }).first()).toBeVisible();
+  await expect(page.getByText('test').first()).toBeVisible();
+
   await page.close();
 
   const newPage = await context.newPage();
   await newPage.goto(`chrome-extension://${extensionId}/index.html`);
-  await expect(
-    newPage.locator('mark', { hasText: 'test' }).first()
-  ).toBeVisible();
+  await expect(newPage.getByText('test').first()).toBeVisible();
 });
 
 test('Tags highlight on arbitrary websites', async ({
@@ -42,19 +41,19 @@ test('Tags highlight on arbitrary websites', async ({
 }) => {
   const testString = 'Business';
   const page = await context.newPage();
+  const initialTagger = new TaggerDevPage(page, extensionId);
 
-  await page.goto(`chrome-extension://${extensionId}/index.html`);
-  await page.getByLabel('Add tag:').click();
-  await page.getByLabel('Add tag:').fill(testString);
-  await page.getByLabel('Add tag:').press('Enter');
-  await expect(
-    page.locator('mark', { hasText: testString }).first()
-  ).toBeVisible();
+  await initialTagger.goto();
+  await initialTagger.addTag({ text: testString });
+
+  await expect(page.getByText(testString).first()).toBeVisible();
+
   const newPage = await context.newPage();
   await newPage.goto('https://google.com');
-  await expect(
-    newPage.locator('mark', { hasText: testString }).first()
-  ).toBeVisible();
+  const tagger = new TaggerDevPage(newPage, extensionId);
+
+  const highlights = await tagger.getHighlightRegistryTextContents();
+  expect(highlights).toContain(testString);
 });
 
 test('Can delete tags', async ({ page, extensionId }) => {
@@ -65,19 +64,11 @@ test('Can delete tags', async ({ page, extensionId }) => {
   await tagger.addTag({ text: 'item2' });
   await tagger.addTag({ text: 'item3' });
 
-  await expect(
-    page.locator('mark', { hasText: 'item1' }).first()
-  ).toBeVisible();
-  await expect(
-    page.locator('mark', { hasText: 'item2' }).first()
-  ).toBeVisible();
-  await expect(
-    page.locator('mark', { hasText: 'item3' }).first()
-  ).toBeVisible();
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.getByText('item2')).toBeVisible();
+  await expect(page.getByText('item3')).toBeVisible();
 
-  await page.getByRole('button', { name: 'delete' }).click();
+  await page.getByRole('button', { name: 'delete' }).nth(1).click();
 
-  await expect(
-    page.locator('mark', { hasText: 'item2' }).first()
-  ).toBeUndefined();
+  await expect(page.getByText('item2')).toBeHidden();
 });

@@ -17,4 +17,15 @@ export class TaggerDevPage {
     await this.page.getByLabel('Add tag:').fill(tag.text);
     await this.page.getByLabel('Add tag:').press('Enter');
   }
+
+  async getHighlightRegistryTextContents() {
+    return this.page.evaluate(() => {
+      const highlights = [...CSS.highlights.get('search-results').entries()];
+      const ranges = highlights.flat();
+      console.log('ranges is: ', ranges);
+      return ranges.map(
+        (range: Range) => range.commonAncestorContainer.textContent
+      );
+    });
+  }
 }
