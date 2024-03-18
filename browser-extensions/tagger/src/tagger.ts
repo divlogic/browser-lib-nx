@@ -15,6 +15,7 @@ export function Tag(tags: string[]) {
 
   const rangesToHighlight = [];
   tags.forEach((str) => {
+    const testStr = str.toLowerCase();
     const ranges = allTextNodes
       .map((el) => {
         return { el, text: el.textContent?.toLowerCase() };
@@ -23,16 +24,16 @@ export function Tag(tags: string[]) {
         const indices = [];
         let startPos = 0;
         while (startPos < text.length) {
-          const index = text?.indexOf(str, startPos);
+          const index = text?.indexOf(testStr, startPos);
           if (index === -1) break;
           indices.push(index);
-          startPos = index + str.length;
+          startPos = index + testStr.length;
         }
 
         return indices.map((index) => {
           const range = new Range();
           range.setStart(el, index);
-          range.setEnd(el, index + str.length);
+          range.setEnd(el, index + testStr.length);
           return range;
         });
       });
