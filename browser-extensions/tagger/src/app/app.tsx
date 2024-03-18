@@ -21,7 +21,6 @@ export function App() {
 
   useEffect(() => {
     const tagStrings = tags.data.map((tag) => tag.text);
-    tagStrings.push('not going to exist');
     Tag(tagStrings);
   }, [tags]);
 
