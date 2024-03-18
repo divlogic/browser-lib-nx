@@ -1,11 +1,11 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
-import MarkJS from 'mark.js';
 
 import App from './app/app';
 import { tag } from './db';
 import { TagType } from './app/form-reducer';
+import { Tag } from './tagger';
 
 async function initializeDB() {
   const tags = await tag.get();
@@ -28,18 +28,8 @@ async function initializeReact() {
       </StrictMode>
     );
   } else {
-    const tags = await tag.get();
-    const instance = new MarkJS(document.querySelectorAll('body')[0]);
-    console.log('tags is: ', tags);
-    tags.forEach((tag: TagType) => {
-      if (typeof tag.text === 'string') {
-        instance.mark(tag.text, {
-          acrossElements: true,
-          ignoreJoiners: true,
-          separateWordSearch: false,
-        });
-      }
-    });
+    const tags = (await tag.get()).map((tag: TagType) => tag.text);
+    Tag(tags);
   }
 }
 
