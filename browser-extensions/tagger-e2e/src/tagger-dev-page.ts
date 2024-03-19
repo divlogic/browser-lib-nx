@@ -22,10 +22,15 @@ export class TaggerDevPage {
     return this.page.evaluate(() => {
       const highlights = [...CSS.highlights.get('search-results').entries()];
       const ranges = highlights.flat();
-      console.log('ranges is: ', ranges);
       return ranges.map(
         (range: Range) => range.commonAncestorContainer.textContent
       );
+    });
+  }
+
+  async clearStorage() {
+    return this.page.evaluate(() => {
+      return window.tag.clear();
     });
   }
 }
