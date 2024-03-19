@@ -1,7 +1,12 @@
-// import { expect } from '@playwright/test';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 const expect = test.expect;
+
+test.beforeEach('clear local storage', async ({ page, extensionId }) => {
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+  await tagger.clearStorage();
+});
 
 // This might change from time to time in the early stages.
 
@@ -83,6 +88,8 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 
   await initialTagger.goto();
   await initialTagger.addTag({ text: testString });
+  await initialTagger.addTag({ text: testString + 'b' });
+  await initialTagger.addTag({ text: testString + 'c' });
 
   await expect(page.getByText(testString).first()).toBeVisible();
 
@@ -99,7 +106,10 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
   await expect(newPage.getByText('item2')).toBeHidden();
 
   await newPage.goto('https://google.com');
+  const searchResults = await newPage.evaluate(() => {
+    const searchResults = CSS.highlights.get('search-results');
+    return searchResults;
+  });
 
-  const updatedHighlights = await tagger.getHighlightRegistryTextContents();
-  expect(updatedHighlights).not.toContain(testString);
+  expect(searchResults).toBeUndefined();
 });
