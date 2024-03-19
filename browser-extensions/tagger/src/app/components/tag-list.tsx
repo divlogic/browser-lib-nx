@@ -13,7 +13,7 @@ export function TagList(props: TagListProps) {
   return (
     <>
       {tags.map((tag, index) => {
-        return <Tag tag={tag} dispatch={dispatch} key={index} />;
+        return <Tag tag={tag} dispatch={dispatch} index={index} key={index} />;
       })}
     </>
   );

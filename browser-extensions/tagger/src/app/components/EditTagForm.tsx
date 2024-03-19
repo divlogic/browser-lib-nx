@@ -2,11 +2,13 @@ import { Dispatch } from 'react';
 import { Action, TagType } from '../form-reducer';
 import { FormControl, FormLabel, HStack, IconButton } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
+import { tag } from '../../db';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
   tag: TagType;
   dispatch: Dispatch<Action>;
+  index: number;
 }
 
 export function EditTagForm(props: EditTagFormProps) {
@@ -22,8 +24,9 @@ export function EditTagForm(props: EditTagFormProps) {
       <IconButton
         aria-label="delete"
         size="sm"
-        onClick={(e) => {
+        onClick={async (e) => {
           e.preventDefault();
+          await tag.remove(props.index);
           props.dispatch({ type: 'removed', payload: { data: props.tag } });
         }}
         icon={<DeleteIcon />}
