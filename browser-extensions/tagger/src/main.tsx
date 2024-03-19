@@ -39,3 +39,7 @@ async function initialization() {
 }
 
 initialization();
+
+if (import.meta.env.DEV) {
+  window.tag = tag;
+}
