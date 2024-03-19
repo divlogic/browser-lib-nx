@@ -16,20 +16,23 @@ export abstract class StoreModel<T> {
   }
 
   set(values: T[]) {
-    return browser.storage.local
-      .set({ [this.key]: values })
-      .then((testSet) => {
-        console.log('Ok: ', values, ' set');
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    return browser.storage.local.set({ [this.key]: values });
   }
 
   add(item: T) {
     return this.get().then((items) => {
       return this.set([...items, item]);
     });
+  }
+  remove(index: number) {
+    return this.get().then((items) => {
+      items.splice(index, 1);
+      return this.set(items);
+    });
+  }
+
+  clear() {
+    return browser.storage.local.clear();
   }
 }
 
