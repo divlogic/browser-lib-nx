@@ -13,13 +13,18 @@ export const test = base.extend<{
       '../../dist/browser-extensions/',
       extensionName
     );
-    const context = await chromium.launchPersistentContext('', {
-      headless: false,
-      args: [
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-    });
+    const context = await chromium.launchPersistentContext(
+      'playwright-chrome-tagger',
+      {
+        devtools: true,
+        viewport: { height: 1000, width: 1000 },
+        headless: false,
+        args: [
+          `--disable-extensions-except=${pathToExtension}`,
+          `--load-extension=${pathToExtension}`,
+        ],
+      }
+    );
     await use(context);
     await context.close();
   },
