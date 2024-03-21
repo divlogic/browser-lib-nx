@@ -1,3 +1,5 @@
+import Color from 'colorjs.io';
+
 export function Tag(tags: string[]) {
   const body = document.getElementsByTagName('body')[0];
   const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
@@ -45,14 +47,30 @@ export function Tag(tags: string[]) {
     CSS.highlights.set('search-results', searchResultsHighlight);
   }
 
+  const bgColor = new Color('hsl', [
+    getRandomArbitrary(0, 360),
+    getRandomArbitrary(0, 100),
+    getRandomArbitrary(0, 100),
+  ]);
+  const bgColorString = bgColor.toString();
+  // const bgColorString = 'blue';
   const css = `
     ::highlight(search-results) {
-      background-color: #f06;
+      background-color: ${bgColorString};
       color: white;
     }
     `;
   const head = document.getElementsByTagName('head')[0];
-  const newStyle = document.createElement('style');
-  newStyle.innerHTML = css;
-  head.appendChild(newStyle);
+  let styleElement = document.getElementById('styled-by-tagger');
+  if (styleElement == null) {
+    styleElement = document.createElement('style');
+    styleElement.setAttribute('id', 'styled-by-tagger');
+    head.appendChild(styleElement);
+  }
+  styleElement.innerHTML = css;
+  window.styleElement = styleElement;
+}
+
+function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }
