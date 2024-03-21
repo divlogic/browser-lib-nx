@@ -113,3 +113,25 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 
   expect(searchResults).toBeUndefined();
 });
+
+test('Added tags add a specific style tag', async ({ page, extensionId }) => {
+  const styleId = 'styled-by-tagger';
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+
+  await expect(page.locator(styleId)).not.toBeAttached();
+
+  await tagger.addTag({ text: 'testing' });
+
+  expect(page.locator(styleId).first()).toBeAttached();
+});
+
+/**
+ * TESTS TODO:
+ * 1. Can input a color when creating a tag
+ * 2. Can input a color when editing a tag
+ * 3. There is only one css style tag added
+ * 4. There is a validation that predefined styles are mapped to the style tag
+ * 5. When appropriate, the style tag will have multiple highlight selectors
+ * 6. (maybe)
+ */
