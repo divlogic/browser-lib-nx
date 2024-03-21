@@ -7,6 +7,10 @@ teardown('clear browser.storage.local', async ({ page, extensionId }) => {
   await tagger.goto();
 
   await page.evaluate(() => {
-    window.tag.clear();
+    try {
+      return window.tag.clear();
+    } catch (e) {
+      return e;
+    }
   });
 });
