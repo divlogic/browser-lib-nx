@@ -13,8 +13,11 @@ export const test = base.extend<{
       '../../dist/browser-extensions/',
       extensionName
     );
+    // Pasing in an empty string as the first arg allows parallel testing
+    // With a named dir, it will break.
+    // This needs some figuring out because some things might be useful in one context, but not in another.
     const context = await chromium.launchPersistentContext(
-      'playwright-chrome-tagger',
+      process.env.USER_DATA_DIR || '',
       {
         devtools: true,
         viewport: { height: 1000, width: 1000 },
