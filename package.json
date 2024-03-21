@@ -11,6 +11,7 @@
     "@emotion/styled": "^11.11.0",
     "@types/webextension-polyfill": "^0.10.7",
     "chrome-types": "^0.1.271",
+    "colorjs.io": "^0.5.0",
     "framer-motion": "^11.0.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
