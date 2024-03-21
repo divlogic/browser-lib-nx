@@ -30,7 +30,11 @@ export class TaggerDevPage {
 
   async clearStorage() {
     return this.page.evaluate(() => {
-      return window.tag.clear();
+      try {
+        return window.tag.clear();
+      } catch (e) {
+        return e;
+      }
     });
   }
 }
