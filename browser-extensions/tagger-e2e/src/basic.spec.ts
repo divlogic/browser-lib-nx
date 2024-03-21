@@ -122,15 +122,18 @@ test('Added tags add a specific style tag', async ({ page, extensionId }) => {
   await expect(page.locator(styleId)).not.toBeAttached();
 
   await tagger.addTag({ text: 'testing' });
-
-  expect(page.locator(styleId).first()).toBeAttached();
+  await expect(page.locator(`#${styleId}`)).toHaveCount(1);
+  const tagName = await page.locator(`#${styleId}`).evaluate((item) => {
+    return item.tagName;
+  });
+  expect(tagName).toBe('STYLE');
 });
 
 /**
  * TESTS TODO:
  * 1. Can input a color when creating a tag
  * 2. Can input a color when editing a tag
- * 3. There is only one css style tag added
+//  * 3. There is only one css style tag added
  * 4. There is a validation that predefined styles are mapped to the style tag
  * 5. When appropriate, the style tag will have multiple highlight selectors
  * 6. (maybe)
