@@ -12,9 +12,14 @@ export class TaggerDevPage {
     await this.page.goto(`chrome-extension://${this.extensionId}/index.html`);
   }
 
-  async addTag(tag: { text: string }) {
+  async addTag(tag: { text: string; color?: string }) {
     await this.page.getByLabel('Add tag:').click();
     await this.page.getByLabel('Add tag:').fill(tag.text);
+
+    if (typeof tag.color === 'string') {
+      await this.page.getByLabel('Pick a color:').click();
+      await this.page.getByLabel('Pick a color').fill(tag.color);
+    }
     await this.page.getByLabel('Add tag:').press('Enter');
   }
 

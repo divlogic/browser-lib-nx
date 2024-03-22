@@ -2,6 +2,7 @@ import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 const expect = test.expect;
 
+const styleTagId = '#styled-by-tagger';
 test.beforeEach('clear local storage', async ({ page, extensionId }) => {
   const tagger = new TaggerDevPage(page, extensionId);
   await tagger.goto();
@@ -115,18 +116,37 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 });
 
 test('Added tags add a specific style tag', async ({ page, extensionId }) => {
-  const styleId = 'styled-by-tagger';
   const tagger = new TaggerDevPage(page, extensionId);
   await tagger.goto();
 
-  await expect(page.locator(styleId)).not.toBeAttached();
+  await expect(page.locator(styleTagId)).not.toBeAttached();
 
   await tagger.addTag({ text: 'testing' });
-  await expect(page.locator(`#${styleId}`)).toHaveCount(1);
-  const tagName = await page.locator(`#${styleId}`).evaluate((item) => {
+  await expect(page.locator(styleTagId)).toHaveCount(1);
+  const tagName = await page.locator(styleTagId).evaluate((item) => {
     return item.tagName;
   });
   expect(tagName).toBe('STYLE');
+});
+
+test('Can add tags with color', async ({ page, extensionId }) => {
+  const tagger = new TaggerDevPage(page, extensionId);
+  await tagger.goto();
+  const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
+  await tagger.addTag(tag);
+
+  const highlights = await tagger.getHighlightRegistryTextContents();
+  await expect(page.locator(styleTagId)).toHaveCount(1);
+
+  expect(highlights).toContain('test');
+  await expect(page.getByText('test')).toHaveCount(1);
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${tag.color};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
 });
 
 /**
