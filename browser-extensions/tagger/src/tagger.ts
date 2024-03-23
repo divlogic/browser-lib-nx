@@ -1,6 +1,7 @@
 import Color from 'colorjs.io';
+import { TagType } from './app/form-reducer';
 
-export function Tag(tags: string[]) {
+export function Tag(tags: TagType[]) {
   const body = document.getElementsByTagName('body')[0];
   const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
 
@@ -16,28 +17,32 @@ export function Tag(tags: string[]) {
   }
 
   const rangesToHighlight = [];
-  tags.forEach((str) => {
-    const testStr = str.toLowerCase();
+  tags.forEach((tag) => {
+    const testStr = tag.text.toLowerCase();
     const ranges = allTextNodes
       .map((el) => {
         return { el, text: el.textContent?.toLowerCase() };
       })
       .map(({ text, el }) => {
-        const indices = [];
-        let startPos = 0;
-        while (startPos < text.length) {
-          const index = text?.indexOf(testStr, startPos);
-          if (index === -1) break;
-          indices.push(index);
-          startPos = index + testStr.length;
-        }
+        if (typeof text === 'string') {
+          const indices = [];
+          let startPos = 0;
+          while (startPos < text.length) {
+            const index = text?.indexOf(testStr, startPos);
+            if (index === -1) break;
+            indices.push(index);
+            startPos = index + testStr.length;
+          }
 
-        return indices.map((index) => {
-          const range = new Range();
-          range.setStart(el, index);
-          range.setEnd(el, index + testStr.length);
-          return range;
-        });
+          return indices.map((index) => {
+            const range = new Range();
+            range.setStart(el, index);
+            range.setEnd(el, index + testStr.length);
+            return range;
+          });
+        } else {
+          return null;
+        }
       });
     rangesToHighlight.push(...ranges.flat());
   });
@@ -47,16 +52,9 @@ export function Tag(tags: string[]) {
     CSS.highlights.set('search-results', searchResultsHighlight);
   }
 
-  const bgColor = new Color('hsl', [
-    getRandomArbitrary(0, 360),
-    getRandomArbitrary(0, 100),
-    getRandomArbitrary(0, 100),
-  ]);
-  const bgColorString = bgColor.toString();
-  // const bgColorString = 'blue';
   const css = `
     ::highlight(search-results) {
-      background-color: ${bgColorString};
+      background-color: ${tags[0]?.color || 'yellow'};
       color: white;
     }
     `;
@@ -69,8 +67,4 @@ export function Tag(tags: string[]) {
   }
   styleElement.innerHTML = css;
   window.styleElement = styleElement;
-}
-
-function getRandomArbitrary(min: number, max: number) {
-  return Math.random() * (max - min) + min;
 }

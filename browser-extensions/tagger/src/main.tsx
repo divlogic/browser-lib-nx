@@ -28,7 +28,7 @@ async function initializeReact() {
       </StrictMode>
     );
   } else {
-    const tags = (await tag.get()).map((tag: TagType) => tag.text);
+    const tags = await tag.get();
     Tag(tags);
   }
 }

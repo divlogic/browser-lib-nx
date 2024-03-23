@@ -20,8 +20,7 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    const tagStrings = tags.data.map((tag) => tag.text);
-    Tag(tagStrings);
+    Tag(tags.data);
   }, [tags]);
 
   return (
