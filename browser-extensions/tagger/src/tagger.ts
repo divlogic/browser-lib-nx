@@ -1,4 +1,3 @@
-import Color from 'colorjs.io';
 import { TagType } from './app/form-reducer';
 
 export function Tag(tags: TagType[]) {
