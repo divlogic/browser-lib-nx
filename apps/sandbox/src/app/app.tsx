@@ -1,11 +1,9 @@
+import { Container } from '@chakra-ui/react';
+import ColorExample from './components/color-example';
 import NxWelcome from './nx-welcome';
 
 export function App() {
-  return (
-    <div>
-      <NxWelcome title="sandbox" />
-    </div>
-  );
+  return <ColorExample></ColorExample>;
 }
 
 export default App;
