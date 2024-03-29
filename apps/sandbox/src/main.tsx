@@ -32,8 +32,8 @@ const customTheme = {
   styles: {
     global: {
       'a.active': {
-        color: 'blue.500',
         textDecoration: 'underline',
+        backgroundColor: 'blue.100',
       },
     },
   },

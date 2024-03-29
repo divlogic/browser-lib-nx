@@ -3,6 +3,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  HStack,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -40,10 +41,16 @@ export function ColorCard(props: ColorCardProps) {
         </VStack>
       </CardBody>
       <CardFooter>
-        <VStack>
-          <Text>Background Color: </Text>
-          <Text>{props.backgroundColor}</Text>
-        </VStack>
+        <HStack>
+          <VStack>
+            <Text>Foreground Color: </Text>
+            <Text>{props.textColor}</Text>
+          </VStack>
+          <VStack>
+            <Text>Background Color: </Text>
+            <Text>{props.backgroundColor}</Text>
+          </VStack>
+        </HStack>
       </CardFooter>
     </Card>
   );

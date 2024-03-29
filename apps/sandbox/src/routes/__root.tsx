@@ -3,22 +3,17 @@ import {
   BreadcrumbItem,
   BreadcrumbLink as BaseBreadcrumbLink,
   Container,
+  BreadcrumbLinkProps,
 } from '@chakra-ui/react';
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { PathOptions } from '../main';
-import { PropsWithChildren } from 'react';
+import { ComponentProps, FC, PropsWithChildren } from 'react';
 
-const BreadcrumbLink = (
-  props: PropsWithChildren<{
-    to: PathOptions;
-  }>
-) => {
-  return (
-    <BaseBreadcrumbLink as={Link} to={props.to}>
-      {props.children}
-    </BaseBreadcrumbLink>
-  );
+const BreadcrumbLink = ({
+  ...props
+}: { to: PathOptions } & BreadcrumbLinkProps) => {
+  return <BaseBreadcrumbLink as={Link} {...props} />;
 };
 
 const RootComponent = () => {
@@ -29,9 +24,11 @@ const RootComponent = () => {
           <BreadcrumbItem>
             <BreadcrumbLink to="/">Home</BreadcrumbLink>
           </BreadcrumbItem>
+
           <BreadcrumbItem>
             <BreadcrumbLink to="/color-examples">Color Examples</BreadcrumbLink>
           </BreadcrumbItem>
+
           <BreadcrumbItem>
             <BreadcrumbLink to="/color-generator">
               Color Generator
