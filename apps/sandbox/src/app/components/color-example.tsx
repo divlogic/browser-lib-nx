@@ -18,6 +18,7 @@ export function ColorExample(props: ColorExampleProps) {
       const color = colorGenerator('black', index);
       return (
         <ColorCard
+          key={index}
           constrastRatio={color.backgroundColor.contrastWCAG21(color.textColor)}
           textColor={color.textColor.toString()}
           backgroundColor={color.backgroundColor.toString()}
@@ -26,11 +27,9 @@ export function ColorExample(props: ColorExampleProps) {
     });
 
   return (
-    <Container maxW={'container.lg'}>
-      <SimpleGrid templateColumns={'repeat(4, minmax(150px, 1fr))'} gap={5}>
-        {colors}
-      </SimpleGrid>
-    </Container>
+    <SimpleGrid templateColumns={'repeat(4, minmax(150px, 1fr))'} gap={5}>
+      {colors}
+    </SimpleGrid>
   );
 }
 
