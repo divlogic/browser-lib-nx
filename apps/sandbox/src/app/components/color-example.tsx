@@ -27,7 +27,14 @@ export function ColorExample(props: ColorExampleProps) {
     });
 
   return (
-    <SimpleGrid templateColumns={'repeat(4, minmax(150px, 1fr))'} gap={5}>
+    <SimpleGrid
+      columns={{ sm: 1, md: 2, lg: 3, xl: 4 }}
+      columnGap={'1rem'}
+      rowGap={'1rem'}
+      border="1px solid black"
+      width={'max-content'}
+      backgroundColor={'orange'}
+    >
       {colors}
     </SimpleGrid>
   );

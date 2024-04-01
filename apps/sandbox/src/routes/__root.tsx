@@ -4,6 +4,8 @@ import {
   BreadcrumbLink as BaseBreadcrumbLink,
   Container,
   BreadcrumbLinkProps,
+  Divider,
+  Flex,
 } from '@chakra-ui/react';
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
@@ -36,10 +38,15 @@ const RootComponent = () => {
           </BreadcrumbItem>
         </Breadcrumb>
       </Container>
-      <hr />
-      <Container maxWidth={'container.lg'}>
+      <Divider />
+      <Flex
+        justify={'center'}
+        marginTop={'2rem'}
+        marginLeft={'1rem'}
+        marginRight={'1rem'}
+      >
         <Outlet />
-      </Container>
+      </Flex>
       <TanStackRouterDevtools />
     </>
   );

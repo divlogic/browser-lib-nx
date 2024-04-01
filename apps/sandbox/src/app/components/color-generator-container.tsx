@@ -12,6 +12,7 @@ import {
   Select,
   SimpleGrid,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import { ColorCard } from './color-card';
 import { reducer } from './reducer';
@@ -42,36 +43,9 @@ export function ColorGeneratorContainer() {
     );
   });
   return (
-    <Box>
-      <Container>
-        <Text>Generators: {state.length}</Text>
-      </Container>
-      <Button
-        variant="solid"
-        backgroundColor="green.300"
-        color="black"
-        onClick={(e) => {
-          e.preventDefault();
-          dispatch({ type: 'added', payload: { data: [180, 50, 50] } });
-        }}
-      >
-        Add
-      </Button>
-      <Button
-        variant="solid"
-        backgroundColor="red.300"
-        color="black"
-        onClick={() => {
-          if (state.length > 1) {
-            dispatch({ type: 'removed' });
-          }
-        }}
-      >
-        Remove
-      </Button>
-      <SimpleGrid columns={2}>
-        <SimpleGrid columns={2}>{generators}</SimpleGrid>
-        <Container>
+    <Box width="100%">
+      <SimpleGrid columns={{ sm: 1, md: 2 }}>
+        <VStack width="100%">
           <Heading>Contrasts:</Heading>
           <HStack>
             <FormControl>
@@ -116,7 +90,42 @@ export function ColorGeneratorContainer() {
               .to('srgb')
               .toString({ format: 'hex' })}
           />
-        </Container>
+        </VStack>
+        <VStack width="100%">
+          <VStack>
+            <Container>
+              <Text>Generators: {state.length}</Text>
+            </Container>
+            <HStack>
+              <Button
+                variant="solid"
+                backgroundColor="green.300"
+                color="black"
+                onClick={(e) => {
+                  e.preventDefault();
+                  dispatch({ type: 'added', payload: { data: [180, 50, 50] } });
+                }}
+              >
+                Add
+              </Button>
+              <Button
+                variant="solid"
+                backgroundColor="red.300"
+                color="black"
+                onClick={() => {
+                  if (state.length > 1) {
+                    dispatch({ type: 'removed' });
+                  }
+                }}
+              >
+                Remove
+              </Button>
+            </HStack>
+          </VStack>
+          <SimpleGrid width={'100%'} columns={2} spacing={2}>
+            {generators}
+          </SimpleGrid>
+        </VStack>
       </SimpleGrid>
     </Box>
   );

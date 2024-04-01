@@ -102,7 +102,7 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
       </CardBody>
-      <CardFooter backgroundColor={colorHex}>
+      <CardFooter backgroundColor={colorHex} borderBottomRadius={'inherit'}>
         <Text>Hex: {colorHex}</Text>
       </CardFooter>
     </Card>
