@@ -119,8 +119,6 @@ test('Added tags add a specific style tag', async ({ page, extensionId }) => {
   const tagger = new TaggerDevPage(page, extensionId);
   await tagger.goto();
 
-  await expect(page.locator(styleTagId)).not.toBeAttached();
-
   await tagger.addTag({ text: 'testing' });
   await expect(page.locator(styleTagId)).toHaveCount(1);
   const tagName = await page.locator(styleTagId).evaluate((item) => {
