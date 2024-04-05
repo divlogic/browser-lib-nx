@@ -1,4 +1,4 @@
-import browser, { Storage } from 'webextension-polyfill';
+import browser from 'webextension-polyfill';
 import { TagType } from './app/form-reducer';
 
 export abstract class StoreModel<T> {
@@ -35,9 +35,3 @@ export abstract class StoreModel<T> {
     return browser.storage.local.clear();
   }
 }
-
-export class TagModel extends StoreModel<TagType> {
-  key = 'tags';
-}
-
-export const tag = new TagModel();

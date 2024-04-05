@@ -3,7 +3,7 @@ import { Container, Heading, Text } from '@chakra-ui/react';
 import { AddTagForm } from './components/add-tag-form';
 import { useEffect, useReducer } from 'react';
 import { tagsReducer } from './form-reducer';
-import { tag } from '../db';
+import { tag } from './models/tag';
 import TagList from './components/tag-list';
 import { Tag } from '../tagger';
 

@@ -13,7 +13,7 @@ import {
 import { Dispatch, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Action, TagType } from '../form-reducer';
-import { tag } from '../../db';
+import { tag } from '../models/tag';
 type Inputs = {
   text: string;
   textRequired: string;

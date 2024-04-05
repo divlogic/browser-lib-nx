@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import App from './app/app';
-import { tag } from './db';
+import { tag } from './app/models/tag';
 import { TagType } from './app/form-reducer';
 import { Tag } from './tagger';
 

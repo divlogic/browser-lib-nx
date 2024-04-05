@@ -2,7 +2,7 @@ import { Dispatch } from 'react';
 import { Action, TagType } from '../form-reducer';
 import { FormControl, FormLabel, HStack, IconButton } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
-import { tag } from '../../db';
+import { tag } from '../models/tag';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
