@@ -39,3 +39,31 @@ test('createStore successfully creates Store', async ({ page }) => {
   });
   expect(isStoreInstance).toBe(true);
 });
+
+test('getStore successfully gets Store', async ({ page }) => {
+  await page.goto('/');
+
+  const dbName = 'testdb';
+  const storeName = 'teststore';
+  const isStoreInstance = await page.evaluate(
+    async (data) => {
+      const engine = window.Engine;
+      const db = await window.Engine.getDB(data.dbName);
+      if (db.objectStoreNames.length > 0) {
+        return false;
+      } else {
+        const createdStore = await engine.createStore(
+          data.dbName,
+          data.storeName
+        );
+        const fetchedStore = await engine.getStore(data.dbName, data.storeName);
+        return fetchedStore instanceof IDBObjectStore;
+      }
+    },
+    {
+      dbName,
+      storeName,
+    }
+  );
+  expect(isStoreInstance).toBe(true);
+});
