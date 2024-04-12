@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
-import { Engine } from '../src';
+import { Engine } from '../src/lib/engine';
 
 declare const window: {
-  Engine: Engine<unknown>;
+  Engine: typeof Engine;
 };
 
 test('testEngine is defined', async ({ page }) => {
@@ -17,10 +17,25 @@ test('testEngine is defined', async ({ page }) => {
 test('getDB successfully fetches DB', async ({ page }) => {
   await page.goto('/');
 
-  const db = await page.evaluate(async () => {
-    const engine = window.Engine;
-    const db = await engine.getDB('test');
-    return db.name;
+  const dbIsInstance = await page.evaluate(async () => {
+    const db = await window.Engine.getDB('test');
+    return db instanceof IDBDatabase;
   });
-  expect(db).toBe('test');
+  expect(dbIsInstance).toBe(true);
+});
+
+test('createStore successfully creates Store', async ({ page }) => {
+  await page.goto('/');
+
+  const isStoreInstance = await page.evaluate(async () => {
+    const engine = window.Engine;
+    const db = await window.Engine.getDB('test');
+    if (db.objectStoreNames.length > 0) {
+      return false;
+    } else {
+      const store = await engine.createStore('test', 'testStore');
+      return store instanceof IDBObjectStore;
+    }
+  });
+  expect(isStoreInstance).toBe(true);
 });
