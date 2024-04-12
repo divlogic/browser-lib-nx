@@ -1,8 +1,10 @@
+import { Engine } from './lib/engine';
 import { Model } from './lib/db';
 
 declare const window: {
   testModel: TestModel;
-  Model: Model;
+  Model: Model<unknown>;
+  Engine: Engine<unknown>;
 };
 
 class TestModel extends Model<{ id?: IDBValidKey; text: string }> {
@@ -12,3 +14,4 @@ class TestModel extends Model<{ id?: IDBValidKey; text: string }> {
 window.Model = Model;
 
 window.testModel = new TestModel();
+window.Engine = Engine;
