@@ -13,3 +13,14 @@ test('testEngine is defined', async ({ page }) => {
   });
   expect(engine).toBe('function');
 });
+
+test('getDB successfully fetches DB', async ({ page }) => {
+  await page.goto('/');
+
+  const db = await page.evaluate(async () => {
+    const engine = window.Engine;
+    const db = await engine.getDB('test');
+    return db.name;
+  });
+  expect(db).toBe('test');
+});
