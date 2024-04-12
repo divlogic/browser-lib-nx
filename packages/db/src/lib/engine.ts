@@ -1,15 +1,8 @@
 import { log } from './logs';
-export class Engine<T> {
-  storeName: string | null = null;
-  static store(store: string) {
-    this.storeName = store;
-
-    return this;
-  }
-
-  getDB = (): Promise<IDBDatabase> => {
+export class Engine {
+  static getDB(name: string): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.store);
+      const request = indexedDB.open(name);
       request.onupgradeneeded = (event) => {
         const target = event.target as IDBOpenDBRequest;
         const db = target.result;
@@ -34,20 +27,22 @@ export class Engine<T> {
         resolve(db);
       };
     });
-  };
+  }
 
   storeNotSetError() {
     return new Error('Model requires store to be set.');
   }
 
-  createStore(
+  static createStore = (
+    db: string,
+    store: string,
     options: IDBObjectStoreParameters = { autoIncrement: true, keyPath: 'id' }
-  ): Promise<IDBObjectStore> {
+  ): Promise<IDBObjectStore> => {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
-      if (typeof this.store === 'string') {
-        return this.getDB().then((db: IDBDatabase) => {
-          if (!db.objectStoreNames.contains(this.store)) {
+      if (typeof store === 'string') {
+        return Engine.getDB(db).then((db: IDBDatabase) => {
+          if (!db.objectStoreNames.contains(store)) {
             db.onclose = (e) => {
               log.info('db is closed');
             };
@@ -60,7 +55,7 @@ export class Engine<T> {
             };
             db.close();
             const upgradedDBRequest = window.indexedDB.open(
-              this.store,
+              store,
               db.version + 1
             );
             upgradedDBRequest.onblocked = (event) => {
@@ -71,7 +66,7 @@ export class Engine<T> {
               log.info('onupgradeneeded', event);
               const upgradeableDB = (event.target as IDBOpenDBRequest)
                 .result as IDBDatabase;
-              resolve(upgradeableDB.createObjectStore(this.store, options));
+              resolve(upgradeableDB.createObjectStore(store, options));
             };
           } else {
             reject(new Error('Store already exists'));
@@ -83,7 +78,7 @@ export class Engine<T> {
         );
       }
     });
-  }
+  };
 
   put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
     return new Promise((resolve, reject) => {
