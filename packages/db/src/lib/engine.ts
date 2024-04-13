@@ -29,10 +29,6 @@ export class Engine {
     });
   }
 
-  storeNotSetError() {
-    return new Error('Model requires store to be set.');
-  }
-
   static createStore = (
     dbName: string,
     storeName: string,
@@ -171,9 +167,14 @@ export class Engine {
     });
   }
 
-  static put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
+  static put(
+    dbName: string,
+    storeName: string,
+    item: unknown,
+    key?: IDBValidKey
+  ): Promise<IDBValidKey> {
     return new Promise((resolve, reject) => {
-      return this.getStore().then((store) => {
+      return Engine.getStore(dbName, storeName).then((store) => {
         try {
           const request = store.put(item, key);
           request.onerror = (event) => {
