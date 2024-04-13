@@ -30,7 +30,11 @@ async function initializeReact() {
     );
   } else {
     const tags = await tag.get();
-    Tag(tags);
+    try {
+      Tag(tags);
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 

@@ -20,7 +20,11 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    Tag(tags.data);
+    try {
+      Tag(tags.data);
+    } catch (e) {
+      console.error(e);
+    }
   }, [tags]);
 
   return (
