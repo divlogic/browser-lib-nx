@@ -42,7 +42,6 @@ export class Engine {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
       return Engine.getDB(dbName).then((db: IDBDatabase) => {
-        console.log('create store getdb: ', dbName);
         if (!db.objectStoreNames.contains(store)) {
           db.onclose = (e) => {
             log.info('db is closed');
@@ -64,16 +63,12 @@ export class Engine {
             log.info('onblocked', event);
           };
           let createdStore: IDBObjectStore;
-          upgradedDBRequest.onsuccess = (event) => {
-            console.log('ON SUCCESS RESOLVING');
-            resolve(createdStore);
-          };
           upgradedDBRequest.onupgradeneeded = (event) => {
             log.info('onupgradeneeded', event);
             const upgradeableDB = (event.target as IDBOpenDBRequest)
               .result as IDBDatabase;
             createdStore = upgradeableDB.createObjectStore(store, options);
-            console.log('SUCCESSFULLY CREATED STORE?');
+            resolve(createdStore);
           };
         } else {
           reject(new Error('Store already exists'));
@@ -83,15 +78,10 @@ export class Engine {
   };
 
   static getStore(db: string, storeName: string): Promise<IDBObjectStore> {
-    console.log('getStore');
     return new Promise((resolve, reject) => {
       return Engine.getDB(db).then((db: IDBDatabase) => {
-        console.log('db is: ', db);
         const transaction = db.transaction(storeName, 'readwrite');
-        console.log('transaction is: ', transaction);
-
         const store = transaction.objectStore(storeName);
-        console.log('Store is: ', store);
         resolve(store);
       });
     });
