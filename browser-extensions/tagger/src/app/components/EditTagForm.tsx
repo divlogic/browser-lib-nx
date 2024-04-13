@@ -26,8 +26,12 @@ export function EditTagForm(props: EditTagFormProps) {
         size="sm"
         onClick={async (e) => {
           e.preventDefault();
-          await tag.remove(props.index);
-          props.dispatch({ type: 'removed', payload: { data: props.tag } });
+          if (typeof props.tag.id === 'number') {
+            await tag.remove(props.tag.id);
+            props.dispatch({ type: 'removed', payload: { data: props.tag } });
+          } else {
+            throw new Error('unexpected situation: id is not a number');
+          }
         }}
         icon={<DeleteIcon />}
       ></IconButton>

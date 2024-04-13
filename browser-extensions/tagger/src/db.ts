@@ -1,3 +1,6 @@
+import { BrowserStorageRepository } from './db/browser-storage-repository';
+import { IndexedDBRepository } from './db/indexed-db-repository';
+
 async function importRepository() {
   if (true) {
     return (await import('./db/indexed-db-repository')).Repo;
@@ -7,9 +10,7 @@ async function importRepository() {
 export abstract class Repository<T> {
   public abstract initialize(): Promise<void>;
   public config: unknown;
-  constructor(config: unknown = {}) {
-    this.config = config;
-  }
+  constructor(config: unknown): void;
   public abstract get(key: string): Promise<T[] | null>;
   public abstract getAll(): Promise<T[] | null>;
   public abstract set(key: string, values: T[]): Promise<void>;
@@ -32,10 +33,10 @@ export abstract class StoreModel<T> {
     this.importedRepository = importRepository();
   }
 
-  get repository() {
-    return (async () => {
+  get repository(): IndexedDBRepository<T> | BrowserStorageRepository<t> {
+    return (async (): Promise<new () => Repository<T>> => {
       const repository = await this.importedRepository;
-      const repositoryInstance = new repository({
+      const repositoryInstance = new repository<T>({
         dbName: 'tagger',
         storeName: 'tags',
       });
@@ -58,15 +59,14 @@ export abstract class StoreModel<T> {
   }
 
   async add(item: T) {
-    return this.get().then((items) => {
-      return this.set([...items, item]);
-    });
+    const repo = await this.repository;
+    return await repo.add(this.key, item);
   }
+
   async remove(index: number) {
-    return this.get().then((items) => {
-      items.splice(index, 1);
-      return this.set(items);
-    });
+    const repo = await this.repository;
+    await repo.remove(this.key, index);
+    return;
   }
 
   // clear() {

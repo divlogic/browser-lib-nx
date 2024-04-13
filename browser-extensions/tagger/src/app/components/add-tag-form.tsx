@@ -50,7 +50,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
     text: string;
     color?: string;
   }) => {
-    const result: number = await tag.add(data);
+    const result = (await tag.add(data)) as number;
     dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
   };
 

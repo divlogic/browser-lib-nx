@@ -5,19 +5,21 @@ export class IndexedDBRepository<T> extends Repository<T> {
   config: { dbName: string; storeName: string };
 
   constructor(config: { dbName: string; storeName: string }) {
-    super();
+    super(config);
     this.config = config;
   }
 
   public async initialize(): Promise<void> {
     const db = await Engine.getDB(this.config.dbName);
     if (db.objectStoreNames.contains(this.config.storeName)) {
+      return;
     } else {
       db.close();
       const store = await Engine.createStore(
         this.config.dbName,
         this.config.storeName
       );
+      return;
     }
   }
 
@@ -43,18 +45,19 @@ export class IndexedDBRepository<T> extends Repository<T> {
     return;
   }
 
-  add(key: string, item: T) {
-    const model = new Engine<T>(key);
-    return model.add(item);
+  async add(key: string, item: T): Promise<unknown> {
+    const result = await Engine.add(
+      this.config.dbName,
+      this.config.storeName,
+      item
+    );
+    console.log('engine add: ', result);
+    return result;
   }
 
-  remove(key: string, index: number) {
-    return Engine.delete(this.config.dbName, this.config.storeName, index);
-  }
-
-  clear() {
-    const model = new Engine<T>(key);
-    return model.deleteStore();
+  async remove(key: string, index: number) {
+    await Engine.delete(this.config.dbName, this.config.storeName, index);
+    return;
   }
 }
 
