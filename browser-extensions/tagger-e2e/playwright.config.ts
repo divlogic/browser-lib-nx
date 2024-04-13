@@ -25,12 +25,12 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   // Since this is for a plugin, a server is a bit tricky.
-  // webServer: {
-  //   command: 'npx nx build-watch tagger && nx preview tagger',
-  //   url: 'http://localhost:4300',
-  //   reuseExistingServer: !process.env.CI,
-  //   cwd: workspaceRoot,
-  // },
+  webServer: {
+    command: 'nx serve tagger',
+    url: 'http://localhost:4200',
+    reuseExistingServer: !process.env.CI,
+    cwd: workspaceRoot,
+  },
   projects: [
     {
       name: 'setup',
@@ -77,4 +77,5 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     } */
   ],
+  fullyParallel: false,
 });
