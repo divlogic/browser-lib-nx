@@ -36,13 +36,13 @@ export class Engine {
 
   static createStore = (
     dbName: string,
-    store: string,
+    storeName: string,
     options: IDBObjectStoreParameters = { autoIncrement: true, keyPath: 'id' }
   ): Promise<IDBObjectStore> => {
     log.info('creating the store');
     return new Promise((resolve, reject) => {
       return Engine.getDB(dbName).then((db: IDBDatabase) => {
-        if (!db.objectStoreNames.contains(store)) {
+        if (!db.objectStoreNames.contains(storeName)) {
           db.onclose = (e) => {
             log.info('db is closed');
           };
@@ -67,7 +67,7 @@ export class Engine {
             log.info('onupgradeneeded', event);
             const upgradeableDB = (event.target as IDBOpenDBRequest)
               .result as IDBDatabase;
-            createdStore = upgradeableDB.createObjectStore(store, options);
+            createdStore = upgradeableDB.createObjectStore(storeName, options);
             resolve(createdStore);
           };
         } else {
@@ -77,9 +77,9 @@ export class Engine {
     });
   };
 
-  static getStore(db: string, storeName: string): Promise<IDBObjectStore> {
+  static getStore(dbName: string, storeName: string): Promise<IDBObjectStore> {
     return new Promise((resolve, reject) => {
-      return Engine.getDB(db).then((db: IDBDatabase) => {
+      return Engine.getDB(dbName).then((db: IDBDatabase) => {
         const transaction = db.transaction(storeName, 'readwrite');
         const store = transaction.objectStore(storeName);
         resolve(store);
@@ -127,30 +127,26 @@ export class Engine {
     });
   }
 
-  add(item: T): Promise<number> {
+  static add(dbName: string, store: string, item: unknown): Promise<number> {
     return new Promise((resolve, reject) => {
-      if (typeof this.store === 'string') {
-        log.info('opening db');
-        const request = indexedDB.open(this.store);
-        request.onsuccess = (event) => {
-          log.info('onsuccess');
-          const target = event.target as IDBOpenDBRequest;
-          const db = target.result;
-          const transaction = db
-            .transaction(this.store, 'readwrite')
-            .objectStore(this.store)
-            .add(item);
-          transaction.onerror = (e) => {
-            log.error(e);
-            reject(e);
-          };
-          transaction.onsuccess = (e) => {
-            resolve((e.target as IDBRequest).result);
-          };
+      log.info('opening db');
+      const request = indexedDB.open(dbName);
+      request.onsuccess = (event) => {
+        log.info('onsuccess');
+        const target = event.target as IDBOpenDBRequest;
+        const db = target.result;
+        const transaction = db
+          .transaction(store, 'readwrite')
+          .objectStore(store)
+          .add(item);
+        transaction.onerror = (e) => {
+          log.error(e);
+          reject(e);
         };
-      } else {
-        throw new Error('Model requires store to be set to add items');
-      }
+        transaction.onsuccess = (e) => {
+          resolve((e.target as IDBRequest).result);
+        };
+      };
     });
   }
 
@@ -185,7 +181,7 @@ export class Engine {
     }
   }
 
-  put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
+  static put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
     return new Promise((resolve, reject) => {
       return this.getStore().then((store) => {
         try {
