@@ -15,7 +15,6 @@ export class Engine {
       };
       request.onerror = (event) => {
         log.error('onerror', event);
-        console.error(event);
         reject((event.target as IDBOpenDBRequest).error);
       };
       request.onblocked = (event) => {
@@ -87,43 +86,38 @@ export class Engine {
     });
   }
 
-  deleteStore(): Promise<void> {
+  static deleteStore(dbName: string, storeName: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (typeof this.store === 'string') {
-        this.getDB().then((db: IDBDatabase) => {
-          if (db.objectStoreNames.contains(this.store)) {
-            log.info('upgrading version');
-            db.close();
-            db.onclose = () => {
-              log.info('db closed');
-            };
+      return Engine.getDB(dbName).then((db: IDBDatabase) => {
+        if (db.objectStoreNames.contains(storeName)) {
+          log.info('upgrading version');
+          db.close();
+          db.onclose = () => {
+            log.info('db closed');
+          };
 
-            const upgradedDBRequest = window.indexedDB.open(
-              this.store,
-              db.version + 1
-            );
-            upgradedDBRequest.onblocked = () => {
-              log.info('onblocked, delete');
-            };
-            upgradedDBRequest.onerror = (event) => {
-              reject(event);
-            };
-            upgradedDBRequest.onsuccess = (event) => {
-              log.info('onsuccess');
-            };
-            upgradedDBRequest.onupgradeneeded = (event) => {
-              log.info('onupgradeneeded, delete');
-              const upgradeableDB = (event.target as IDBOpenDBRequest)
-                .result as IDBDatabase;
-              resolve(upgradeableDB.deleteObjectStore(this.store));
-            };
-          }
-        });
-      } else {
-        reject(
-          new Error('Model requires store to be set to create object store')
-        );
-      }
+          const upgradedDBRequest = window.indexedDB.open(
+            dbName,
+            db.version + 1
+          );
+          upgradedDBRequest.onblocked = (event) => {
+            log.info('onblocked, delete', event.target);
+          };
+          upgradedDBRequest.onerror = (event) => {
+            reject(event.target);
+          };
+          upgradedDBRequest.onsuccess = (event) => {
+            log.info('onsuccess');
+            resolve();
+          };
+          upgradedDBRequest.onupgradeneeded = (event) => {
+            log.info('onupgradeneeded, delete');
+            const upgradeableDB = (event.target as IDBOpenDBRequest)
+              .result as IDBDatabase;
+            resolve(upgradeableDB.deleteObjectStore(storeName));
+          };
+        }
+      });
     });
   }
 
