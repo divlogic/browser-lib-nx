@@ -144,35 +144,31 @@ export class Engine {
     });
   }
 
-  getAll(): Promise<T[]> {
-    if (typeof this.store === 'string') {
-      log.info('initiating getAll');
-      return new Promise((resolve, reject) => {
-        const retrievalRequest = window.indexedDB.open(this.store);
-        retrievalRequest.onsuccess = (event) => {
-          log.info('onsuccess');
-          if (event) {
-            const target = event.target as IDBOpenDBRequest;
-            const db = target.result;
-            const retrieval = db
-              .transaction([this.store])
-              .objectStore(this.store)
-              .getAll();
+  static getAll<T>(dbName: string, storeName: string): Promise<T[]> {
+    log.info('initiating getAll');
+    return new Promise((resolve, reject) => {
+      const retrievalRequest = window.indexedDB.open(dbName);
+      retrievalRequest.onsuccess = (event) => {
+        log.info('onsuccess');
+        if (event) {
+          const target = event.target as IDBOpenDBRequest;
+          const db = target.result;
+          const retrieval = db
+            .transaction([storeName])
+            .objectStore(storeName)
+            .getAll();
 
-            retrieval.onerror = (event) => {
-              reject(event);
-            };
-            retrieval.onsuccess = (event) => {
-              resolve(
-                (event.target as IDBOpenDBRequest).result as unknown as T[]
-              );
-            };
-          }
-        };
-      });
-    } else {
-      throw this.storeNotSetError();
-    }
+          retrieval.onerror = (event) => {
+            reject(event);
+          };
+          retrieval.onsuccess = (event) => {
+            resolve(
+              (event.target as IDBOpenDBRequest).result as unknown as T[]
+            );
+          };
+        }
+      };
+    });
   }
 
   static put(item: T, key?: IDBValidKey): Promise<IDBValidKey> {
@@ -193,10 +189,14 @@ export class Engine {
     });
   }
 
-  delete(key: IDBValidKey | IDBKeyRange): Promise<undefined> {
+  static delete(
+    dbName: string,
+    storeName: string,
+    key: IDBValidKey | IDBKeyRange
+  ): Promise<undefined> {
     log.info('initiating delete');
     return new Promise((resolve, reject) => {
-      return this.getStore().then((store) => {
+      return Engine.getStore(dbName, storeName).then((store) => {
         const deletionRequest = store.delete(key);
         deletionRequest.onerror = (event) => {
           log.info('onerror');
