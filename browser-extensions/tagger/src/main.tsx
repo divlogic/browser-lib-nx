@@ -8,7 +8,8 @@ import { TagType } from './app/form-reducer';
 import { Tag } from './tagger';
 
 async function initializeDB() {
-  const tags = await tag.get();
+  let tags = null;
+  tags = await tag.get();
   if (typeof tags === 'undefined') {
     await tag.set([]);
   }
