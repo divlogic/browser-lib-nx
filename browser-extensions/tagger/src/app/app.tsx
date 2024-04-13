@@ -23,7 +23,7 @@ export function App() {
     try {
       Tag(tags.data);
     } catch (e) {
-      console.error(e);
+      // console.error(e);
     }
   }, [tags]);
 

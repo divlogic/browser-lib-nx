@@ -33,7 +33,7 @@ async function initializeReact() {
     try {
       Tag(tags);
     } catch (e) {
-      console.error(e);
+      // console.error(e);
     }
   }
 }
