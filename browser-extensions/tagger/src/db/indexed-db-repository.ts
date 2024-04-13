@@ -12,7 +12,6 @@ export class IndexedDBRepository<T> extends Repository<T> {
   public async initialize(): Promise<void> {
     const db = await Engine.getDB(this.config.dbName);
     if (db.objectStoreNames.contains(this.config.storeName)) {
-      console.log('Contains');
     } else {
       db.close();
       const store = await Engine.createStore(
@@ -31,9 +30,17 @@ export class IndexedDBRepository<T> extends Repository<T> {
 
     return items;
   }
-  set(key: string, values: T[]) {
-    const model = new Engine<T>(key);
-    return model.put(values, key);
+
+  /**
+   * Sets whatever the existing values are to the new values.
+   *
+   * @param key - Kept to maintain API consistency, but this is used earlier as the store name
+   * @param values
+   * @returns
+   */
+  async set(key: string, values: T[]): Promise<void> {
+    await Engine.put(this.config.dbName, this.config.storeName, values);
+    return;
   }
 
   add(key: string, item: T) {
@@ -42,8 +49,7 @@ export class IndexedDBRepository<T> extends Repository<T> {
   }
 
   remove(key: string, index: number) {
-    const model = new Engine<T>(key);
-    return model.delete(index);
+    return Engine.delete(this.config.dbName, this.config.storeName, index);
   }
 
   clear() {

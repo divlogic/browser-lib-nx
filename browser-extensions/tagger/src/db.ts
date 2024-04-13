@@ -54,7 +54,7 @@ export abstract class StoreModel<T> {
   async set(values: T[]) {
     const repo = await this.repository;
 
-    return repo.set({ [this.key]: values });
+    return repo.set(this.key, values);
   }
 
   async add(item: T) {
