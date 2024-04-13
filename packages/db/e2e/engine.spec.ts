@@ -52,10 +52,7 @@ test('getStore successfully gets Store', async ({ page }) => {
       if (db.objectStoreNames.length > 0) {
         return false;
       } else {
-        const createdStore = await engine.createStore(
-          data.dbName,
-          data.storeName
-        );
+        await engine.createStore(data.dbName, data.storeName);
         const fetchedStore = await engine.getStore(data.dbName, data.storeName);
         return fetchedStore instanceof IDBObjectStore;
       }
@@ -77,16 +74,13 @@ test('add successfully adds new item', async ({ page }) => {
     dbName,
     storeName,
   };
-  const isStoreInstance = await page.evaluate(async (data) => {
+  await page.evaluate(async (data) => {
     const engine = window.Engine;
     const db = await window.Engine.getDB(data.dbName);
     if (db.objectStoreNames.length > 0) {
       return false;
     } else {
-      const createdStore = await engine.createStore(
-        data.dbName,
-        data.storeName
-      );
+      await engine.createStore(data.dbName, data.storeName);
 
       await window.Engine.add(data.dbName, data.storeName, {
         id: 1,
@@ -113,4 +107,39 @@ test('add successfully adds new item', async ({ page }) => {
     });
   }, data);
   expect(items).toMatchObject([{ id: 1, name: 'test' }]);
+});
+
+test('Engine.deleteStore() successfully deletes a store', async ({ page }) => {
+  test.slow();
+  await page.goto('/');
+
+  const storeName = 'testStore';
+  const dbName = 'testDB';
+  const data = {
+    storeName,
+    dbName,
+  };
+  const isStoreInstance = await page.evaluate(async (data) => {
+    const store = await window.Engine.createStore(data.dbName, data.storeName);
+    return store instanceof IDBObjectStore;
+  }, data);
+  expect(isStoreInstance).toBe(true);
+
+  const storeNames = await page.evaluate(async (data) => {
+    const db = await window.Engine.getDB(data.dbName);
+    return Array.from(db.objectStoreNames);
+  }, data);
+
+  expect(storeNames).toMatchObject([storeName]);
+
+  const updatedStoreNames = await page.evaluate(async (data) => {
+    const deleteStoreResults = await window.Engine.deleteStore(
+      data.dbName,
+      data.storeName
+    );
+    const db = await window.Engine.getDB(data.dbName);
+    return Array.from(db.objectStoreNames);
+  }, data);
+  expect(updatedStoreNames).toMatchObject([]);
+  expect([]).toMatchObject([]);
 });
