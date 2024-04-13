@@ -67,3 +67,50 @@ test('getStore successfully gets Store', async ({ page }) => {
   );
   expect(isStoreInstance).toBe(true);
 });
+
+test('add successfully adds new item', async ({ page }) => {
+  await page.goto('/');
+
+  const dbName = 'testdb';
+  const storeName = 'teststore';
+  const data = {
+    dbName,
+    storeName,
+  };
+  const isStoreInstance = await page.evaluate(async (data) => {
+    const engine = window.Engine;
+    const db = await window.Engine.getDB(data.dbName);
+    if (db.objectStoreNames.length > 0) {
+      return false;
+    } else {
+      const createdStore = await engine.createStore(
+        data.dbName,
+        data.storeName
+      );
+
+      await window.Engine.add(data.dbName, data.storeName, {
+        id: 1,
+        name: 'test',
+      });
+      return;
+    }
+  }, data);
+
+  const items = await page.evaluate(async (data) => {
+    return new Promise((resolve, reject) => {
+      const dbRequest = indexedDB.open(data.dbName);
+      dbRequest.onsuccess = (e) => {
+        const db = (e.target as IDBOpenDBRequest).result;
+        const itemsTransaction = db
+          .transaction(data.storeName)
+          .objectStore(data.storeName)
+          .getAll();
+        itemsTransaction.onsuccess = (e) => {
+          const items = (e.target as IDBRequest).result;
+          resolve(items);
+        };
+      };
+    });
+  }, data);
+  expect(items).toMatchObject([{ id: 1, name: 'test' }]);
+});
