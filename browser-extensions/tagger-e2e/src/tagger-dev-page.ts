@@ -2,14 +2,19 @@ import { Page } from '@playwright/test';
 
 export class TaggerDevPage {
   readonly page: Page;
-  readonly extensionId: string;
-  constructor(page: Page, extensionId: string) {
+  readonly extensionId: string | null;
+  constructor(page: Page, extensionId: string = null) {
     this.page = page;
     this.extensionId = extensionId;
   }
 
   async goto() {
-    await this.page.goto(`chrome-extension://${this.extensionId}/index.html`);
+    const storage = process.env.TAGGER_STORAGE_TYPE;
+    if (storage === 'indexeddb') {
+      await this.page.goto('/');
+    } else {
+      await this.page.goto(`chrome-extension://${this.extensionId}/index.html`);
+    }
   }
 
   async addTag(tag: { text: string; color?: string }) {
