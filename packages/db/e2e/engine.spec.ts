@@ -181,3 +181,41 @@ test('Engine.getAll() fetches all items', async ({ page }) => {
     { text: 'playwright test 2' },
   ]);
 });
+
+test('Engine.delete(dbName, storeName, key) deletes items', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const dbName = 'testdb';
+  const storeName = 'teststore';
+  const data = {
+    dbName,
+    storeName,
+  };
+
+  const noStoresExist = await page.evaluate(async (data) => {
+    const db = await window.Engine.getDB(data.dbName);
+    return db.objectStoreNames.length === 0;
+  }, data);
+  expect(noStoresExist).toBe(true);
+
+  const storeIsteststore = await page.evaluate(async (data) => {
+    const store = await window.Engine.createStore(data.dbName, data.storeName);
+    return store?.name === data.storeName;
+  }, data);
+
+  const addItems = await page.evaluate(async (data) => {
+    const item1 = { text: 'playwright test' };
+    const item2 = { text: 'playwright test 2' };
+    const result = await window.Engine.add(data.dbName, data.storeName, item1);
+    const result2 = await window.Engine.add(data.dbName, data.storeName, item2);
+    const deleted = await window.Engine.delete(data.dbName, data.storeName, 1);
+    return deleted;
+  }, data);
+
+  const items = await page.evaluate(async (data) => {
+    const results = await window.Engine.getAll(data.dbName, data.storeName);
+    return results;
+  }, data);
+  expect(items).toMatchObject([{ text: 'playwright test 2' }]);
+});
