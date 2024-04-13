@@ -143,3 +143,41 @@ test('Engine.deleteStore() successfully deletes a store', async ({ page }) => {
   expect(updatedStoreNames).toMatchObject([]);
   expect([]).toMatchObject([]);
 });
+
+test('Engine.getAll() fetches all items', async ({ page }) => {
+  await page.goto('/');
+  const dbName = 'testdb';
+  const storeName = 'teststore';
+  const data = {
+    dbName,
+    storeName,
+  };
+
+  const noStoresExist = await page.evaluate(async (data) => {
+    const db = await window.Engine.getDB(data.dbName);
+
+    return db.objectStoreNames.length === 0;
+  }, data);
+  expect(noStoresExist).toBe(true);
+
+  const storeIsTestStore = await page.evaluate(async (data) => {
+    const store = await window.Engine.createStore(data.dbName, data.storeName);
+    return store?.name === data.storeName;
+  }, data);
+
+  const addItems = await page.evaluate(async (data) => {
+    const item1 = { text: 'playwright test' };
+    const item2 = { text: 'playwright test 2' };
+    const result = await window.Engine.add(data.dbName, data.storeName, item1);
+    const result2 = await window.Engine.add(data.dbName, data.storeName, item2);
+    return;
+  }, data);
+
+  const items = await page.evaluate(async (data) => {
+    return await window.Engine.getAll(data.dbName, data.storeName);
+  }, data);
+  expect(items).toMatchObject([
+    { text: 'playwright test' },
+    { text: 'playwright test 2' },
+  ]);
+});
