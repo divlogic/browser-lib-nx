@@ -18,9 +18,19 @@ export function TagList(props: TagListProps) {
     </>
   );
 }
-function Tag(props: { tag: TagType; dispatch: Dispatch<Action>; key: number }) {
+function Tag(props: {
+  tag: TagType;
+  dispatch: Dispatch<Action>;
+  index: number;
+}) {
   const { tag, dispatch } = props;
-  return <EditTagForm tag={tag} dispatch={dispatch}></EditTagForm>;
+  return (
+    <EditTagForm
+      tag={tag}
+      dispatch={dispatch}
+      index={props.index}
+    ></EditTagForm>
+  );
 }
 
 export default TagList;
