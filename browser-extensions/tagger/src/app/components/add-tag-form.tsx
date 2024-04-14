@@ -7,12 +7,14 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  HStack,
   Input,
   Spacer,
+  Text,
 } from '@chakra-ui/react';
 import { Dispatch, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Action, TagType } from '../form-reducer';
+import { Action } from '../form-reducer';
 import { tag } from '../models/tag';
 type Inputs = {
   text: string;
@@ -56,7 +58,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
 
   return (
     <Container>
-      <Card bgColor={defaultColor}>
+      <Card bgColor={'gray.50'}>
         <CardBody>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormControl>
@@ -73,9 +75,17 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
                 <Spacer></Spacer>
               </Flex>
             </FormControl>
-            <Button bgColor="green.300" type="submit">
-              Add
-            </Button>
+            <HStack justify={'start'}>
+              <Button bgColor="green.300" type="submit">
+                Add
+              </Button>
+              <Container>
+                <HStack justify={'center'}>
+                  <Text>Example: </Text>
+                  <Text bgColor={watch('color')}>{watch('text')}</Text>
+                </HStack>
+              </Container>
+            </HStack>
           </form>
         </CardBody>
       </Card>
