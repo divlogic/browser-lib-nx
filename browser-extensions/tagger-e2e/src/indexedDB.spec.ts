@@ -76,6 +76,28 @@ test('Can delete tags', async ({ page }) => {
 
   await expect(page.getByText('item2')).toBeHidden();
 });
+test('Can delete all tags', async ({ page }) => {
+  const tagger = new TaggerDevPage(page);
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1' });
+  await tagger.addTag({ text: 'item2' });
+  await tagger.addTag({ text: 'item3' });
+
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.getByText('item2')).toBeVisible();
+  await expect(page.getByText('item3')).toBeVisible();
+
+  await page.getByRole('button', { name: 'delete' }).first().click();
+  await page.pause();
+  await page.getByRole('button', { name: 'delete' }).first().click();
+  await page.getByRole('button', { name: 'delete' }).first().click();
+  await page.reload();
+
+  await expect(page.getByText('item1')).toBeHidden();
+  await expect(page.getByText('item2')).toBeHidden();
+  await expect(page.getByText('item3')).toBeHidden();
+});
 
 test.skip('Deleted tags no longer highlight on arbitrary websites', async ({
   context,
