@@ -27,3 +27,5 @@ export class BrowserStorageRepository<T> extends Repository<T> {
     return browser.storage.local.clear();
   }
 }
+
+export { BrowserStorageRepository as Repository };

@@ -61,4 +61,4 @@ export class IndexedDBRepository<T> extends Repository<T> {
   }
 }
 
-export { IndexedDBRepository as Repo };
+export { IndexedDBRepository as Repository };
