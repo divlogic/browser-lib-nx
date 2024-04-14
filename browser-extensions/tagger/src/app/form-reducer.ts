@@ -26,18 +26,20 @@ type PluralAction = {
 };
 
 export function tagsReducer(tagsState: TagState, action: Action): TagState {
+  const newState = Object.assign({}, tagsState);
+
   switch (action.type) {
     case 'added':
       return {
-        loaded: tagsState.loaded,
-        data: [...tagsState.data, action.payload.data],
+        loaded: newState.loaded,
+        data: [...newState.data, action.payload.data],
       };
     case 'removed':
       return {
-        loaded: tagsState.loaded,
-        data: tagsState.data.filter(
-          (tag: TagType) => tag.text !== action.payload.data?.text
-        ),
+        loaded: newState.loaded,
+        data: newState.data.filter((tag: TagType) => {
+          return tag.id !== action.payload.data.id;
+        }),
       };
     case 'loaded':
       return { loaded: true, data: action.payload.data };
