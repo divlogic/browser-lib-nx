@@ -2,8 +2,10 @@ import { BrowserStorageRepository } from './db/browser-storage-repository';
 import { IndexedDBRepository } from './db/indexed-db-repository';
 
 async function importRepository() {
-  if (true) {
-    return (await import('./db/indexed-db-repository')).Repo;
+  if (import.meta.env.DEV) {
+    return (await import('./db/indexed-db-repository')).Repository;
+  } else {
+    return (await import('./db/browser-storage-repository')).Repository;
   }
 }
 
