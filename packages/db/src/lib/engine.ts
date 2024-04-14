@@ -1,48 +1,48 @@
 import { log } from './logs';
 export class Engine {
   static getDB(name: string): Promise<IDBDatabase> {
+    log.debug(`getDB for ${name}`);
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(name);
       request.onupgradeneeded = (event) => {
         const target = event.target as IDBOpenDBRequest;
         const db = target.result;
-        log.info('onupgradeneeded');
+        log.info('getDB request onupgradeneeded');
         db.onclose = () => {
-          log.info('db closed from getDB');
+          log.info('getDb onclose db closed from getDB');
         };
         db.close();
         resolve(db);
       };
       request.onerror = (event) => {
-        log.error('onerror', event);
+        log.error('getDB request onerror', event);
         reject((event.target as IDBOpenDBRequest).error);
       };
-      request.onblocked = (event) => {
-        log.error('onblocked');
+      request.onblocked = function (event) {
+        log.error('getDB request onblocked');
         reject(event);
       };
-      request.onsuccess = (event) => {
-        log.info('onsuccess');
+      request.onsuccess = function (event) {
+        log.debug('getDB request onsuccess');
         const db = (event.target as IDBOpenDBRequest).result as IDBDatabase;
         resolve(db);
       };
     });
   }
-
   static createStore = (
     dbName: string,
     storeName: string,
     options: IDBObjectStoreParameters = { autoIncrement: true, keyPath: 'id' }
   ): Promise<IDBObjectStore> => {
-    log.info('creating the store');
+    log.debug(`createStore dbName: ${dbName} storeName: ${storeName}`, options);
     return new Promise((resolve, reject) => {
       return Engine.getDB(dbName).then((db: IDBDatabase) => {
         if (!db.objectStoreNames.contains(storeName)) {
           db.onclose = (e) => {
-            log.info('db is closed');
+            log.debug('createStore db onclose');
           };
           db.onabort = () => {
-            log.info('db is aborted');
+            log.debug('createStore db onabort');
           };
           db.onerror = (e) => {
             log.error(e);
@@ -55,11 +55,11 @@ export class Engine {
           );
           upgradedDBRequest.onblocked = (event) => {
             // Database needs to acknowledge the request
-            log.info('onblocked', event);
+            log.debug('createStore upgradedDBRequest onblocked');
           };
           let createdStore: IDBObjectStore;
           upgradedDBRequest.onupgradeneeded = (event) => {
-            log.info('onupgradeneeded', event);
+            log.debug('createStore upgradedDBRequest onupgradeneeded');
             const upgradeableDB = (event.target as IDBOpenDBRequest)
               .result as IDBDatabase;
             createdStore = upgradeableDB.createObjectStore(storeName, options);
@@ -73,9 +73,19 @@ export class Engine {
   };
 
   static getStore(dbName: string, storeName: string): Promise<IDBObjectStore> {
+    log.debug(`getStore for dbName: ${dbName} storeName: ${storeName}`);
     return new Promise((resolve, reject) => {
       return Engine.getDB(dbName).then((db: IDBDatabase) => {
         const transaction = db.transaction(storeName, 'readwrite');
+        transaction.onabort = (event) => {
+          log.debug('getStore transaction onabort', event);
+        };
+        transaction.oncomplete = (event) => {
+          log.info('getStore transaction oncomplete', event);
+        };
+        transaction.onerror = (event) => {
+          log.fatal('getStore transaction onerror', event);
+        };
         const store = transaction.objectStore(storeName);
         resolve(store);
       });
@@ -83,13 +93,14 @@ export class Engine {
   }
 
   static deleteStore(dbName: string, storeName: string): Promise<void> {
+    log.debug(`deleteStore for dbName: ${dbName} storeName: ${storeName}`);
     return new Promise((resolve, reject) => {
       return Engine.getDB(dbName).then((db: IDBDatabase) => {
         if (db.objectStoreNames.contains(storeName)) {
-          log.info('upgrading version');
+          log.debug('upgrading version');
           db.close();
           db.onclose = () => {
-            log.info('db closed');
+            log.info('deleteStore db onclose');
           };
 
           const upgradedDBRequest = window.indexedDB.open(
@@ -97,17 +108,18 @@ export class Engine {
             db.version + 1
           );
           upgradedDBRequest.onblocked = (event) => {
-            log.info('onblocked, delete', event.target);
+            log.debug('deleteStore upgradedDBRequest onblocked');
           };
           upgradedDBRequest.onerror = (event) => {
+            log.debug('deleteStore upgradedDBRequest onerror');
             reject(event.target);
           };
           upgradedDBRequest.onsuccess = (event) => {
-            log.info('onsuccess');
+            log.debug('deleteStore upgradedDBRequest onsuccess');
             resolve();
           };
           upgradedDBRequest.onupgradeneeded = (event) => {
-            log.info('onupgradeneeded, delete');
+            log.debug('deleteStore upgradedDBRequest onupgradeneeded');
             const upgradeableDB = (event.target as IDBOpenDBRequest)
               .result as IDBDatabase;
             resolve(upgradeableDB.deleteObjectStore(storeName));
@@ -118,11 +130,11 @@ export class Engine {
   }
 
   static add(dbName: string, store: string, item: unknown): Promise<number> {
+    log.debug(`add for ${dbName}, ${store}`);
     return new Promise((resolve, reject) => {
-      log.info('opening db');
       const request = indexedDB.open(dbName);
       request.onsuccess = (event) => {
-        log.info('onsuccess');
+        log.debug('add request onsuccess');
         const target = event.target as IDBOpenDBRequest;
         const db = target.result;
         const transaction = db
@@ -134,6 +146,7 @@ export class Engine {
           reject(e);
         };
         transaction.onsuccess = (e) => {
+          log.debug('add transaction onsuccess');
           resolve((e.target as IDBRequest).result);
         };
       };
@@ -141,11 +154,11 @@ export class Engine {
   }
 
   static getAll<T>(dbName: string, storeName: string): Promise<T[]> {
-    log.info('initiating getAll');
+    log.debug(`getAll for dbName: ${dbName} storeName: ${storeName}`);
     return new Promise((resolve, reject) => {
       const retrievalRequest = window.indexedDB.open(dbName);
       retrievalRequest.onsuccess = (event) => {
-        log.info('onsuccess');
+        log.debug('getAll retrievalRequest onsuccess');
         if (event) {
           const target = event.target as IDBOpenDBRequest;
           const db = target.result;
@@ -155,9 +168,11 @@ export class Engine {
             .getAll();
 
           retrieval.onerror = (event) => {
+            log.error('getAll retrievalRequest onerror');
             reject(event);
           };
           retrieval.onsuccess = (event) => {
+            log.error('getAll retrievalRequest onsuccess');
             resolve(
               (event.target as IDBOpenDBRequest).result as unknown as T[]
             );
@@ -173,14 +188,17 @@ export class Engine {
     item: unknown,
     key?: IDBValidKey
   ): Promise<IDBValidKey> {
+    log.debug(`put for dbName: ${dbName} storeName: ${storeName} key: ${key}`);
     return new Promise((resolve, reject) => {
       return Engine.getStore(dbName, storeName).then((store) => {
         try {
           const request = store.put(item, key);
           request.onerror = (event) => {
+            log.error('put request onerror');
             reject(event);
           };
           request.onsuccess = (event) => {
+            log.error('put request onsuccess');
             resolve((event.target as IDBRequest).result);
           };
         } catch (e) {
@@ -194,18 +212,21 @@ export class Engine {
     dbName: string,
     storeName: string,
     key: IDBValidKey | IDBKeyRange
-  ): Promise<undefined> {
-    log.info('initiating delete');
+  ): Promise<void> {
+    log.debug(
+      `delete for dbName: ${dbName} storeName: ${storeName} key: ${key}`
+    );
     return new Promise((resolve, reject) => {
       return Engine.getStore(dbName, storeName).then((store) => {
         const deletionRequest = store.delete(key);
+
         deletionRequest.onerror = (event) => {
-          log.info('onerror');
+          log.info('delete deletionRequest onerror');
           reject(event);
         };
         deletionRequest.onsuccess = (event) => {
-          log.info('onsuccess');
-          resolve((event.target as IDBRequest).result);
+          log.info('delete deletionRequest onsuccess');
+          resolve(undefined);
         };
       });
     });
