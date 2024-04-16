@@ -172,7 +172,7 @@ export class Engine {
             reject(event);
           };
           retrieval.onsuccess = (event) => {
-            log.error('getAll retrievalRequest onsuccess');
+            log.debug('getAll retrievalRequest onsuccess');
             resolve(
               (event.target as IDBOpenDBRequest).result as unknown as T[]
             );
