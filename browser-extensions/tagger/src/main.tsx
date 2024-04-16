@@ -3,16 +3,25 @@ import * as ReactDOM from 'react-dom/client';
 import { ChakraProvider } from '@chakra-ui/react';
 
 import App from './app/app';
-import { tag } from './app/models/tag';
-import { TagType } from './app/form-reducer';
 import { Tag } from './tagger';
+import { TagModel } from './app/models/tag';
 
 async function initializeDB() {
-  let tags = null;
-  tags = await tag.get();
-  if (typeof tags === 'undefined') {
-    await tag.set([]);
+  let RepositoryClass;
+  let config;
+  if (import.meta.env.DEV) {
+    RepositoryClass = (await import('./db/indexed-db-repository')).default;
+    config = { dbName: 'tagger', storeName: 'tags' };
+  } else {
+    const browser = (await import('webextension-polyfill')).default;
+    window.browser = browser;
+    RepositoryClass = (await import('./db/browser-storage-repository')).default;
+    config = {};
   }
+  const repository = new RepositoryClass(config);
+  await repository.initialize();
+  const tagModel = new TagModel(repository);
+  window.tag = tagModel;
 }
 
 async function initializeReact() {
@@ -28,23 +37,24 @@ async function initializeReact() {
         </ChakraProvider>
       </StrictMode>
     );
-  } else {
-    const tags = await tag.get();
-    try {
-      Tag(tags);
-    } catch (e) {
-      // console.error(e);
-    }
+  }
+}
+async function initializeContentScript() {
+  console.log('Initializing content script');
+  const tags = await new TagModel().get();
+  try {
+    Tag(tags);
+  } catch (e) {
+    console.error(e);
   }
 }
 
 async function initialization() {
-  await initializeDB();
-  await initializeReact();
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    await initializeDB();
+    await initializeReact();
+    await initializeContentScript();
+  }
 }
 
 initialization();
-
-if (import.meta.env.DEV) {
-  window.tag = tag;
-}
