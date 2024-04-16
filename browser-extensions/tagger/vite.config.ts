@@ -31,14 +31,9 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
     rollupOptions: {
-      input: {
-        main: 'src/main.tsx',
-        'web-worker': 'src/web-worker.ts',
-        index: 'index.html',
-      },
       output: {
-        entryFileNames: '[name].js',
-        format: 'es',
+        entryFileNames: 'main.js',
+        format: 'iife',
       },
     },
   },
