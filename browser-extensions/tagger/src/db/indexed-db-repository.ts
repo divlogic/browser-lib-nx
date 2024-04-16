@@ -1,7 +1,7 @@
 import { Engine } from '@browser-lib-nx/index';
-import { Repository } from '../db';
+import { Repository } from './repository';
 
-export class IndexedDBRepository<T> extends Repository<T> {
+export default class IndexedDBRepository extends Repository {
   config: { dbName: string; storeName: string };
 
   constructor(config: { dbName: string; storeName: string }) {
@@ -23,7 +23,7 @@ export class IndexedDBRepository<T> extends Repository<T> {
     }
   }
 
-  get(key: string): Promise<T[] | null> {
+  get(key: string): Promise<unknown[] | null> {
     return Engine.getAll(this.config.dbName, this.config.storeName);
   }
 
@@ -40,18 +40,17 @@ export class IndexedDBRepository<T> extends Repository<T> {
    * @param values
    * @returns
    */
-  async set(key: string, values: T[]): Promise<void> {
+  async set(key: string, values: unknown[]): Promise<void> {
     await Engine.put(this.config.dbName, this.config.storeName, values);
     return;
   }
 
-  async add(key: string, item: T): Promise<unknown> {
+  async add(key: string, item: unknown): Promise<unknown> {
     const result = await Engine.add(
       this.config.dbName,
       this.config.storeName,
       item
     );
-    console.log('engine add: ', result);
     return result;
   }
 
@@ -60,5 +59,3 @@ export class IndexedDBRepository<T> extends Repository<T> {
     return;
   }
 }
-
-export { IndexedDBRepository as Repository };

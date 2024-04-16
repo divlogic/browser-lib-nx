@@ -1,17 +1,32 @@
-import { Repository } from '../db';
-import browser from 'webextension-polyfill';
-export class BrowserStorageRepository<T> extends Repository<T> {
-  get(key: string): Promise<T[]> {
-    return browser.storage.local.get(key).then((results) => {
-      return results[key];
+import { Repository } from './repository';
+
+export default class BrowserStorageRepository extends Repository {
+  public initialize(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      resolve();
     });
   }
-  set(key: string, values: T[]) {
+  get(key: string): Promise<unknown[]> {
+    return browser.storage.local.get(key).then((results) => {
+      return results[key] || [];
+    });
+  }
+
+  getAll(key: string): Promise<unknown[]> {
+    return browser.storage.local.get(key).then((results) => {
+      return results[key] || [];
+    });
+  }
+
+  set(key: string, values: unknown[]) {
     return browser.storage.local.set({ [key]: values });
   }
 
-  add(key: string, item: T) {
+  add(key: string, item: unknown) {
     return this.get(key).then((items) => {
+      if (typeof items === 'undefined') {
+        items = [];
+      }
       return this.set(key, [...items, item]);
     });
   }
@@ -27,5 +42,3 @@ export class BrowserStorageRepository<T> extends Repository<T> {
     return browser.storage.local.clear();
   }
 }
-
-export { BrowserStorageRepository as Repository };
