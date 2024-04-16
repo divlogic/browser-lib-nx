@@ -2,15 +2,20 @@ import { Page } from '@playwright/test';
 
 export class TaggerDevPage {
   readonly page: Page;
-  readonly extensionId: string | null;
-  constructor(page: Page, extensionId: string = null) {
-    this.page = page;
-    this.extensionId = extensionId;
+  readonly extensionId?: string | null;
+  readonly storage: 'indexeddb' | 'browser.storage.local';
+  constructor(config: {
+    page: Page;
+    extensionId?: string;
+    storage: 'indexeddb' | 'browser.storage.local';
+  }) {
+    this.page = config.page;
+    this.extensionId = config.extensionId;
+    this.storage = config.storage;
   }
 
   async goto() {
-    const storage = process.env.TAGGER_STORAGE_TYPE;
-    if (storage === 'indexeddb') {
+    if (this.storage === 'indexeddb') {
       await this.page.goto('/');
     } else {
       await this.page.goto(`chrome-extension://${this.extensionId}/index.html`);

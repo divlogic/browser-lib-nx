@@ -4,7 +4,7 @@ const expect = test.expect;
 
 const styleTagId = '#styled-by-tagger';
 test.beforeEach('clear local storage', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
   await tagger.clearStorage();
 });
@@ -12,13 +12,13 @@ test.beforeEach('clear local storage', async ({ page }) => {
 // This might change from time to time in the early stages.
 
 test('Example test', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
   await expect(page).toHaveTitle('Tagger');
 });
 
 test('Can add tags', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
   await tagger.addTag({ text: 'test' });
 
@@ -29,7 +29,7 @@ test('Can add tags', async ({ page }) => {
 
 test('Added tags persist', async ({ context }) => {
   const page = await context.newPage();
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
   await tagger.addTag({ text: 'test' });
 
@@ -45,7 +45,7 @@ test('Added tags persist', async ({ context }) => {
 test.skip('Tags highlight on arbitrary websites', async ({ context }) => {
   const testString = 'Business';
   const page = await context.newPage();
-  const initialTagger = new TaggerDevPage(page);
+  const initialTagger = new TaggerDevPage({ page, storage: 'indexeddb' });
 
   await initialTagger.goto();
   await initialTagger.addTag({ text: testString });
@@ -61,7 +61,7 @@ test.skip('Tags highlight on arbitrary websites', async ({ context }) => {
 });
 
 test('Can delete tags', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
 
   await tagger.addTag({ text: 'item1' });
@@ -77,7 +77,7 @@ test('Can delete tags', async ({ page }) => {
   await expect(page.getByText('item2')).toBeHidden();
 });
 test('Can delete all tags', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
 
   await tagger.addTag({ text: 'item1' });
@@ -89,7 +89,6 @@ test('Can delete all tags', async ({ page }) => {
   await expect(page.getByText('item3')).toBeVisible();
 
   await page.getByRole('button', { name: 'delete' }).first().click();
-  await page.pause();
   await page.getByRole('button', { name: 'delete' }).first().click();
   await page.getByRole('button', { name: 'delete' }).first().click();
   await page.reload();
@@ -104,7 +103,7 @@ test.skip('Deleted tags no longer highlight on arbitrary websites', async ({
 }) => {
   const testString = 'Business';
   const page = await context.newPage();
-  const initialTagger = new TaggerDevPage(page);
+  const initialTagger = new TaggerDevPage({ page, storage: 'indexeddb' });
 
   await initialTagger.goto();
   await initialTagger.addTag({ text: testString });
@@ -135,7 +134,7 @@ test.skip('Deleted tags no longer highlight on arbitrary websites', async ({
 });
 
 test('Added tags add a specific style tag', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
 
   await tagger.addTag({ text: 'testing' });
@@ -147,7 +146,7 @@ test('Added tags add a specific style tag', async ({ page }) => {
 });
 
 test('Can add tags with color', async ({ page }) => {
-  const tagger = new TaggerDevPage(page);
+  const tagger = new TaggerDevPage({ page, storage: 'indexeddb' });
   await tagger.goto();
   const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
   await tagger.addTag(tag);

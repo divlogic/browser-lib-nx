@@ -4,7 +4,11 @@ const expect = test.expect;
 
 const styleTagId = '#styled-by-tagger';
 test.beforeEach('clear local storage', async ({ page, extensionId }) => {
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
   await tagger.clearStorage();
 });
@@ -17,7 +21,11 @@ test('Example test', async ({ page, extensionId }) => {
 });
 
 test('Can add tags', async ({ page, extensionId }) => {
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
   await tagger.addTag({ text: 'test' });
 
@@ -28,7 +36,11 @@ test('Can add tags', async ({ page, extensionId }) => {
 
 test('Added tags persist', async ({ extensionId, context }) => {
   const page = await context.newPage();
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
   await tagger.addTag({ text: 'test' });
 
@@ -47,7 +59,11 @@ test('Tags highlight on arbitrary websites', async ({
 }) => {
   const testString = 'Business';
   const page = await context.newPage();
-  const initialTagger = new TaggerDevPage(page, extensionId);
+  const initialTagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
 
   await initialTagger.goto();
   await initialTagger.addTag({ text: testString });
@@ -56,14 +72,21 @@ test('Tags highlight on arbitrary websites', async ({
 
   const newPage = await context.newPage();
   await newPage.goto('https://google.com');
-  const tagger = new TaggerDevPage(newPage, extensionId);
+  const tagger = new TaggerDevPage({
+    page: newPage,
+    extensionId: extensionId,
+    storage: 'browser.storage.local',
+  });
 
   const highlights = await tagger.getHighlightRegistryTextContents();
   expect(highlights).toContain(testString);
 });
-
 test('Can delete tags', async ({ page, extensionId }) => {
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
 
   await tagger.addTag({ text: 'item1' });
@@ -85,7 +108,11 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 }) => {
   const testString = 'Business';
   const page = await context.newPage();
-  const initialTagger = new TaggerDevPage(page, extensionId);
+  const initialTagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
 
   await initialTagger.goto();
   await initialTagger.addTag({ text: testString });
@@ -96,7 +123,11 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 
   const newPage = await context.newPage();
   await newPage.goto('https://google.com');
-  const tagger = new TaggerDevPage(newPage, extensionId);
+  const tagger = new TaggerDevPage({
+    page: newPage,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
 
   const highlights = await tagger.getHighlightRegistryTextContents();
   expect(highlights).toContain(testString);
@@ -116,7 +147,11 @@ test('Deleted tags no longer highlight on arbitrary websites', async ({
 });
 
 test('Added tags add a specific style tag', async ({ page, extensionId }) => {
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
 
   await tagger.addTag({ text: 'testing' });
@@ -128,7 +163,11 @@ test('Added tags add a specific style tag', async ({ page, extensionId }) => {
 });
 
 test('Can add tags with color', async ({ page, extensionId }) => {
-  const tagger = new TaggerDevPage(page, extensionId);
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
   await tagger.goto();
   const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
   await tagger.addTag(tag);
