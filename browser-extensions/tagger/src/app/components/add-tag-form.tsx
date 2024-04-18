@@ -6,6 +6,7 @@ import {
   Container,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -18,7 +19,6 @@ import { Action } from '../form-reducer';
 import { tag } from '../models/tag';
 type Inputs = {
   text: string;
-  textRequired: string;
   color: string;
 };
 function getRandomArbitrary(min: number, max: number) {
@@ -41,6 +41,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
@@ -54,6 +55,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
   }) => {
     const result = (await tag.add(data)) as number;
     dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
+    reset();
   };
 
   return (
@@ -61,9 +63,15 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
       <Card bgColor={'gray.50'}>
         <CardBody>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl>
+            <FormControl isInvalid={!!errors.text}>
               <FormLabel>Add tag:</FormLabel>
-              <Input type="text" {...register('text')}></Input>
+              <Input
+                type="text"
+                {...register('text', { required: true })}
+              ></Input>
+              <FormErrorMessage>
+                {errors?.text?.type === 'required' && 'Some text is required.'}
+              </FormErrorMessage>
               <Flex m={2}>
                 <Spacer></Spacer>
               </Flex>
