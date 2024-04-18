@@ -81,6 +81,7 @@ test('Tags highlight on arbitrary websites', async ({
   const highlights = await tagger.getHighlightRegistryTextContents();
   expect(highlights).toContain(testString);
 });
+
 test('Can delete tags', async ({ page, extensionId }) => {
   const tagger = new TaggerDevPage({
     page,
@@ -99,6 +100,33 @@ test('Can delete tags', async ({ page, extensionId }) => {
 
   await page.getByRole('button', { name: 'delete' }).nth(1).click();
 
+  await expect(page.getByText('item2')).toBeHidden();
+});
+
+test('Can delete tags after reloads', async ({ page, extensionId }) => {
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1' });
+  await tagger.addTag({ text: 'item2' });
+  await tagger.addTag({ text: 'item3' });
+  await page.pause();
+
+  await page.reload();
+
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.getByText('item2')).toBeVisible();
+  await expect(page.getByText('item3')).toBeVisible();
+
+  await page.getByRole('button', { name: 'delete' }).nth(1).click();
+
+  await expect(page.getByText('item2')).toBeHidden();
+
+  await page.reload();
   await expect(page.getByText('item2')).toBeHidden();
 });
 
@@ -179,6 +207,41 @@ test('Can add tags with color', async ({ page, extensionId }) => {
   await expect(page.getByText('test')).toHaveCount(1);
   await expect(page.locator(styleTagId)).toContainText(
     `background-color: ${tag.color};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
+});
+
+test('Can edit tags', async ({ page, extensionId }) => {
+  const oldColor = 'blue';
+  const newColor = 'red';
+  const tagger = new TaggerDevPage({
+    page,
+    extensionId,
+    storage: 'browser.storage.local',
+  });
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1', color: oldColor });
+
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${oldColor};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
+
+  await page.getByRole('button', { name: 'edit' }).first().click();
+  await expect(page.getByText('Color')).toBeVisible();
+  await page.getByLabel('Color:').click();
+  await page.getByLabel('Color:').fill(newColor);
+  await page.getByLabel('Color:').press('Enter');
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${newColor};`,
     {
       ignoreCase: true,
       useInnerText: true,
