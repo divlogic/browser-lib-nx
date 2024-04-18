@@ -165,6 +165,67 @@ test('Can add tags with color', async ({ page }) => {
   );
 });
 
+test('Can edit tags', async ({ page }) => {
+  const oldColor = 'blue';
+  const newColor = 'red';
+  const tagger = new TaggerDevPage({
+    page,
+    storage: 'indexeddb',
+  });
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1', color: oldColor });
+
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${oldColor};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
+
+  const colorLocator = page.getByText('Color: ').nth(1);
+  await page.getByRole('button', { name: 'edit' }).first().click();
+  await expect(colorLocator).toBeVisible();
+  await colorLocator.click();
+  await colorLocator.fill(newColor);
+  await colorLocator.press('Enter');
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${newColor};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
+});
+
+test('Editing tags requires color', async ({ page }) => {
+  const oldColor = 'blue';
+  const tagger = new TaggerDevPage({
+    page,
+    storage: 'indexeddb',
+  });
+  await tagger.goto();
+
+  await tagger.addTag({ text: 'item1', color: oldColor });
+
+  await expect(page.getByText('item1')).toBeVisible();
+  await expect(page.locator(styleTagId)).toContainText(
+    `background-color: ${oldColor};`,
+    {
+      ignoreCase: true,
+      useInnerText: true,
+    }
+  );
+
+  const colorLocator = page.getByText('Color: ').nth(1);
+  await page.getByRole('button', { name: 'edit' }).first().click();
+  await expect(colorLocator).toBeVisible();
+  await colorLocator.click();
+  await colorLocator.press('Enter');
+  await expect(page.getByText('Color is a required field')).toBeVisible();
+});
 /**
  * TESTS TODO:
  * 1. Can input a color when creating a tag
