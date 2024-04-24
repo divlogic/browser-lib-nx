@@ -50,7 +50,7 @@ test.describe('This is a test', () => {
     context,
     storage,
   }) => {
-    test.skip(storage === 'indexeddb');
+    test.skip(storage === 'indexeddb', 'not applicable with storage type');
     const testString = 'Business';
     const page = await context.newPage();
     const initialTagger = new TaggerDevPage({
@@ -98,7 +98,6 @@ test.describe('This is a test', () => {
     await tagger.addTag({ text: 'item1' });
     await tagger.addTag({ text: 'item2' });
     await tagger.addTag({ text: 'item3' });
-    await page.pause();
 
     await page.reload();
 
@@ -119,7 +118,7 @@ test.describe('This is a test', () => {
     context,
     storage,
   }) => {
-    test.skip(storage === 'indexeddb');
+    test.skip(storage === 'indexeddb', 'not applicable with storage type');
     const testString = 'Business';
     const page = await context.newPage();
     const initialTagger = new TaggerDevPage({
@@ -171,7 +170,7 @@ test.describe('This is a test', () => {
     expect(tagName).toBe('STYLE');
   });
 
-  test('Can add tags with color', async ({ page, extensionId, tagger }) => {
+  test('Can add tags with color', async ({ page, tagger }) => {
     await tagger.goto();
     const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
     await tagger.addTag(tag);
@@ -190,7 +189,7 @@ test.describe('This is a test', () => {
     );
   });
 
-  test('Can edit tags', async ({ page, extensionId, tagger }) => {
+  test('Can edit tags', async ({ page, tagger }) => {
     const oldColor = 'blue';
     const newColor = 'red';
     await tagger.goto();
