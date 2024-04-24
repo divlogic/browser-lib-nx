@@ -16,7 +16,13 @@
     },
     {
       "files": ["src/**/*.{ts,js,tsx,jsx}"],
-      "rules": {}
+      "rules": {
+        "playwright/no-skipped-test": ["off", true], // Would use but the allowConditional isn't working for me
+        "no-empty-pattern": [
+          "warn",
+          { "allowObjectPatternsAsParameters": true }
+        ]
+      }
     }
   ]
 }
