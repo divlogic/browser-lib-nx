@@ -15,7 +15,9 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<{
+  storage: 'indexeddb' | 'browser.storage.local';
+}>({
   ...nxE2EPreset(__filename, { testDir: './src' }),
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -42,11 +44,18 @@ export default defineConfig({
       testMatch: /global\.teardown.ts/,
     },
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'chromium browser.storage.local',
+      use: { ...devices['Desktop Chrome'], storage: 'browser.storage.local' },
       dependencies: ['setup'],
     },
-
+    {
+      name: 'chromium indexeddb',
+      use: {
+        ...devices['Desktop Chrome'],
+        storage: 'indexeddb',
+      },
+      dependencies: ['setup'],
+    },
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
