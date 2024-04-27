@@ -17,7 +17,7 @@
     {
       "files": ["src/**/*.{ts,js,tsx,jsx}"],
       "rules": {
-        "playwright/no-skipped-test": ["off", true], // Would use but the allowConditional isn't working for me
+        "playwright/no-skipped-test": ["error", { "allowConditional": true }],
         "no-empty-pattern": [
           "warn",
           { "allowObjectPatternsAsParameters": true }
