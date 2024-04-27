@@ -45,36 +45,36 @@ test.describe('This is a test', () => {
     await expect(newPage.getByText('test').first()).toBeVisible();
   });
 
-  test('Tags highlight on arbitrary websites', async ({
-    extensionId,
-    context,
-    storage,
-  }) => {
-    test.skip(storage === 'indexeddb', 'not applicable with storage type');
-    const testString = 'Business';
-    const page = await context.newPage();
-    const initialTagger = new TaggerDevPage({
-      page,
-      extensionId,
-      storage: 'browser.storage.local',
-    });
+  test(
+    'Tags highlight on arbitrary websites',
+    { tag: ['@websurfing'] },
+    async ({ extensionId, context, storage }) => {
+      test.skip(storage === 'indexeddb', 'not applicable with storage type');
+      const testString = 'Business';
+      const page = await context.newPage();
+      const initialTagger = new TaggerDevPage({
+        page,
+        extensionId,
+        storage: 'browser.storage.local',
+      });
 
-    await initialTagger.goto();
-    await initialTagger.addTag({ text: testString });
+      await initialTagger.goto();
+      await initialTagger.addTag({ text: testString });
 
-    await expect(page.getByText(testString).first()).toBeVisible();
+      await expect(page.getByText(testString).first()).toBeVisible();
 
-    const newPage = await context.newPage();
-    await newPage.goto('https://google.com');
-    const tagger = new TaggerDevPage({
-      page: newPage,
-      extensionId: extensionId,
-      storage: 'browser.storage.local',
-    });
+      const newPage = await context.newPage();
+      await newPage.goto('https://google.com');
+      const tagger = new TaggerDevPage({
+        page: newPage,
+        extensionId: extensionId,
+        storage: 'browser.storage.local',
+      });
 
-    const highlights = await tagger.getHighlightRegistryTextContents();
-    expect(highlights).toContain(testString);
-  });
+      const highlights = await tagger.getHighlightRegistryTextContents();
+      expect(highlights).toContain(testString);
+    }
+  );
 
   test('Can delete tags', async ({ page, tagger }) => {
     await tagger.goto();
@@ -113,51 +113,51 @@ test.describe('This is a test', () => {
     await expect(page.getByText('item2')).toBeHidden();
   });
 
-  test('Deleted tags no longer highlight on arbitrary websites', async ({
-    extensionId,
-    context,
-    storage,
-  }) => {
-    test.skip(storage === 'indexeddb', 'not applicable with storage type');
-    const testString = 'Business';
-    const page = await context.newPage();
-    const initialTagger = new TaggerDevPage({
-      page,
-      extensionId,
-      storage: 'browser.storage.local',
-    });
+  test(
+    'Deleted tags no longer highlight on arbitrary websites',
+    { tag: ['@websurfing'] },
+    async ({ extensionId, context, storage }) => {
+      test.skip(storage === 'indexeddb', 'not applicable with storage type');
+      const testString = 'Business';
+      const page = await context.newPage();
+      const initialTagger = new TaggerDevPage({
+        page,
+        extensionId,
+        storage: 'browser.storage.local',
+      });
 
-    await initialTagger.goto();
-    await initialTagger.addTag({ text: testString });
-    await initialTagger.addTag({ text: testString + 'b' });
-    await initialTagger.addTag({ text: testString + 'c' });
+      await initialTagger.goto();
+      await initialTagger.addTag({ text: testString });
+      await initialTagger.addTag({ text: testString + 'b' });
+      await initialTagger.addTag({ text: testString + 'c' });
 
-    await expect(page.getByText(testString).first()).toBeVisible();
+      await expect(page.getByText(testString).first()).toBeVisible();
 
-    const newPage = await context.newPage();
-    await newPage.goto('https://google.com');
-    const tagger = new TaggerDevPage({
-      page: newPage,
-      extensionId,
-      storage: 'browser.storage.local',
-    });
+      const newPage = await context.newPage();
+      await newPage.goto('https://google.com');
+      const tagger = new TaggerDevPage({
+        page: newPage,
+        extensionId,
+        storage: 'browser.storage.local',
+      });
 
-    const highlights = await tagger.getHighlightRegistryTextContents();
-    expect(highlights).toContain(testString);
+      const highlights = await tagger.getHighlightRegistryTextContents();
+      expect(highlights).toContain(testString);
 
-    await tagger.goto();
+      await tagger.goto();
 
-    await newPage.getByRole('button', { name: 'delete' }).first().click();
-    await expect(newPage.getByText('item2')).toBeHidden();
+      await newPage.getByRole('button', { name: 'delete' }).first().click();
+      await expect(newPage.getByText('item2')).toBeHidden();
 
-    await newPage.goto('https://google.com');
-    const searchResults = await newPage.evaluate(() => {
-      const searchResults = CSS.highlights.get('search-results');
-      return searchResults;
-    });
+      await newPage.goto('https://google.com');
+      const searchResults = await newPage.evaluate(() => {
+        const searchResults = CSS.highlights.get('search-results');
+        return searchResults;
+      });
 
-    expect(searchResults).toBeUndefined();
-  });
+      expect(searchResults).toBeUndefined();
+    }
+  );
 
   test('Added tags add a specific style tag', async ({ page, tagger }) => {
     await tagger.goto();
