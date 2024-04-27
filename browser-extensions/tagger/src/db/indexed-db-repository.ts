@@ -33,6 +33,15 @@ export default class IndexedDBRepository extends Repository {
     return items;
   }
 
+  async update<T>(key: string, item: T): Promise<T> {
+    const request = await Engine.put(
+      this.config.dbName,
+      this.config.storeName,
+      item
+    );
+    return request;
+  }
+
   /**
    * Sets whatever the existing values are to the new values.
    *

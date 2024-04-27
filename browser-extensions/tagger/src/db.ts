@@ -18,6 +18,10 @@ export abstract class StoreModel<T> {
     return this.repository.get(this.key);
   }
 
+  async update(item: T): Promise<T> {
+    return this.repository.update(this.key, item);
+  }
+
   async set(values: T[]) {
     return this.repository.set(this.key, values);
   }

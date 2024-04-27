@@ -6,5 +6,6 @@ export abstract class Repository {
   public abstract getAll(): Promise<unknown[] | null>;
   public abstract set(key: string, values: unknown[]): Promise<void>;
   public abstract add(key: string, item: unknown): Promise<void>;
+  public abstract update<T>(key: string, item: T): Promise<T>;
   public abstract remove(key: string, index: number): Promise<void>;
 }

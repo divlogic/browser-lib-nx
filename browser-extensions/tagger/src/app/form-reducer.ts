@@ -12,7 +12,7 @@ export type TagState = {
 export type Action = SingularAction | PluralAction;
 
 type SingularAction = {
-  type: 'added' | 'removed';
+  type: 'added' | 'removed' | 'edited';
   payload: {
     data: TagType;
   };
@@ -39,6 +39,16 @@ export function tagsReducer(tagsState: TagState, action: Action): TagState {
         loaded: newState.loaded,
         data: newState.data.filter((tag: TagType) => {
           return tag.id !== action.payload.data.id;
+        }),
+      };
+    case 'edited':
+      return {
+        loaded: newState.loaded,
+        data: newState.data.map((tag: TagType) => {
+          if (tag.id === action.payload.data.id) {
+            tag = action.payload.data;
+          }
+          return tag;
         }),
       };
     case 'loaded':
