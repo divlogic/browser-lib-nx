@@ -206,10 +206,10 @@ test.describe('This is a test', () => {
     );
 
     await page.getByRole('button', { name: 'edit' }).first().click();
-    await expect(page.getByText('Color')).toBeVisible();
-    await page.getByLabel('Color:').click();
-    await page.getByLabel('Color:').fill(newColor);
-    await page.getByLabel('Color:').press('Enter');
+    await expect(page.getByLabel('Color:').nth(1)).toBeVisible();
+    await page.getByLabel('Color:').nth(1).click();
+    await page.getByLabel('Color:').nth(1).fill(newColor);
+    await page.getByLabel('Color:').nth(1).press('Enter');
     await expect(page.locator(styleTagId)).toContainText(
       `background-color: ${newColor};`,
       {
