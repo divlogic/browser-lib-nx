@@ -51,23 +51,21 @@ export function Tag(tags: TagType[]) {
 
       CSS.highlights.set('search-results', searchResultsHighlight);
     }
-
-    const css = `
+  } else {
+    console.error('CSS custom highlights API not available');
+  }
+  const css = `
     ::highlight(search-results) {
       background-color: ${tags[0]?.color || 'yellow'};
       color: white;
     }
     `;
-    const head = document.getElementsByTagName('head')[0];
-    let styleElement = document.getElementById('styled-by-tagger');
-    if (styleElement == null) {
-      styleElement = document.createElement('style');
-      styleElement.setAttribute('id', 'styled-by-tagger');
-      head.appendChild(styleElement);
-    }
-    styleElement.innerHTML = css;
-    window.styleElement = styleElement;
-  } else {
-    console.error('CSS custom highlights API not available');
+  const head = document.getElementsByTagName('head')[0];
+  let styleElement = document.getElementById('styled-by-tagger');
+  if (styleElement == null) {
+    styleElement = document.createElement('style');
+    styleElement.setAttribute('id', 'styled-by-tagger');
+    head.appendChild(styleElement);
   }
+  styleElement.innerHTML = css;
 }
