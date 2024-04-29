@@ -9,7 +9,7 @@ import { TagModel } from './app/models/tag';
 async function initializeDB() {
   let RepositoryClass;
   let config;
-  if (import.meta.env.DEV) {
+  if (import.meta.env.MODE === 'development') {
     RepositoryClass = (await import('./db/indexed-db-repository')).default;
     config = { dbName: 'tagger', storeName: 'tags' };
   } else {
@@ -40,7 +40,6 @@ async function initializeReact() {
   }
 }
 async function initializeContentScript() {
-  console.log('Initializing content script');
   const tags = await new TagModel().get();
   try {
     Tag(tags);
