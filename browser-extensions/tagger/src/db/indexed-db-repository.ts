@@ -15,16 +15,13 @@ export default class IndexedDBRepository extends Repository {
       return;
     } else {
       db.close();
-      const store = await Engine.createStore(
-        this.config.dbName,
-        this.config.storeName
-      );
+      await Engine.createStore(this.config.dbName, this.config.storeName);
       return;
     }
   }
 
-  get(key: string): Promise<unknown[] | null> {
-    return Engine.getAll(this.config.dbName, this.config.storeName);
+  get<T>(key: string): Promise<T[] | null> {
+    return Engine.getAll<T>(this.config.dbName, this.config.storeName);
   }
 
   getAll() {
@@ -33,25 +30,13 @@ export default class IndexedDBRepository extends Repository {
     return items;
   }
 
-  async update<T>(key: string, item: T): Promise<T> {
+  async update<T>(key: string, item: T): Promise<IDBValidKey | undefined> {
     const request = await Engine.put(
       this.config.dbName,
       this.config.storeName,
       item
     );
     return request;
-  }
-
-  /**
-   * Sets whatever the existing values are to the new values.
-   *
-   * @param key - Kept to maintain API consistency, but this is used earlier as the store name
-   * @param values
-   * @returns
-   */
-  async set(key: string, values: unknown[]): Promise<void> {
-    await Engine.put(this.config.dbName, this.config.storeName, values);
-    return;
   }
 
   async add(key: string, item: unknown): Promise<unknown> {

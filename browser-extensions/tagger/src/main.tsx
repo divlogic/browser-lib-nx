@@ -9,16 +9,17 @@ import { TagModel } from './app/models/tag';
 async function initializeDB() {
   let RepositoryClass;
   let config;
+  let repository;
   if (import.meta.env.MODE === 'development') {
     RepositoryClass = (await import('./db/indexed-db-repository')).default;
     config = { dbName: 'tagger', storeName: 'tags' };
+    repository = new RepositoryClass(config);
   } else {
     const browser = (await import('webextension-polyfill')).default;
     window.browser = browser;
     RepositoryClass = (await import('./db/browser-storage-repository')).default;
-    config = {};
+    repository = new RepositoryClass();
   }
-  const repository = new RepositoryClass(config);
   await repository.initialize();
   const tagModel = new TagModel(repository);
   window.tag = tagModel;

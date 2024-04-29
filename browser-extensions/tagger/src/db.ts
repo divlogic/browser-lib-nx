@@ -4,7 +4,7 @@ export abstract class StoreModel<T> {
   private static repositoryCache: Repository;
   abstract key: string;
 
-  constructor(repository?: Repository) {
+  constructor(repository: Repository) {
     if (typeof repository !== 'undefined') {
       StoreModel.repositoryCache = repository;
     }
@@ -14,12 +14,13 @@ export abstract class StoreModel<T> {
     return StoreModel.repositoryCache;
   }
 
-  async get(): Promise<T[]> {
+  async get(): Promise<T[] | null> {
     return this.repository.get(this.key);
   }
 
-  async update(item: T): Promise<T> {
-    return this.repository.update(this.key, item);
+  async update(item: T): Promise<void> {
+    await this.repository.update(this.key, item);
+    return;
   }
 
   async set(values: T[]) {
