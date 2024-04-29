@@ -1,5 +1,7 @@
-import type Browser from 'webextension-polyfill';
+import Browser from 'webextension-polyfill';
 
 declare global {
-  const browser: Browser.Browser;
+  interface Window {
+    browser: Browser;
+  }
 }
