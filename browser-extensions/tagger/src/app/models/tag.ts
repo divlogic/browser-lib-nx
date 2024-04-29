@@ -1,4 +1,4 @@
-import { StoreModel } from '../../db';
+import { StoreModel } from '../../db/store-model';
 import { TagType } from '../form-reducer';
 export class TagModel extends StoreModel<TagType> {
   key = 'tags';

@@ -1,4 +1,4 @@
-import { Repository } from './db/repository';
+import { Repository } from './repository';
 
 export abstract class StoreModel<T> {
   private static repositoryCache: Repository;
