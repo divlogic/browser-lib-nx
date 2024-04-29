@@ -4,4 +4,5 @@ declare global {
   interface Window {
     browser: Browser;
   }
+  const browser = Browser;
 }
