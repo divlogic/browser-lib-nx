@@ -4,7 +4,11 @@ export abstract class StoreModel<T> {
   private static repositoryCache: Repository;
   abstract key: string;
 
-  constructor(repository: Repository) {
+  /**
+   *
+   * @param repository Only necessary the first time class is instantiated
+   */
+  constructor(repository?: Repository) {
     if (typeof repository !== 'undefined') {
       StoreModel.repositoryCache = repository;
     }

@@ -1,3 +1,4 @@
+import { pageAction } from 'webextension-polyfill';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 
@@ -12,7 +13,7 @@ test.describe('This is a test', () => {
     await expect(page).toHaveTitle('Tagger');
   });
 
-  test('Can add tags', async ({ tagger }) => {
+  test('Can add tags', async ({ tagger, page }) => {
     await tagger.goto();
     await tagger.addTag({ text: 'test' });
 

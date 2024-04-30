@@ -1,4 +1,4 @@
-import { Dispatch, useState } from 'react';
+import { Dispatch } from 'react';
 import { Action, TagType } from '../form-reducer';
 import {
   Button,
@@ -12,13 +12,11 @@ import {
   FormLabel,
   HStack,
   Highlight,
-  Icon,
-  IconButton,
   Input,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { TagModel, tag } from '../models/tag';
+import { TagModel } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
 

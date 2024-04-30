@@ -1,6 +1,5 @@
 import { Dispatch } from 'react';
 import { Action, TagType } from '../form-reducer';
-import EditTagForm from './edit-tag-form';
 import TagItem from './tag-item';
 
 /* eslint-disable-next-line */
