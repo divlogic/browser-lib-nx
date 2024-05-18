@@ -1,0 +1,19 @@
+{
+  "name": "browser-types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/browser-types/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/browser-types",
+        "main": "packages/browser-types/src/index.ts",
+        "tsConfig": "packages/browser-types/tsconfig.lib.json",
+        "assets": ["packages/browser-types/*.md"]
+      }
+    }
+  }
+}
