@@ -2,8 +2,10 @@
   "name": "tagger",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "browser-extensions/tagger/src",
-
   "targets": {
+    "build-worker": {
+      "command": "cd {projectRoot}; vite build -c vite.config.worker.ts"
+    },
     "build-watch": {
       "inputs": ["default"],
       "executor": "@nx/vite:build",
@@ -15,6 +17,5 @@
       }
     }
   },
-  "tags": [],
-  "implicitDependencies": ["tagger-worker"]
+  "tags": []
 }
