@@ -19,9 +19,6 @@
       "@browser-lib-nx/tagger": ["browser-extensions/tagger/src/*"],
       "@browser-lib-nx/tagger-data": [
         "browser-extensions/tagger-data/src/index.ts"
-      ],
-      "@browser-lib-nx/tagger-worker": [
-        "browser-extensions/tagger-worker/src/index.ts"
       ]
     }
   },
