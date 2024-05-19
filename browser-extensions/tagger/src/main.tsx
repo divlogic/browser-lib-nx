@@ -15,8 +15,6 @@ async function initializeDB() {
     config = { dbName: 'tagger', storeName: 'tags' };
     repository = new RepositoryClass(config);
   } else {
-    const browser = (await import('webextension-polyfill')).default;
-    window.browser = browser;
     RepositoryClass = (await import('./db/browser-storage-repository')).default;
     repository = new RepositoryClass();
   }
