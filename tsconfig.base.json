@@ -15,7 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@browser-lib-nx/*": ["./packages/db/src/*"]
+      "@browser-lib-nx/*": ["./packages/db/src/*"],
+      "@browser-lib-nx/tagger": ["browser-extensions/tagger/src/*"],
+      "@browser-lib-nx/tagger-data": [
+        "browser-extensions/tagger-data/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
