@@ -16,10 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@browser-lib-nx/*": ["./packages/db/src/*"],
-      "@browser-lib-nx/tagger": ["browser-extensions/tagger/src/*"],
-      "@browser-lib-nx/tagger-data": [
-        "browser-extensions/tagger-data/src/index.ts"
-      ]
+      "@browser-lib-nx/tagger": ["browser-extensions/tagger/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]
