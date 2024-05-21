@@ -1,4 +1,3 @@
-import { pageAction } from 'webextension-polyfill';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 

@@ -42,14 +42,4 @@ export class TaggerDevPage {
       );
     });
   }
-
-  async clearStorage() {
-    return this.page.evaluate(() => {
-      try {
-        return window.tag.clear();
-      } catch (e) {
-        return e;
-      }
-    });
-  }
 }

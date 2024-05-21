@@ -6,6 +6,7 @@
     "module": "commonjs",
     "sourceMap": false
   },
+  "ts-node": { "files": true },
   "include": [
     "**/*.ts",
     "**/*.js",
@@ -15,6 +16,7 @@
     "src/**/*.test.ts",
     "src/**/*.test.js",
     "src/**/*.d.ts",
-    "../../packages/browser-types/src/*.d.ts"
+    "@browser-lib-nx/browser-types/*",
+    "../../packages/browser-types/src/CSS.d.ts"
   ]
 }
