@@ -7,11 +7,13 @@ import {
   Container,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
@@ -95,15 +97,17 @@ export function pickRandomWords(input: string) {
 }
 
 export function StyleForm(props: StyleFormProps) {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useForm<HighlightStyle>({
+    defaultValues: { backgroundColor: 'yellow', color: 'black' },
+  });
+
   const randomWords = pickRandomWords(textSample);
-  const style: HighlightStyle = {
-    backgroundColor: 'red',
-    color: 'black',
-    textDecorationColor: 'blue',
-    textDecorationLine: 'underline overline',
-    textDecorationThickness: '3px',
-    textDecorationStyle: 'dotted',
-  };
+
+  const style = watch();
 
   const tags = randomWords.map((word, index) => {
     return { text: word, style: style };
@@ -122,18 +126,39 @@ export function StyleForm(props: StyleFormProps) {
               <Input type="text"></Input>
             </FormControl>
             <FormControl>
-              <FormLabel></FormLabel>
-              <Input type="text"></Input>
+              <FormLabel>Text Decoration Line</FormLabel>
+              <Input type="text" {...register('textDecorationLine')}></Input>
             </FormControl>
             <FormControl>
-              <FormLabel></FormLabel>
-              <Input type="text"></Input>
+              <FormLabel>Text Decoration Color</FormLabel>
+              <Input type="text" {...register('textDecorationColor')}></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Text Decoration Style</FormLabel>
+              <Input type="text" {...register('textDecorationStyle')}></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Text Decoration Thickness</FormLabel>
+              <Input
+                type="text"
+                {...register('textDecorationThickness')}
+              ></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Background Color</FormLabel>
+              <Input type="text" {...register('backgroundColor')}></Input>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Color</FormLabel>
+              <Input type="text" {...register('color')}></Input>
             </FormControl>
           </form>
         </CardBody>
         <CardFooter>
           <VStack>
-            <Text>Example:</Text>
+            <Heading as="h6" size="lg">
+              Demo:
+            </Heading>
             <Text>{textSample}</Text>
           </VStack>
         </CardFooter>
