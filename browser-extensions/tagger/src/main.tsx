@@ -58,7 +58,9 @@ async function initializeReact() {
 async function initializeContentScript() {
   const tags = await new TagModel().get();
   try {
-    Tag(tags);
+    if (Array.isArray(tags)) {
+      Tag(tags);
+    }
   } catch (e) {
     console.error(e);
   }
