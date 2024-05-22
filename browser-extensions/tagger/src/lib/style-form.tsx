@@ -16,16 +16,68 @@ import { useEffect } from 'react';
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
 
-type HighlightStyle = {
+type HighlightCommon = {
   color: string;
   backgroundColor: string;
-  textDecoration: string;
-  textDecorationColor: string;
-  textDecorationLine: string;
-  textDecorationStyle: string;
-  textDecorationThickness: string;
-  textShadow: string;
 };
+type TextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
+
+type TextDecorationLineOption =
+  | 'none'
+  | 'underline'
+  | 'overline'
+  | 'line-through'
+  | 'blink';
+
+type ExtendTest<
+  Input extends string,
+  Plucked extends never | string = never
+> = Input extends any ? (Input extends Plucked ? never : `${Input}`) : never;
+
+type WTF = 'test' extends never ? 'it does extend' : 'It does not extend';
+
+type Tested = ExtendTest<'A' | 'B' | 'C'>;
+type Tested_2 = ExtendTest<'A' | 'B' | 'C', 'C'>;
+
+type Extended<
+  Input extends string,
+  Plucked extends string | never = never,
+  Alias1 extends string = Exclude<Input, Plucked>
+> = Input extends any ? Alias1 : never;
+
+type ExtendTest3 = Extended<'A' | 'B' | 'C'>;
+type ExtendTest4 = Extended<'A' | 'B' | 'C', 'C'>;
+
+type ConditionalCombination<
+  Input extends string,
+  ToPluck extends string | never = never,
+  Filtered extends string = Exclude<Input, ToPluck>,
+  Reference extends string = Filtered
+> = Input extends any
+  ? Input extends ToPluck
+    ? `${Input}`
+    : `${Filtered}` | `${Input} ${Exclude<Reference, Input>}`
+  : never;
+
+type TextDecorationLine = ConditionalCombination<
+  TextDecorationLineOption,
+  'none'
+>;
+
+type HighlightStyle =
+  | HighlightCommon &
+      (
+        | {
+            textDecoration: string;
+            textShadow: string;
+          }
+        | {
+            textDecorationColor: string;
+            textDecorationLine: TextDecorationLine;
+            textDecorationStyle: TextDecorationStyle;
+            textDecorationThickness: string;
+          }
+      );
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -55,10 +107,18 @@ export function pickRandomWords(input: string) {
 
 export function StyleForm(props: StyleFormProps) {
   const randomWords = pickRandomWords(textSample);
+  const style: HighlightStyle = {
+    backgroundColor: 'red',
+    color: 'black',
+    textDecorationColor: 'blue',
+    textDecorationLine: ['underline', 'overline'],
+    textDecorationThickness: '3px',
+    textDecorationStyle: 'dotted',
+  };
+
   const tags = randomWords.map((word, index) => {
-    return { text: word, color: 'red' };
+    return { text: word, style: style };
   });
-  console.log('tags is: ', tags);
   useEffect(() => {
     Tag(tags);
   });
