@@ -2,7 +2,18 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
+import { exec } from 'child_process';
 
+function postBuild() {
+  return {
+    name: 'postbuild-commands',
+    closeBundle: async () => {
+      if (process.env.OPEN_BROWSER === 'true') {
+        await exec('nx open_in_browser tagger-e2e');
+      }
+    },
+  };
+}
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/tagger',
@@ -16,7 +27,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths()],
+  plugins: [react(), nxViteTsPaths(), postBuild()],
 
   // Uncomment this if you are using workers.
   // worker: {
