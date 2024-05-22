@@ -1,10 +1,27 @@
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
-import { ChakraProvider } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  extendBaseTheme,
+  theme as baseTheme,
+} from '@chakra-ui/react';
 
 import App from './app/app';
 import { Tag } from './tagger';
 import { TagModel } from './app/models/tag';
+
+const customTheme = {
+  styles: {
+    global: {
+      body: {
+        height: '590px',
+        width: '750px',
+      },
+    },
+  },
+};
+
+const theme = extendBaseTheme(baseTheme, customTheme);
 
 async function initializeDB() {
   let RepositoryClass;
@@ -31,7 +48,7 @@ async function initializeReact() {
 
     root.render(
       <StrictMode>
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
           <App />
         </ChakraProvider>
       </StrictMode>
