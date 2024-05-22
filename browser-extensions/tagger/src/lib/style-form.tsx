@@ -29,25 +29,6 @@ type TextDecorationLineOption =
   | 'line-through'
   | 'blink';
 
-type ExtendTest<
-  Input extends string,
-  Plucked extends never | string = never
-> = Input extends any ? (Input extends Plucked ? never : `${Input}`) : never;
-
-type WTF = 'test' extends never ? 'it does extend' : 'It does not extend';
-
-type Tested = ExtendTest<'A' | 'B' | 'C'>;
-type Tested_2 = ExtendTest<'A' | 'B' | 'C', 'C'>;
-
-type Extended<
-  Input extends string,
-  Plucked extends string | never = never,
-  Alias1 extends string = Exclude<Input, Plucked>
-> = Input extends any ? Alias1 : never;
-
-type ExtendTest3 = Extended<'A' | 'B' | 'C'>;
-type ExtendTest4 = Extended<'A' | 'B' | 'C', 'C'>;
-
 type ConditionalCombination<
   Input extends string,
   ToPluck extends string | never = never,
@@ -56,7 +37,9 @@ type ConditionalCombination<
 > = Input extends any
   ? Input extends ToPluck
     ? `${Input}`
-    : `${Filtered}` | `${Input} ${Exclude<Reference, Input>}`
+    :
+        | `${Input}`
+        | `${Input} ${ConditionalCombination<Exclude<Reference, Input>>}`
   : never;
 
 type TextDecorationLine = ConditionalCombination<
@@ -111,7 +94,7 @@ export function StyleForm(props: StyleFormProps) {
     backgroundColor: 'red',
     color: 'black',
     textDecorationColor: 'blue',
-    textDecorationLine: ['underline', 'overline'],
+    textDecorationLine: 'underline overline',
     textDecorationThickness: '3px',
     textDecorationStyle: 'dotted',
   };
