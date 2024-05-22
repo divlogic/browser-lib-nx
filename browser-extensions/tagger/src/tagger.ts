@@ -1,6 +1,12 @@
+import { HighlightStyle } from './lib/style-form';
 import { TagType } from './app/form-reducer';
 
-export function Tag(tags: TagType[]) {
+function unCamelize(str: string) {
+  return str.replace(/([A-Z][a-z]+)/g, function (word: string) {
+    return '-' + word.toLowerCase();
+  });
+}
+export function Tag(tags: TagType & { style?: HighlightStyle }[]) {
   if (typeof CSS.highlights !== 'undefined') {
     const body = document.getElementsByTagName('body')[0];
     const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
@@ -54,12 +60,31 @@ export function Tag(tags: TagType[]) {
   } else {
     console.error('CSS custom highlights API not available');
   }
-  const css = `
+  let css: string;
+  css = `
     ::highlight(search-results) {
       background-color: ${tags[0]?.color || 'yellow'};
       color: white;
     }
     `;
+  console.log('Creating css');
+  console.log('tags[0]', tags[0]);
+  if (tags[0] && tags[0].style) {
+    const style = tags[0].style;
+
+    css = `
+    ::highlight(search-results) {`;
+
+    Object.keys(style).forEach((key) => {
+      if (key in style) {
+        css += `${unCamelize(key)}: ${style[key as keyof HighlightStyle]};\n`;
+      }
+    });
+
+    css += `
+      }`;
+  }
+
   const head = document.getElementsByTagName('head')[0];
   let styleElement = document.getElementById('styled-by-tagger');
   if (styleElement == null) {

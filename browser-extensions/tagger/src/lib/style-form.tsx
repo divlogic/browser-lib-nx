@@ -16,10 +16,6 @@ import { useEffect } from 'react';
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
 
-type HighlightCommon = {
-  color: string;
-  backgroundColor: string;
-};
 type TextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
 
 type TextDecorationLineOption =
@@ -47,20 +43,30 @@ type TextDecorationLine = ConditionalCombination<
   'none'
 >;
 
-type HighlightStyle =
-  | HighlightCommon &
-      (
-        | {
-            textDecoration: string;
-            textShadow: string;
-          }
-        | {
-            textDecorationColor: string;
-            textDecorationLine: TextDecorationLine;
-            textDecorationStyle: TextDecorationStyle;
-            textDecorationThickness: string;
-          }
-      );
+type MinimalDecoration = {
+  textDecoration?: string;
+  textShadow?: string;
+};
+type GranularDecoration = {
+  textDecorationColor: string;
+  textDecorationLine: TextDecorationLine;
+  textDecorationStyle: TextDecorationStyle;
+  textDecorationThickness: string;
+};
+
+type HighlightCommon = {
+  color: string;
+  backgroundColor: string;
+};
+
+export type HighlightStyle = (MinimalDecoration | GranularDecoration) &
+  HighlightCommon;
+
+const foo: HighlightStyle = {
+  color: 'test',
+  backgroundColor: 'backgroundtest',
+  textDecoration: 'textDecorationTest',
+};
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
