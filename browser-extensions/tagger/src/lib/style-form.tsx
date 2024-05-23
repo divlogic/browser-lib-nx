@@ -4,9 +4,13 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Checkbox,
+  CheckboxGroup,
   Container,
   FormControl,
+  FormHelperText,
   FormLabel,
+  HStack,
   Heading,
   Input,
   Text,
@@ -20,12 +24,13 @@ export interface StyleFormProps {}
 
 type TextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
 
-type TextDecorationLineOption =
-  | 'none'
-  | 'underline'
-  | 'overline'
-  | 'line-through'
-  | 'blink';
+const TextDecorationLineOption = [
+  'none',
+  'underline',
+  'overline',
+  'line-through',
+  'blink',
+] as const;
 
 type ConditionalCombination<
   Input extends string,
@@ -41,7 +46,7 @@ type ConditionalCombination<
   : never;
 
 type TextDecorationLine = ConditionalCombination<
-  TextDecorationLineOption,
+  (typeof TextDecorationLineOption)[number],
   'none'
 >;
 
@@ -63,12 +68,6 @@ type HighlightCommon = {
 
 export type HighlightStyle = (MinimalDecoration | GranularDecoration) &
   HighlightCommon;
-
-const foo: HighlightStyle = {
-  color: 'test',
-  backgroundColor: 'backgroundtest',
-  textDecoration: 'textDecorationTest',
-};
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -112,9 +111,12 @@ export function StyleForm(props: StyleFormProps) {
   const tags = randomWords.map((word, index) => {
     return { text: word, style: style };
   });
+  console.log('style is: ', style);
+  console.log('textDecorationThickness', style.textDecorationThickness);
   useEffect(() => {
     Tag(tags);
   });
+  console.log(watch());
   return (
     <Container>
       <Card>
@@ -124,14 +126,80 @@ export function StyleForm(props: StyleFormProps) {
             <FormControl>
               <FormLabel>Name of the style:</FormLabel>
               <Input type="text"></Input>
+              <FormHelperText>
+                What is entered here will be how this style is referenced in
+                future use.
+              </FormHelperText>
             </FormControl>
             <FormControl>
               <FormLabel>Text Decoration Line</FormLabel>
-              <Input type="text" {...register('textDecorationLine')}></Input>
+              <CheckboxGroup colorScheme="green">
+                <HStack>
+                  <Checkbox
+                    textDecorationLine={'none'}
+                    value="none"
+                    {...register('textDecorationLine', {
+                      setValueAs(value) {
+                        console.log('underline value is: ', value);
+                        return value;
+                      },
+                    })}
+                  >
+                    none
+                  </Checkbox>
+                  <Checkbox
+                    textDecorationLine={'underline'}
+                    textDecorationThickness={style.textDecorationThickness}
+                    value="underline"
+                    {...register('textDecorationLine', {
+                      setValueAs(value) {
+                        console.log('underline value is: ', value);
+                        return value;
+                      },
+                    })}
+                  >
+                    underline
+                  </Checkbox>
+                  <Checkbox
+                    value="overline"
+                    textDecorationLine={'overline'}
+                    textDecorationThickness={style.textDecorationThickness}
+                    {...register('textDecorationLine', {
+                      setValueAs(value) {
+                        console.log('overline value is: ', value);
+                        return value;
+                      },
+                    })}
+                  >
+                    overline
+                  </Checkbox>
+                  <Checkbox
+                    textDecorationLine={'line-through'}
+                    textDecorationThickness={style.textDecorationThickness}
+                    value="line-through"
+                    {...register('textDecorationLine', {
+                      setValueAs(value) {
+                        console.log('underline value is: ', value);
+                        return value;
+                      },
+                    })}
+                  >
+                    line-through
+                  </Checkbox>
+                </HStack>
+              </CheckboxGroup>
+              <FormHelperText>
+                Add an underline, overline and/or line-through for particular
+                emphasis.
+              </FormHelperText>
             </FormControl>
             <FormControl>
               <FormLabel>Text Decoration Color</FormLabel>
               <Input type="text" {...register('textDecorationColor')}></Input>
+              <FormHelperText>
+                Set a specific color for the underline, overline and/or
+                line-through.
+              </FormHelperText>
             </FormControl>
             <FormControl>
               <FormLabel>Text Decoration Style</FormLabel>
@@ -143,14 +211,19 @@ export function StyleForm(props: StyleFormProps) {
                 type="text"
                 {...register('textDecorationThickness')}
               ></Input>
+              <FormHelperText>
+                How thick the underline, overline and/or line-through should be.
+              </FormHelperText>
             </FormControl>
             <FormControl>
               <FormLabel>Background Color</FormLabel>
               <Input type="text" {...register('backgroundColor')}></Input>
+              <FormHelperText>The highlight itself.</FormHelperText>
             </FormControl>
             <FormControl>
               <FormLabel>Color</FormLabel>
               <Input type="text" {...register('color')}></Input>
+              <FormHelperText>The color of the text.</FormHelperText>
             </FormControl>
           </form>
         </CardBody>
