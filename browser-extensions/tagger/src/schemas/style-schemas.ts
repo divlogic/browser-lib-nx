@@ -1,0 +1,50 @@
+import { z } from 'zod';
+
+export const TextDecorationLineSchema = z.optional(
+  z.array(z.literal('none')).or(
+    z
+      .array(
+        z
+          .literal('underline')
+          .or(z.literal('overline'))
+          .or(z.literal('line-through'))
+      )
+      .refine((items) => new Set(items).size === items.length, {
+        message: 'must be an array of unique strings',
+      })
+  )
+);
+
+export const HighlightCommon = z.object({
+  color: z.string().optional(),
+  backgroundColor: z.literal('red'),
+  textShadow: z.string().optional(),
+});
+
+export const TextDecorationStyleSchema = z
+  .literal('solid')
+  .or(z.literal('double'))
+  .or(z.literal('dotted'))
+  .or(z.literal('dashed'))
+  .or(z.literal('wavy'))
+  .optional();
+
+export type TextDecorationStyle = z.infer<typeof TextDecorationStyleSchema>;
+
+export const HighlightGranular = HighlightCommon.extend({
+  textDecorationColor: z.string().optional(),
+  textDecorationLine: TextDecorationLineSchema,
+  textDecorationStyle: TextDecorationStyleSchema,
+  textDecorationThickness: z.string().optional(),
+});
+
+export const HighlightShorthand = HighlightCommon.merge(
+  z.object({
+    textDecoration: z.string().optional(),
+  })
+);
+
+export const HighlightSchema =
+  HighlightGranular.or(HighlightShorthand).or(HighlightCommon);
+
+export type HighlightStyle = z.infer<typeof HighlightSchema>;
