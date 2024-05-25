@@ -1,4 +1,4 @@
-import { Engine } from '@browser-lib-nx/index';
+import { Engine } from '@browser-lib-nx/db';
 import { Repository } from './repository';
 
 export default class IndexedDBRepository extends Repository {
