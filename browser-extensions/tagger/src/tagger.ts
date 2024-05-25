@@ -1,5 +1,5 @@
-import { HighlightStyle } from './lib/style-form';
 import { TagType } from './app/form-reducer';
+import { HighlightStyle } from './schemas/style-schemas';
 
 function unCamelize(str: string) {
   return str.replace(/([A-Z][a-z]+)/g, function (word: string) {
@@ -22,7 +22,7 @@ export function Tag(tags: (TagType & { style?: HighlightStyle })[]) {
       console.error('CSS Custom Highlight API not supported');
     }
 
-    const rangesToHighlight = [];
+    const rangesToHighlight: Range[] = [];
     tags.forEach((tag) => {
       const testStr = tag.text.toLowerCase();
       const ranges = allTextNodes
@@ -50,7 +50,12 @@ export function Tag(tags: (TagType & { style?: HighlightStyle })[]) {
             return null;
           }
         });
-      rangesToHighlight.push(...ranges.flat());
+
+      const filteredRanges = ranges
+        .flat()
+        .filter((item): item is Range => item instanceof Range);
+
+      rangesToHighlight.push(...filteredRanges);
     });
     if (rangesToHighlight.length > 0) {
       const searchResultsHighlight = new Highlight(...rangesToHighlight);
@@ -67,8 +72,6 @@ export function Tag(tags: (TagType & { style?: HighlightStyle })[]) {
       color: white;
     }
     `;
-  console.log('Creating css');
-  console.log('tags[0]', tags[0]);
   if (tags[0] && tags[0].style) {
     const style = tags[0].style;
 
