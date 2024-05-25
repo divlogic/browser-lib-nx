@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@browser-lib-nx/db": ["./packages/db/src/index"],
+      "@browser-lib-nx/db": ["./packages/db/src/index.ts"],
+      "@browser-lib-nx/browser-types": ["packages/browser-types/src/*"],
       "@browser-lib-nx/tagger": ["browser-extensions/tagger/src/*"]
     }
   },
