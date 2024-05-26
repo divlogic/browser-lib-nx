@@ -1,5 +1,6 @@
 import { Tag } from '../tagger';
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
@@ -8,6 +9,7 @@ import {
   CheckboxGroup,
   Container,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   HStack,
@@ -18,56 +20,16 @@ import {
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  HighlightGranularStyle,
+  HighlightGranular,
+} from '../schemas/style-schemas';
 
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
 
 type TextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
-
-const TextDecorationLineOption = [
-  'none',
-  'underline',
-  'overline',
-  'line-through',
-  'blink',
-] as const;
-
-type ConditionalCombination<
-  Input extends string,
-  ToPluck extends string | never = never,
-  Filtered extends string = Exclude<Input, ToPluck>,
-  Reference extends string = Filtered
-> = Input extends any
-  ? Input extends ToPluck
-    ? `${Input}`
-    :
-        | `${Input}`
-        | `${Input} ${ConditionalCombination<Exclude<Reference, Input>>}`
-  : never;
-
-type TextDecorationLine = ConditionalCombination<
-  (typeof TextDecorationLineOption)[number],
-  'none'
->;
-
-type MinimalDecoration = {
-  textDecoration?: string;
-  textShadow?: string;
-};
-type GranularDecoration = {
-  textDecorationColor: string;
-  textDecorationLine: TextDecorationLine;
-  textDecorationStyle: TextDecorationStyle;
-  textDecorationThickness: string;
-};
-
-type HighlightCommon = {
-  color: string;
-  backgroundColor: string;
-};
-
-export type HighlightStyle = (MinimalDecoration | GranularDecoration) &
-  HighlightCommon;
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -99,10 +61,13 @@ export function StyleForm(props: StyleFormProps) {
   const {
     register,
     watch,
+    handleSubmit,
     formState: { errors },
-  } = useForm<HighlightStyle>({
+  } = useForm<HighlightGranularStyle>({
     defaultValues: { backgroundColor: 'yellow', color: 'black' },
+    resolver: zodResolver(HighlightGranular),
   });
+  console.log('Errors is: ', errors);
 
   const randomWords = pickRandomWords(textSample);
 
@@ -116,22 +81,28 @@ export function StyleForm(props: StyleFormProps) {
   useEffect(() => {
     Tag(tags);
   });
-  console.log(watch());
   return (
     <Container>
       <Card>
         <CardHeader>Add a Style</CardHeader>
         <CardBody>
-          <form>
-            <FormControl>
+          <form
+            onSubmit={handleSubmit((data) => {
+              console.log('Data is: ', data);
+            })}
+          >
+            <FormControl isInvalid={'name' in errors}>
               <FormLabel>Name of the style:</FormLabel>
               <Input type="text"></Input>
+              {'name' in errors && (
+                <FormErrorMessage>{errors?.name?.message}</FormErrorMessage>
+              )}
               <FormHelperText>
                 What is entered here will be how this style is referenced in
                 future use.
               </FormHelperText>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'textDecorationLine' in errors}>
               <FormLabel>Text Decoration Line</FormLabel>
               <CheckboxGroup colorScheme="green">
                 <HStack>
@@ -188,43 +159,73 @@ export function StyleForm(props: StyleFormProps) {
                   </Checkbox>
                 </HStack>
               </CheckboxGroup>
+              {'textDecorationLine' in errors ? (
+                <FormErrorMessage>
+                  {errors?.textDecorationLine?.message}
+                </FormErrorMessage>
+              ) : null}
               <FormHelperText>
                 Add an underline, overline and/or line-through for particular
                 emphasis.
               </FormHelperText>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'textDecorationColor' in errors}>
               <FormLabel>Text Decoration Color</FormLabel>
               <Input type="text" {...register('textDecorationColor')}></Input>
+              {'textDecorationColor' in errors && (
+                <FormErrorMessage>
+                  {errors?.textDecorationColor?.message}
+                </FormErrorMessage>
+              )}
               <FormHelperText>
                 Set a specific color for the underline, overline and/or
                 line-through.
               </FormHelperText>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'textDecorationStyle' in errors}>
               <FormLabel>Text Decoration Style</FormLabel>
               <Input type="text" {...register('textDecorationStyle')}></Input>
+              {'textDecorationStyle' in errors && (
+                <FormErrorMessage>
+                  {errors?.textDecorationStyle?.message}
+                </FormErrorMessage>
+              )}
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'textDecorationThickness' in errors}>
               <FormLabel>Text Decoration Thickness</FormLabel>
               <Input
                 type="text"
                 {...register('textDecorationThickness')}
               ></Input>
+              {'textDecorationThickness' in errors && (
+                <FormErrorMessage>
+                  {errors?.textDecorationThickness?.message}
+                </FormErrorMessage>
+              )}
               <FormHelperText>
                 How thick the underline, overline and/or line-through should be.
               </FormHelperText>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'backgroundColor' in errors}>
               <FormLabel>Background Color</FormLabel>
               <Input type="text" {...register('backgroundColor')}></Input>
+              {'backgroundColor' in errors ? (
+                <FormErrorMessage>
+                  {errors.backgroundColor?.message}
+                </FormErrorMessage>
+              ) : null}
               <FormHelperText>The highlight itself.</FormHelperText>
             </FormControl>
-            <FormControl>
+            <FormControl isInvalid={'color' in errors}>
               <FormLabel>Color</FormLabel>
               <Input type="text" {...register('color')}></Input>
-              <FormHelperText>The color of the text.</FormHelperText>
+              {'color' in errors ? (
+                <FormErrorMessage>{errors.color?.message}</FormErrorMessage>
+              ) : (
+                <FormHelperText>The color of the text.</FormHelperText>
+              )}
             </FormControl>
+            <Button type="submit">Save</Button>
           </form>
         </CardBody>
         <CardFooter>

@@ -38,6 +38,8 @@ export const HighlightGranular = HighlightCommon.extend({
   textDecorationThickness: z.string().optional(),
 });
 
+export type HighlightGranularStyle = z.infer<typeof HighlightGranular>;
+
 export const HighlightShorthand = HighlightCommon.merge(
   z.object({
     textDecoration: z.string().optional(),
