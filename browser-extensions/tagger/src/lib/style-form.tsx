@@ -15,21 +15,18 @@ import {
   HStack,
   Heading,
   Input,
+  Radio,
+  RadioGroup,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  HighlightGranularStyle,
-  HighlightGranular,
-} from '../schemas/style-schemas';
+import { StyleFormFields, StyleFormSchema } from '../schemas/style-schemas';
 
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
-
-type TextDecorationStyle = 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -63,9 +60,13 @@ export function StyleForm(props: StyleFormProps) {
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<HighlightGranularStyle>({
-    defaultValues: { backgroundColor: 'yellow', color: 'black' },
-    resolver: zodResolver(HighlightGranular),
+  } = useForm<StyleFormFields>({
+    defaultValues: {
+      backgroundColor: 'yellow',
+      color: 'black',
+      textDecorationLine: ['none'],
+    },
+    resolver: zodResolver(StyleFormSchema),
   });
   console.log('Errors is: ', errors);
 
@@ -184,7 +185,54 @@ export function StyleForm(props: StyleFormProps) {
             </FormControl>
             <FormControl isInvalid={'textDecorationStyle' in errors}>
               <FormLabel>Text Decoration Style</FormLabel>
-              <Input type="text" {...register('textDecorationStyle')}></Input>
+              <RadioGroup>
+                <HStack>
+                  <Radio value="" {...register('textDecorationStyle')}>
+                    <Text textDecorationLine="underline">None</Text>
+                  </Radio>
+                  <Radio value="solid" {...register('textDecorationStyle')}>
+                    <Text
+                      textDecorationLine={'underline'}
+                      textDecorationStyle="solid"
+                    >
+                      Solid
+                    </Text>
+                  </Radio>
+                  <Radio value="double" {...register('textDecorationStyle')}>
+                    <Text
+                      textDecorationLine={'underline'}
+                      textDecorationStyle="double"
+                    >
+                      Double
+                    </Text>
+                  </Radio>
+                  <Radio value="dotted" {...register('textDecorationStyle')}>
+                    <Text
+                      textDecorationLine={'underline'}
+                      textDecorationStyle="dotted"
+                    >
+                      Dotted
+                    </Text>
+                  </Radio>
+                  <Radio value="dashed" {...register('textDecorationStyle')}>
+                    <Text
+                      textDecorationLine={'underline'}
+                      textDecorationStyle="dashed"
+                    >
+                      Dashed
+                    </Text>
+                  </Radio>
+                  <Radio value="wavy" {...register('textDecorationStyle')}>
+                    <Text
+                      textDecorationLine={'underline'}
+                      textDecorationStyle="wavy"
+                    >
+                      Wavy
+                    </Text>
+                  </Radio>
+                </HStack>
+              </RadioGroup>
+              {/* <Input type="text" {...register('textDecorationStyle')}></Input> */}
               {'textDecorationStyle' in errors && (
                 <FormErrorMessage>
                   {errors?.textDecorationStyle?.message}

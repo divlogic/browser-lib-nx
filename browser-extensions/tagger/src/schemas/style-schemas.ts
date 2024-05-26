@@ -17,7 +17,7 @@ export const TextDecorationLineSchema = z.optional(
 
 export const HighlightCommon = z.object({
   color: z.string().optional(),
-  backgroundColor: z.literal('red'),
+  backgroundColor: z.string(),
   textShadow: z.string().optional(),
 });
 
@@ -39,6 +39,10 @@ export const HighlightGranular = HighlightCommon.extend({
 });
 
 export type HighlightGranularStyle = z.infer<typeof HighlightGranular>;
+
+export const StyleFormSchema = HighlightGranular.extend({ name: z.string() });
+
+export type StyleFormFields = z.infer<typeof StyleFormSchema>;
 
 export const HighlightShorthand = HighlightCommon.merge(
   z.object({
