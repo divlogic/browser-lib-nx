@@ -38,8 +38,21 @@ export function generateRandomAccessibleColor(
   return bgColor;
 }
 
-export function cycle(starting: number, cap: number, toAdd: number) {
-  return starting + toAdd - cap;
+export function cycle(
+  start: number,
+  end: number,
+  current: number,
+  increment: number
+) {
+  let answer = current + increment;
+  if (answer > end) {
+    answer = Math.abs(end - answer) + start - 1;
+  }
+  if (answer < start) {
+    const difference = Math.abs(start - answer);
+    answer = end - Math.abs(difference) + 1;
+  }
+  return answer;
 }
 
 export function generateAccessibleColor(textColor: string, startingHue = 30) {
