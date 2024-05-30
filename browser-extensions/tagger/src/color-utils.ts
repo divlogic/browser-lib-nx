@@ -11,13 +11,16 @@ export function generateRandomColor() {
   return color;
 }
 
-export function generateRandomAccessibleColor(textColor: string) {
+export function generateRandomAccessibleColor(
+  textColor: string,
+  hsl: { hue: null; saturation: null; lightness: null }
+) {
   let difference = 0;
   const text = new Color(textColor);
   let bgColor: Color = new Color('hsluv', [
-    getRandomArbitrary(0, 360),
-    getRandomArbitrary(0, 100),
-    getRandomArbitrary(0, 100),
+    hsl?.hue || getRandomArbitrary(0, 360),
+    hsl?.saturation || getRandomArbitrary(0, 100),
+    hsl?.lightness || getRandomArbitrary(0, 100),
   ]);
   let count = 0;
   while (difference < 7 && count < 100) {
@@ -33,4 +36,87 @@ export function generateRandomAccessibleColor(textColor: string) {
     throw new Error('Something went wrong');
   }
   return bgColor;
+}
+
+export function cycle(starting: number, cap: number, toAdd: number) {
+  return starting + toAdd - cap;
+}
+
+export function generateAccessibleColor(textColor: string, startingHue = 30) {
+  const fg = new Color(textColor);
+
+  const fgLightness = fg.hsluv[2];
+  let bg: Color;
+  let lightness = 50;
+
+  if (fgLightness <= 50) {
+    //lighten
+    bg = new Color('hsluv', [startingHue, 100, lightness]);
+    while (Math.abs(bg.contrastAPCA(fg)) < 90) {
+      if (lightness > 100) {
+        throw new Error('Unable to find appropriately light color');
+        // if (startingHue = startingHue +){
+        //   startingHue += 15
+        //   lightness = 50
+        // }
+      }
+      lightness += 1;
+      bg = new Color('hsluv', [startingHue, 100, lightness]);
+    }
+  } else {
+    //darken
+    bg = new Color('hsluv', [startingHue, 100, lightness]);
+    while (Math.abs(bg.contrastAPCA(fg)) < 90) {
+      lightness -= 1;
+      if (lightness < 0) {
+        console.log(bg.contrastAPCA(fg));
+        throw new Error('Unable to find appropriately dark color');
+      }
+      bg = new Color('hsluv', [startingHue, 100, lightness]);
+    }
+  }
+  return bg;
+}
+
+export function generateAccessibleColors(textColor: string): string[] {
+  const fg = new Color(textColor);
+  const basicHues = {
+    red: 0,
+    orange: 30,
+    yellow: 50,
+    green: 120,
+    blue: 180,
+    purple: 300,
+    pink: 330,
+  };
+  const colors: string[] = [];
+  Object.keys(basicHues).forEach((colorName) => {
+    /**
+     * 1. Lighten
+     * 2. Darken
+     * 3. Cycle through
+     */
+    let color = new Color('hsluv', [
+      basicHues[colorName as keyof typeof basicHues],
+      100,
+      50,
+    ]);
+    console.log(color.luminance);
+    if (color.contrastAPCA(fg) > 90) {
+      colors.push(color.to('srgb').toString({ format: 'hex' }));
+      return;
+    }
+    color.lighten();
+    if (color.contrastAPCA(fg) > 90) {
+      colors.push(color.to('srgb').toString({ format: 'hex' }));
+      return;
+    }
+    color.lighten();
+    if (color.contrastAPCA(fg) > 90) {
+      colors.push(color.to('srgb').toString({ format: 'hex' }));
+      return;
+    }
+    colors.push(color.to('srgb').toString({ format: 'hex' }));
+  });
+  return colors;
 }
