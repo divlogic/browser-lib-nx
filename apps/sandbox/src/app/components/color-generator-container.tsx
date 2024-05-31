@@ -29,6 +29,7 @@ export function ColorGeneratorContainer() {
   const textColor = new Color('hsl', state[foreground]);
   const backgroundColor = new Color('hsl', state[background]);
   const contrastRatio = textColor.contrastWCAG21(backgroundColor);
+  const contrastRatioAPCA = backgroundColor.contrastAPCA(textColor).toString();
 
   const generators = [...state].map((item, index) => {
     return (
@@ -89,6 +90,7 @@ export function ColorGeneratorContainer() {
             backgroundColor={backgroundColor
               .to('srgb')
               .toString({ format: 'hex' })}
+            colorContrastAPCA={contrastRatioAPCA}
           />
         </VStack>
         <VStack width="100%">

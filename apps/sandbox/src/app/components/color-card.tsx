@@ -15,6 +15,7 @@ interface ColorCardProps {
   textColor: string;
   backgroundColor: string;
   constrastRatio: number;
+  colorContrastAPCA: number;
 }
 
 export function ColorCard(props: ColorCardProps) {
@@ -92,7 +93,15 @@ export function ColorCard(props: ColorCardProps) {
       >
         <VStack>
           <Text align={'start'} backgroundColor={'white'}>
-            Contrast Ratio: {props.constrastRatio}
+            WCAG 2.1 contrast Contrast Ratio: {props.constrastRatio}
+          </Text>
+          <Text
+            align={'start'}
+            backgroundColor={
+              Math.abs(props.colorContrastAPCA) > 90 ? 'greenyellow' : 'white'
+            }
+          >
+            APCA Contrast Ratio: {Math.abs(props.colorContrastAPCA)}
           </Text>
         </VStack>
       </CardHeader>

@@ -18,6 +18,7 @@ import { Route as rootRoute } from './routes/__root'
 
 const ColorGeneratorLazyImport = createFileRoute('/color-generator')()
 const ColorExamplesLazyImport = createFileRoute('/color-examples')()
+const ColorDemoLazyImport = createFileRoute('/color-demo')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
@@ -36,6 +37,11 @@ const ColorExamplesLazyRoute = ColorExamplesLazyImport.update({
   import('./routes/color-examples.lazy').then((d) => d.Route),
 )
 
+const ColorDemoLazyRoute = ColorDemoLazyImport.update({
+  path: '/color-demo',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/color-demo.lazy').then((d) => d.Route))
+
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
@@ -47,6 +53,10 @@ declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': {
       preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/color-demo': {
+      preLoaderRoute: typeof ColorDemoLazyImport
       parentRoute: typeof rootRoute
     }
     '/color-examples': {
@@ -64,6 +74,7 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
+  ColorDemoLazyRoute,
   ColorExamplesLazyRoute,
   ColorGeneratorLazyRoute,
 ])

@@ -1,3 +1,4 @@
+import Color from 'colorjs.io';
 import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
@@ -24,6 +25,7 @@ declare module '@tanstack/react-router' {
 
 export type PathOptions = ToPathOption<typeof router.routeTree>;
 
+window.Color = Color;
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
