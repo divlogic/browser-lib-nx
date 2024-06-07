@@ -55,37 +55,38 @@ export function cycle(
   return answer;
 }
 
-export function generateAccessibleColor(textColor: string, startingHue = 30) {
+export function generateAccessibleColor(
+  textColor: string,
+  hue = 30
+): Color | null {
   const fg = new Color(textColor);
 
   const fgLightness = fg.hsluv[2];
   let bg: Color;
   let lightness = 50;
 
+  let highestContrast = 0;
   if (fgLightness <= 50) {
     //lighten
-    bg = new Color('hsluv', [startingHue, 100, lightness]);
-    while (Math.abs(bg.contrastAPCA(fg)) < 90) {
+    bg = new Color('hsluv', [hue, 100, lightness]);
+    highestContrast = Math.abs(bg.contrastAPCA(fg));
+    while (highestContrast < 90) {
       if (lightness > 100) {
-        throw new Error('Unable to find appropriately light color');
-        // if (startingHue = startingHue +){
-        //   startingHue += 15
-        //   lightness = 50
-        // }
+        return null;
       }
       lightness += 1;
-      bg = new Color('hsluv', [startingHue, 100, lightness]);
+      bg = new Color('hsluv', [hue, 100, lightness]);
+      highestContrast = Math.abs(bg.contrastAPCA(fg));
     }
   } else {
     //darken
-    bg = new Color('hsluv', [startingHue, 100, lightness]);
+    bg = new Color('hsluv', [hue, 100, lightness]);
     while (Math.abs(bg.contrastAPCA(fg)) < 90) {
       lightness -= 1;
       if (lightness < 0) {
-        console.log(bg.contrastAPCA(fg));
-        throw new Error('Unable to find appropriately dark color');
+        return null;
       }
-      bg = new Color('hsluv', [startingHue, 100, lightness]);
+      bg = new Color('hsluv', [hue, 100, lightness]);
     }
   }
   return bg;

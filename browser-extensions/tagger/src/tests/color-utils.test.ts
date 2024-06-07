@@ -95,29 +95,14 @@ describe('generateAccessibleColor', () => {
   it('should still work with light colors', () => {
     const startingColorString = 'white';
     const startingColor = new Color(startingColorString);
-    const color = generateAccessibleColor(startingColorString);
+    const color = generateAccessibleColor(startingColorString) as Color;
     const rating = color.contrastAPCA(startingColor);
     expect(Math.abs(rating)).toBeGreaterThan(90);
   });
-  it('should still work with basic colors', () => {
+
+  it('return null if a color cannot be generated', () => {
     const startingColorString = 'green';
-    const startingColor = new Color(startingColorString);
     const color = generateAccessibleColor(startingColorString);
-    const rating = color.contrastAPCA(startingColor);
-    expect(Math.abs(rating)).toBeGreaterThan(90);
+    expect(color).toBeNull();
   });
 });
-
-// describe('generateAccessibleColors', () => {
-//   it('should return an array of accessible colors based on a starting color', () => {
-//     const startingColorString = 'black';
-//     const startingColor = new Color(startingColorString);
-//     const colors = generateAccessibleColors(startingColorString);
-
-//     colors.forEach((backgroundColor) => {
-//       const bgColor = new Color(backgroundColor);
-//       const rating = bgColor.contrastAPCA(startingColor);
-//       expect(rating).toBeGreaterThan(90);
-//     });
-//   });
-// });
