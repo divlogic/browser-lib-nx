@@ -11,14 +11,18 @@ const meta: Meta<typeof ColorPicker> = {
 export default meta;
 type Story = StoryObj<typeof ColorPicker>;
 
-export const Primary = {
-  args: { label: 'A color picker story' },
+export const Black = {
+  args: { label: 'A color picker story', startingColor: 'black' },
 };
 
-export const Heading: Story = {
-  args: {},
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    expect(canvas.getByText(/Welcome to ColorPicker!/gi)).toBeTruthy();
-  },
+export const White: Story = {
+  args: { startingColor: 'white' },
+};
+
+export const Green: Story = {
+  args: { startingColor: 'green' },
+};
+
+export const Yellow: Story = {
+  args: { startingColor: 'yellow' },
 };
