@@ -22,7 +22,8 @@ export const HighlightCommon = z.object({
 });
 
 export const TextDecorationStyleSchema = z
-  .literal('solid')
+  .literal('none')
+  .or(z.literal('solid'))
   .or(z.literal('double'))
   .or(z.literal('dotted'))
   .or(z.literal('dashed'))
