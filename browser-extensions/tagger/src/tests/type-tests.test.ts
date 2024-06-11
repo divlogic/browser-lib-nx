@@ -52,6 +52,9 @@ describe('TextDecorationStyleSchema', () => {
     let instance = TextDecorationStyleSchema.safeParse('bad');
     expect(instance.success).toBeFalsy();
 
+    instance = TextDecorationStyleSchema.safeParse('none');
+    expect(instance.success).toBeTruthy();
+
     instance = TextDecorationStyleSchema.safeParse('solid');
     expect(instance.success).toBeTruthy();
 
