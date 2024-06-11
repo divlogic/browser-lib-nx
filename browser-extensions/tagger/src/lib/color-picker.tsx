@@ -25,6 +25,16 @@ export interface ColorPickerProps {
   defaultColors?: string[];
 }
 
+/**
+ *
+ * TODO:
+ * 1. Might make more sense to just use the ColorRadioGroup
+ * as the ColorPicker componen since it'd make passing props around easier,
+ * so 1st todo is to validate that idea.
+ * 2. Make it so that the appropriate props can be passed through
+ *  for things like react-hook-form's register function and error handling.
+ *
+ */
 export function ColorPicker({
   label = 'Color Picker',
   name = 'name',
@@ -59,6 +69,7 @@ export function ColorPicker({
               colors={defaultColors}
               name={name}
               onChange={setValue}
+              textColor={startingColor}
             ></ColorRadioGroup>
           ) : (
             <Alert status="warning">
@@ -94,7 +105,6 @@ export default ColorPicker;
 type RadioColorProps = UseRadioProps & {
   children: React.ReactElement | string;
 };
-// 1. Create a component that consumes the `useRadio` hook
 function RadioColor(props: RadioColorProps) {
   const { getInputProps, getRadioProps } = useRadio(props);
 
@@ -131,8 +141,14 @@ type ColorRadioGroupProps = {
   name: string;
   defaultValue?: string;
   onChange: (value: string) => void;
+  textColor?: string;
 };
-function ColorRadioGroup({ colors, name, onChange }: ColorRadioGroupProps) {
+function ColorRadioGroup({
+  colors,
+  name,
+  onChange,
+  textColor = 'black',
+}: ColorRadioGroupProps) {
   const { getRootProps, getRadioProps } = useRadioGroup({
     name,
     onChange,
@@ -146,7 +162,9 @@ function ColorRadioGroup({ colors, name, onChange }: ColorRadioGroupProps) {
         const radio = getRadioProps({ color });
         return (
           <RadioColor key={color} value={color} {...radio}>
-            {color}
+            <Text as="span" color={textColor}>
+              {color}
+            </Text>
           </RadioColor>
         );
       })}
