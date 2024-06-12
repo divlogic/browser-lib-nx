@@ -41,7 +41,7 @@ export function ColorGenerator({
       </CardHeader>
       <CardBody>
         <FormControl>
-          <FormLabel>Hue</FormLabel>
+          <FormLabel marginBottom={'2em'}>Hue</FormLabel>
           <Slider
             defaultValue={hue}
             min={0}
@@ -60,7 +60,7 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
         <FormControl>
-          <FormLabel>Saturation</FormLabel>
+          <FormLabel marginBottom={'2em'}>Saturation</FormLabel>
           <Slider
             defaultValue={saturation}
             min={0}
@@ -84,7 +84,7 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
         <FormControl>
-          <FormLabel>Lightness</FormLabel>
+          <FormLabel marginBottom={'2em'}>Lightness</FormLabel>
           <Slider
             defaultValue={lightness}
             min={0}
