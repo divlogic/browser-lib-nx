@@ -103,6 +103,26 @@ export function StyleForm(props: StyleFormProps) {
                 future use.
               </FormHelperText>
             </FormControl>
+            <FormControl isInvalid={'color' in errors}>
+              <FormLabel>Text Color</FormLabel>
+              <Input type="text" {...register('color')}></Input>
+              {'color' in errors ? (
+                <FormErrorMessage>{errors.color?.message}</FormErrorMessage>
+              ) : (
+                <FormHelperText>The color of the text.</FormHelperText>
+              )}
+            </FormControl>
+            <FormControl isInvalid={'backgroundColor' in errors}>
+              <FormLabel>Highlight Color</FormLabel>
+              <Input type="text" {...register('backgroundColor')}></Input>
+              {'backgroundColor' in errors ? (
+                <FormErrorMessage>
+                  {errors.backgroundColor?.message}
+                </FormErrorMessage>
+              ) : null}
+              <FormHelperText>The highlight itself.</FormHelperText>
+            </FormControl>
+
             <FormControl isInvalid={'textDecorationLine' in errors}>
               <FormLabel>Text Decoration Line</FormLabel>
               <CheckboxGroup colorScheme="green">
@@ -254,25 +274,7 @@ export function StyleForm(props: StyleFormProps) {
                 How thick the underline, overline and/or line-through should be.
               </FormHelperText>
             </FormControl>
-            <FormControl isInvalid={'backgroundColor' in errors}>
-              <FormLabel>Background Color</FormLabel>
-              <Input type="text" {...register('backgroundColor')}></Input>
-              {'backgroundColor' in errors ? (
-                <FormErrorMessage>
-                  {errors.backgroundColor?.message}
-                </FormErrorMessage>
-              ) : null}
-              <FormHelperText>The highlight itself.</FormHelperText>
-            </FormControl>
-            <FormControl isInvalid={'color' in errors}>
-              <FormLabel>Color</FormLabel>
-              <Input type="text" {...register('color')}></Input>
-              {'color' in errors ? (
-                <FormErrorMessage>{errors.color?.message}</FormErrorMessage>
-              ) : (
-                <FormHelperText>The color of the text.</FormHelperText>
-              )}
-            </FormControl>
+
             <Button type="submit">Save</Button>
           </form>
         </CardBody>
