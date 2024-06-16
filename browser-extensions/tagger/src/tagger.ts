@@ -1,4 +1,4 @@
-import { TagType } from './app/form-reducer';
+import { TagType } from './app/tags-reducer';
 import { HighlightStyle } from './schemas/style-schemas';
 
 function unCamelize(str: string) {

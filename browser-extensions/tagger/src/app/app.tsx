@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useEffect, useReducer } from 'react';
-import { tagsReducer } from './form-reducer';
+import { tagsReducer } from './tags-reducer';
 import { tag } from './models/tag';
 import { Tag } from '../tagger';
 import MainPage from './pages/main-page';

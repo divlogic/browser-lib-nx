@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { Dispatch, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Action } from '../form-reducer';
+import { Action } from '../tags-reducer';
 import { tag } from '../models/tag';
 type Inputs = {
   text: string;

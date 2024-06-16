@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { TagType } from '../app/form-reducer';
+import { TagType } from '../app/tags-reducer';
 import { Repository } from './repository';
 
 type HasId = unknown & {
