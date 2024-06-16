@@ -16,14 +16,14 @@ export const TextDecorationLineSchema = z.optional(
 );
 
 export const HighlightCommon = z.object({
+  name: z.string(),
   color: z.string().optional(),
   backgroundColor: z.string(),
   textShadow: z.string().optional(),
 });
 
 export const TextDecorationStyleSchema = z
-  .literal('none')
-  .or(z.literal('solid'))
+  .literal('solid')
   .or(z.literal('double'))
   .or(z.literal('dotted'))
   .or(z.literal('dashed'))
