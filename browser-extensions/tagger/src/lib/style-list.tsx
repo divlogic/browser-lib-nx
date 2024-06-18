@@ -9,12 +9,15 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { HighlightSchema, HighlightStyle } from '../schemas/style-schemas';
+import { useContext } from 'react';
+import { StylesContext } from '../app/providers';
 
 export interface StyleListProps {
   styles: HighlightStyle[];
 }
 
-export function StyleList({ styles }: StyleListProps) {
+export function StyleList() {
+  const styles = useContext<HighlightStyle[]>(StylesContext);
   return (
     <Container>
       <Heading m="2">current styles</Heading>

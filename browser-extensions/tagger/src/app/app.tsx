@@ -6,6 +6,7 @@ import { tag } from './models/tag';
 import { Tag } from '../tagger';
 import MainPage from './pages/main-page';
 import StylesPage from './pages/styles-page';
+import { StylesProvider } from './providers';
 
 export function App() {
   const [tags, dispatch] = useReducer(tagsReducer, {
@@ -28,20 +29,22 @@ export function App() {
   }, [tags]);
 
   return (
-    <Tabs orientation="vertical" variant="solid-rounded" width="100%">
-      <TabList>
-        <Tab>Tags</Tab>
-        <Tab>Styles</Tab>
-      </TabList>
-      <TabPanels width={'100%'}>
-        <TabPanel>
-          <MainPage dispatch={dispatch} tags={tags} />
-        </TabPanel>
-        <TabPanel>
-          <StylesPage />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <StylesProvider>
+      <Tabs orientation="vertical" variant="solid-rounded" width="100%">
+        <TabList>
+          <Tab>Tags</Tab>
+          <Tab>Styles</Tab>
+        </TabList>
+        <TabPanels width={'100%'}>
+          <TabPanel>
+            <MainPage dispatch={dispatch} tags={tags} />
+          </TabPanel>
+          <TabPanel>
+            <StylesPage />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </StylesProvider>
   );
 }
 

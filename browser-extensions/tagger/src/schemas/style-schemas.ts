@@ -28,6 +28,7 @@ export const TextDecorationStyleSchema = z
   .or(z.literal('dotted'))
   .or(z.literal('dashed'))
   .or(z.literal('wavy'))
+  .or(z.literal(''))
   .optional();
 
 export type TextDecorationStyle = z.infer<typeof TextDecorationStyleSchema>;

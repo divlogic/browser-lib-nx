@@ -20,13 +20,17 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
+import { Dispatch, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StyleFormFields, StyleFormSchema } from '../schemas/style-schemas';
+import { Action } from '../app/tags-reducer';
+import { StylesDispatchContext, StylesActions } from '../app/providers';
 
 /* eslint-disable-next-line */
-export interface StyleFormProps {}
+export interface StyleFormProps {
+  dispatch: Dispatch<Action>;
+}
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -55,6 +59,7 @@ export function pickRandomWords(input: string) {
 }
 
 export function StyleForm(props: StyleFormProps) {
+  const dispatch = useContext<Dispatch<StylesActions>>(StylesDispatchContext);
   const {
     register,
     watch,
@@ -89,12 +94,12 @@ export function StyleForm(props: StyleFormProps) {
         <CardBody>
           <form
             onSubmit={handleSubmit((data) => {
-              console.log('Data is: ', data);
+              dispatch({ type: 'added', payload: data });
             })}
           >
             <FormControl isInvalid={'name' in errors}>
               <FormLabel>Name of the style:</FormLabel>
-              <Input type="text"></Input>
+              <Input type="text" {...register('name')}></Input>
               {'name' in errors && (
                 <FormErrorMessage>{errors?.name?.message}</FormErrorMessage>
               )}
