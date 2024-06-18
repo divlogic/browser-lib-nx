@@ -10,17 +10,7 @@ export function StylesPage(props: StylesPageProps) {
     <Container>
       <Heading m={2}>styles</Heading>
       <StyleForm />
-      <StyleList
-        styles={[
-          {
-            name: 'foo',
-            backgroundColor: 'orange',
-            color: 'white',
-            textDecorationLine: ['underline', 'overline'],
-            textDecorationStyle: 'wavy',
-          },
-        ]}
-      ></StyleList>
+      <StyleList />
     </Container>
   );
 }

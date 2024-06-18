@@ -7,7 +7,6 @@ import { Tag } from '../tagger';
 import MainPage from './pages/main-page';
 import StylesPage from './pages/styles-page';
 import { StylesProvider } from './providers';
-import { styleModel } from './models';
 
 export function App() {
   const [tags, dispatch] = useReducer(tagsReducer, {
@@ -17,7 +16,7 @@ export function App() {
 
   useEffect(() => {
     tag.get()?.then((tags) => {
-      dispatch({ type: 'loaded', payload: { data: tags } });
+      dispatch({ type: 'loaded', payload: { data: tags || [] } });
     });
   }, []);
 
