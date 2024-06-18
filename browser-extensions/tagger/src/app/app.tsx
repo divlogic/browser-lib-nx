@@ -7,6 +7,7 @@ import { Tag } from '../tagger';
 import MainPage from './pages/main-page';
 import StylesPage from './pages/styles-page';
 import { StylesProvider } from './providers';
+import { styleModel } from './models';
 
 export function App() {
   const [tags, dispatch] = useReducer(tagsReducer, {

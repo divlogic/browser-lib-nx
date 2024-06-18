@@ -1,5 +1,12 @@
+import { styleModel } from '../models';
 import { HighlightStyle } from '../../schemas';
-import { Dispatch, PropsWithChildren, createContext, useReducer } from 'react';
+import {
+  Dispatch,
+  PropsWithChildren,
+  createContext,
+  useEffect,
+  useReducer,
+} from 'react';
 
 export const StylesContext = createContext<HighlightStyle[]>([]);
 export const StylesDispatchContext =
@@ -7,6 +14,13 @@ export const StylesDispatchContext =
 
 export function StylesProvider({ children }: PropsWithChildren) {
   const [styles, dispatch] = useReducer(stylesReducer, []);
+
+  useEffect(() => {
+    styleModel.get()?.then((styleModels) => {
+      console.log('styleModels: ', styleModels);
+      dispatch({ type: 'loaded', payload: styleModels });
+    });
+  }, []);
   return (
     <StylesContext.Provider value={styles}>
       <StylesDispatchContext.Provider value={dispatch}>
@@ -16,10 +30,17 @@ export function StylesProvider({ children }: PropsWithChildren) {
   );
 }
 
-export type StylesActions = {
-  type: 'added' | 'removed';
-  payload: HighlightStyle;
+export type StylesGroupActions = {
+  type: 'loaded';
+  payload: HighlightStyle[];
 };
+
+export type StylesActions =
+  | StylesGroupActions
+  | {
+      type: 'added' | 'removed';
+      payload: HighlightStyle;
+    };
 
 function stylesReducer(
   styles: HighlightStyle[],
@@ -32,5 +53,10 @@ function stylesReducer(
     case 'removed': {
       return styles.filter((style) => action.payload.name !== style.name);
     }
+    case 'loaded': {
+      return action.payload;
+    }
+    default:
+      throw Error('Unknown action: ' + action);
   }
 }

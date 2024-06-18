@@ -24,13 +24,10 @@ import { Dispatch, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StyleFormFields, StyleFormSchema } from '../schemas/style-schemas';
-import { Action } from '../app/tags-reducer';
-import { StylesDispatchContext, StylesActions } from '../app/providers';
+import { styleModel } from '../app/models';
 
 /* eslint-disable-next-line */
-export interface StyleFormProps {
-  dispatch: Dispatch<Action>;
-}
+export interface StyleFormProps {}
 
 const textSample = `Lorem ipsum dolor sit amet,
   consectetur adipiscing elit,
@@ -93,7 +90,8 @@ export function StyleForm(props: StyleFormProps) {
         <CardHeader>Add a Style</CardHeader>
         <CardBody>
           <form
-            onSubmit={handleSubmit((data) => {
+            onSubmit={handleSubmit(async (data) => {
+              const result = (await styleModel.add(data)) as number;
               dispatch({ type: 'added', payload: data });
             })}
           >

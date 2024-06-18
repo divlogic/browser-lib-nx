@@ -23,22 +23,26 @@ export function StyleList() {
       <Heading m="2">current styles</Heading>
       <UnorderedList>
         {styles.map((style: HighlightStyle, index) => {
-          const keys = Object.keys(
-            HighlightSchema.parse(style)
-          ) as (keyof HighlightStyle)[];
-          keys.forEach((key: keyof HighlightStyle) => {
-            const item = style[key];
-            if (Array.isArray(item)) {
-              style[key] = item.join(' ');
-            }
-          });
-          return (
-            <ListItem key={index}>
-              <Text {...style} width={'min-content'}>
-                {style.name}
-              </Text>
-            </ListItem>
-          );
+          const parsed = HighlightSchema.safeParse(style);
+          if (parsed.success === false) {
+            console.error('Unsuccessful parse for: ', parsed, parsed.error);
+            console.log('error data is: ', parsed.data);
+          } else {
+            const keys = Object.keys(parsed.data) as (keyof HighlightStyle)[];
+            keys.forEach((key: keyof HighlightStyle) => {
+              const item = style[key];
+              if (Array.isArray(item)) {
+                style[key] = item.join(' ');
+              }
+            });
+            return (
+              <ListItem key={index}>
+                <Text {...style} width={'min-content'}>
+                  {style.name}
+                </Text>
+              </ListItem>
+            );
+          }
         })}
       </UnorderedList>
     </Container>
