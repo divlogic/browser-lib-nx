@@ -22,6 +22,27 @@ export class TaggerDevPage {
     }
   }
 
+  async gotoStyleTab() {
+    console.log('Navigating to styles tab');
+    await this.goto();
+    let tagsTab = await this.page.getByRole('tab', {
+      name: 'styles',
+      selected: false,
+    });
+    await tagsTab.click();
+    tagsTab = this.page.getByRole('tab', {
+      name: 'styles',
+      selected: true,
+    });
+    const heading = this.page.getByRole('heading', {
+      name: 'styles',
+      exact: true,
+    });
+    const textColorInput = this.page.getByRole('textbox', {
+      name: 'Text Color',
+    });
+  }
+
   async addTag(tag: { text: string; color?: string }) {
     await this.page.getByLabel('Add tag:').click();
     await this.page.getByLabel('Add tag:').fill(tag.text);
