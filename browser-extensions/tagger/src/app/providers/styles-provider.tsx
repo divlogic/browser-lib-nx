@@ -17,8 +17,7 @@ export function StylesProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     styleModel.get()?.then((styleModels) => {
-      console.log('styleModels: ', styleModels);
-      dispatch({ type: 'loaded', payload: styleModels });
+      dispatch({ type: 'loaded', payload: styleModels || [] });
     });
   }, []);
   return (
