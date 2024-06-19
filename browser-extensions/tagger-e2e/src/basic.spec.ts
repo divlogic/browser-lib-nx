@@ -274,6 +274,11 @@ test.describe('This is a test', () => {
       name: 'testStyle',
       backgroundColor: 'orange',
       color: 'white',
+      textDecorationColor: '',
+      textDecorationLine: ['none'],
+      textDecorationStyle: '',
+      textDecorationThickness: '',
+      id: 0,
     });
   });
 
