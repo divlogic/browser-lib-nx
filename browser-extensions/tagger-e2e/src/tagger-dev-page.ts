@@ -26,20 +26,10 @@ export class TaggerDevPage {
   async gotoStyleTab() {
     console.log('Navigating to styles tab');
     await this.goto();
-    let tagsTab = await this.page.getByRole('tab', {
-      name: 'styles',
+    const stylesTab = this.page.getByRole('tab', {
+      name: 'Styles',
     });
-    await tagsTab.click();
-    tagsTab = this.page.getByRole('tab', {
-      name: 'styles',
-    });
-    const heading = this.page.getByRole('heading', {
-      name: 'styles',
-      exact: true,
-    });
-    const textColorInput = this.page.getByRole('textbox', {
-      name: 'Text Color',
-    });
+    await stylesTab.click();
   }
 
   async gotoTagsTab() {
