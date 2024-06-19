@@ -3,25 +3,19 @@ import * as ReactDOM from 'react-dom/client';
 
 import App from './app/app';
 import { Tag } from './tagger';
-import { TagModel } from './app/models/tag';
 import { theme } from './theme';
 import { ChakraProvider } from '@chakra-ui/react';
+import { RepositoryFactory } from './db';
+import { StyleModel, TagModel } from './app';
 
 async function initializeDB() {
-  let RepositoryClass;
-  let config;
-  let repository;
-  if (import.meta.env.MODE === 'development') {
-    RepositoryClass = (await import('./db/indexed-db-repository')).default;
-    config = { dbName: 'tagger', storeName: 'tags' };
-    repository = new RepositoryClass(config);
-  } else {
-    RepositoryClass = (await import('./db/browser-storage-repository')).default;
-    repository = new RepositoryClass();
-  }
-  await repository.initialize();
-  const tagModel = new TagModel(repository);
+  const tagRepository = await RepositoryFactory('tags');
+  const tagModel = new TagModel(tagRepository);
+
   window.tag = tagModel;
+
+  const styleRepository = await RepositoryFactory('styles');
+  window.styleModel = new StyleModel(styleRepository);
 }
 
 async function initializeReact() {
