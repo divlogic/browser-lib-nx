@@ -6,11 +6,6 @@ const expect = test.expect;
 
 const styleTagId = '#styled-by-tagger';
 
-declare const window: {
-  tag: TagModel;
-  styleModel: StyleModel;
-};
-
 // This might change from time to time in the early stages.
 test.describe('This is a test', () => {
   test('Example test', async ({ page, tagger }) => {
@@ -18,7 +13,7 @@ test.describe('This is a test', () => {
     await expect(page).toHaveTitle('Tagger');
   });
 
-  test('Can add tags', async ({ tagger, page }) => {
+  test('Can add tags', async ({ tagger }) => {
     await tagger.goto();
     await tagger.addTag({ text: 'test' });
 
@@ -257,27 +252,39 @@ test.describe('This is a test', () => {
       name: 'testStyle',
       backgroundColor: 'orange',
       color: 'white',
+      textDecorationStyle: 'wavy',
+      textDecorationLine: ['underline', 'overline'],
+      textDecorationColor: 'green',
+      textDecorationThickness: '1em',
     });
 
     const tags = await page.evaluate(async () => {
-      return await window.tag.get();
+      if ('tag' in window) {
+        return await (window.tag as TagModel).get();
+      } else {
+        throw new Error('tag not in window');
+      }
     });
 
     expect(tags.length).toBe(1);
     expect(tags[0]).toEqual({ text: 'testTag', color: 'yellow', id: 0 });
 
     const styles = await page.evaluate(async () => {
-      return await window.styleModel.get();
+      if ('styleModel' in window) {
+        return await (window.styleModel as StyleModel).get();
+      } else {
+        throw new Error('styleModel not in window');
+      }
     });
     expect(styles.length).toBe(1);
     expect(styles[0]).toEqual({
       name: 'testStyle',
       backgroundColor: 'orange',
       color: 'white',
-      textDecorationColor: '',
-      textDecorationLine: ['none'],
-      textDecorationStyle: '',
-      textDecorationThickness: '',
+      textDecorationStyle: 'wavy',
+      textDecorationLine: ['underline', 'overline'],
+      textDecorationColor: 'green',
+      textDecorationThickness: '1em',
       id: 0,
     });
   });
