@@ -1,8 +1,9 @@
 import { Repository } from './repository';
 
 export abstract class StoreModel<T> {
-  private static repositoryCache: Repository;
-  abstract key: string;
+  protected static repositoryCache: Repository;
+  public static key: string;
+  ['constructor']!: typeof StoreModel;
 
   /**
    *
@@ -10,12 +11,16 @@ export abstract class StoreModel<T> {
    */
   constructor(repository?: Repository) {
     if (typeof repository !== 'undefined') {
-      StoreModel.repositoryCache = repository;
+      this.constructor.repositoryCache = repository;
     }
   }
 
+  get key() {
+    return this.constructor.key;
+  }
+
   get repository() {
-    return StoreModel.repositoryCache;
+    return this.constructor.repositoryCache;
   }
 
   async get(): Promise<T[] | null> {
