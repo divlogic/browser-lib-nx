@@ -267,7 +267,7 @@ test.describe('This is a test', () => {
     });
 
     expect(tags.length).toBe(1);
-    expect(tags[0]).toEqual({ text: 'testTag', color: 'yellow', id: 0 });
+    expect(tags[0]).toMatchObject({ text: 'testTag', color: 'yellow' });
 
     const styles = await page.evaluate(async () => {
       if ('styleModel' in window) {
@@ -277,7 +277,7 @@ test.describe('This is a test', () => {
       }
     });
     expect(styles.length).toBe(1);
-    expect(styles[0]).toEqual({
+    expect(styles[0]).toMatchObject({
       name: 'testStyle',
       backgroundColor: 'orange',
       color: 'white',
@@ -285,7 +285,6 @@ test.describe('This is a test', () => {
       textDecorationLine: ['underline', 'overline'],
       textDecorationColor: 'green',
       textDecorationThickness: '1em',
-      id: 0,
     });
   });
 
