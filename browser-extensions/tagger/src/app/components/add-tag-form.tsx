@@ -10,15 +10,18 @@ import {
   FormLabel,
   HStack,
   Input,
+  Select,
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { Dispatch, useMemo } from 'react';
+import { Dispatch, useContext, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Action } from '../tags-reducer';
 import { tag } from '../models/tag';
+import { StylesContext } from '../providers';
 type Inputs = {
   text: string;
+  style: string;
   color: string;
 };
 function getRandomArbitrary(min: number, max: number) {
@@ -26,6 +29,7 @@ function getRandomArbitrary(min: number, max: number) {
 }
 
 export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
+  const styles = useContext(StylesContext);
   const dispatch = props.dispatcher;
   const defaultColor = useMemo(() => {
     const bgColor = new Color('hsl', [
@@ -76,6 +80,18 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
                 <Spacer></Spacer>
               </Flex>
             </FormControl>
+            <FormControl>
+              <FormLabel>Pick a style:</FormLabel>
+              <Select placeholder="placeholder">
+                {styles.map((style) => {
+                  return <option value={style.name}>{style.name}</option>;
+                })}
+              </Select>
+              <Flex m={2}>
+                <Spacer></Spacer>
+              </Flex>
+            </FormControl>
+
             <FormControl>
               <FormLabel>Pick a color:</FormLabel>
               <Input type="text" {...register('color')}></Input>
