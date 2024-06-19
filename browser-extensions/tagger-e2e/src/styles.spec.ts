@@ -61,4 +61,32 @@ test.describe('This is a test', () => {
 
     await expect(page.getByText('test Name').first()).toBeVisible();
   });
+
+  test('styles are an option for tags', async ({ page, tagger }) => {
+    const nameInput = page.getByRole('textbox', {
+      name: 'Name of the style',
+    });
+    await nameInput.fill('test Name');
+    const textColorInput = page.getByRole('textbox', {
+      name: 'Text Color',
+    });
+    textColorInput.fill('white');
+    const highlightColorInput = page.getByRole('textbox', {
+      name: 'Highlight Color',
+    });
+    highlightColorInput.fill('orange');
+    const saveButton = page.getByRole('button', { name: 'Save' });
+    await saveButton.click();
+    await expect(page.getByText('test Name').first()).toBeAttached();
+    await page.reload();
+    await tagger.gotoStyleTab();
+    await expect(page.getByText('test Name').first()).toBeAttached();
+
+    await tagger.gotoTagsTab();
+
+    const styleOptions = page.getByLabel('Pick a style:');
+    await expect(styleOptions).toBeVisible();
+    styleOptions.selectOption('test Name');
+    await expect(styleOptions).toHaveValue('test Name');
+  });
 });
