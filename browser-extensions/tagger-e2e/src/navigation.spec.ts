@@ -35,7 +35,7 @@ test.describe('There should be some basic navigation tools', () => {
       selected: true,
     });
     await expect(tagsTab).toBeVisible();
-    const heading = page.getByRole('heading', { name: 'styles' });
+    const heading = page.getByRole('heading', { name: 'styles', exact: true });
     await expect(heading).toBeVisible();
     const textColorInput = page.getByRole('textbox', { name: 'Text Color' });
     await expect(textColorInput).toBeVisible();
