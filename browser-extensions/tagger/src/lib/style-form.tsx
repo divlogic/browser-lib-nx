@@ -71,7 +71,6 @@ export function StyleForm(props: StyleFormProps) {
     },
     resolver: zodResolver(StyleFormSchema),
   });
-  console.log('Errors is: ', errors);
 
   const randomWords = pickRandomWords(textSample);
 
@@ -80,8 +79,6 @@ export function StyleForm(props: StyleFormProps) {
   const tags = randomWords.map((word, index) => {
     return { text: word, style: style };
   });
-  console.log('style is: ', style);
-  console.log('textDecorationThickness', style.textDecorationThickness);
   useEffect(() => {
     Tag(tags);
   });
@@ -134,12 +131,7 @@ export function StyleForm(props: StyleFormProps) {
                   <Checkbox
                     textDecorationLine={'none'}
                     value="none"
-                    {...register('textDecorationLine', {
-                      setValueAs(value) {
-                        console.log('underline value is: ', value);
-                        return value;
-                      },
-                    })}
+                    {...register('textDecorationLine')}
                   >
                     none
                   </Checkbox>
@@ -147,12 +139,7 @@ export function StyleForm(props: StyleFormProps) {
                     textDecorationLine={'underline'}
                     textDecorationThickness={style.textDecorationThickness}
                     value="underline"
-                    {...register('textDecorationLine', {
-                      setValueAs(value) {
-                        console.log('underline value is: ', value);
-                        return value;
-                      },
-                    })}
+                    {...register('textDecorationLine')}
                   >
                     underline
                   </Checkbox>
@@ -160,12 +147,7 @@ export function StyleForm(props: StyleFormProps) {
                     value="overline"
                     textDecorationLine={'overline'}
                     textDecorationThickness={style.textDecorationThickness}
-                    {...register('textDecorationLine', {
-                      setValueAs(value) {
-                        console.log('overline value is: ', value);
-                        return value;
-                      },
-                    })}
+                    {...register('textDecorationLine')}
                   >
                     overline
                   </Checkbox>
@@ -173,12 +155,7 @@ export function StyleForm(props: StyleFormProps) {
                     textDecorationLine={'line-through'}
                     textDecorationThickness={style.textDecorationThickness}
                     value="line-through"
-                    {...register('textDecorationLine', {
-                      setValueAs(value) {
-                        console.log('underline value is: ', value);
-                        return value;
-                      },
-                    })}
+                    {...register('textDecorationLine')}
                   >
                     line-through
                   </Checkbox>
