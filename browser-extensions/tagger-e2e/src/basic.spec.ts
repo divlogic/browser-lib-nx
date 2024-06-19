@@ -1,9 +1,15 @@
+import { StyleModel, TagModel } from '@browser-lib-nx/tagger';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 
 const expect = test.expect;
 
 const styleTagId = '#styled-by-tagger';
+
+declare const window: {
+  tag: TagModel;
+  styleModel: StyleModel;
+};
 
 // This might change from time to time in the early stages.
 test.describe('This is a test', () => {
@@ -241,6 +247,34 @@ test.describe('This is a test', () => {
     await colorLocator.fill('');
     await colorLocator.press('Enter');
     await expect(page.getByText('The color field is required.')).toBeVisible();
+  });
+
+  test('tags and styles use separate stores', async ({ tagger, page }) => {
+    await tagger.goto();
+    await tagger.addTag({ text: 'testTag', color: 'yellow' });
+
+    await tagger.addStyle({
+      name: 'testStyle',
+      backgroundColor: 'orange',
+      color: 'white',
+    });
+
+    const tags = await page.evaluate(async () => {
+      return await window.tag.get();
+    });
+
+    expect(tags.length).toBe(1);
+    expect(tags[0]).toEqual({ text: 'testTag', color: 'yellow', id: 0 });
+
+    const styles = await page.evaluate(async () => {
+      return await window.styleModel.get();
+    });
+    expect(styles.length).toBe(1);
+    expect(styles[0]).toEqual({
+      name: 'testStyle',
+      backgroundColor: 'orange',
+      color: 'white',
+    });
   });
 
   /**
