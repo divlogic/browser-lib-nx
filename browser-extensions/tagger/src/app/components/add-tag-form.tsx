@@ -1,4 +1,3 @@
-import Color from 'colorjs.io';
 import {
   Button,
   Card,
@@ -14,32 +13,20 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { Dispatch, useContext, useMemo } from 'react';
+import { Dispatch, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Action } from '../tags-reducer';
 import { tag } from '../models/tag';
 import { StylesContext } from '../providers';
+
 type Inputs = {
   text: string;
   style: string;
-  color: string;
 };
-function getRandomArbitrary(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
 
 export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
   const styles = useContext(StylesContext);
   const dispatch = props.dispatcher;
-  const defaultColor = useMemo(() => {
-    const bgColor = new Color('hsl', [
-      getRandomArbitrary(0, 360),
-      getRandomArbitrary(0, 100),
-      getRandomArbitrary(0, 100),
-    ]);
-    const bgColorString = bgColor.toString();
-    return bgColorString;
-  }, []);
 
   const {
     register,
@@ -50,12 +37,11 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
   } = useForm<Inputs>({
     defaultValues: {
       text: '',
-      color: defaultColor,
     },
   });
   const onSubmit: SubmitHandler<Inputs> = async (data: {
     text: string;
-    color?: string;
+    style?: string;
   }) => {
     const result = (await tag.add(data)) as number;
     dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
@@ -82,7 +68,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
             </FormControl>
             <FormControl>
               <FormLabel>Pick a style:</FormLabel>
-              <Select placeholder="placeholder">
+              <Select placeholder="placeholder" {...register('style')}>
                 {styles.map((style) => {
                   return <option value={style.name}>{style.name}</option>;
                 })}
@@ -92,13 +78,6 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
               </Flex>
             </FormControl>
 
-            <FormControl>
-              <FormLabel>Pick a color:</FormLabel>
-              <Input type="text" {...register('color')}></Input>
-              <Flex m={2}>
-                <Spacer></Spacer>
-              </Flex>
-            </FormControl>
             <HStack justify={'start'}>
               <Button bgColor="green.300" type="submit">
                 Add
@@ -106,7 +85,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
               <Container>
                 <HStack justify={'center'}>
                   <Text>Example: </Text>
-                  <Text bgColor={watch('color')}>{watch('text')}</Text>
+                  <Text>{watch('text')}</Text>
                 </HStack>
               </Container>
             </HStack>

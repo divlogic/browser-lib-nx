@@ -72,13 +72,7 @@ export function Tag(tags: TagType[]) {
   } else {
     console.error('CSS custom highlights API not available');
   }
-  let css: string;
-  css = `
-    ::highlight(search-results) {
-      background-color: ${tags[0]?.color || 'yellow'};
-      color: white;
-    }
-    `;
+  let css = '';
   if (tags[0] && tags[0].style) {
     const style = tags[0].style;
 
@@ -86,7 +80,7 @@ export function Tag(tags: TagType[]) {
     ::highlight(search-results) {`;
 
     Object.keys(style).forEach((key) => {
-      if (key in style) {
+      if (typeof style === 'object' && key in style) {
         css += `${unCamelize(key)}: ${style[key as keyof HighlightStyle]};\n`;
       }
     });
