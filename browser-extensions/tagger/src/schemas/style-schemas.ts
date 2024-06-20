@@ -16,7 +16,7 @@ export const TextDecorationLineSchema = z.optional(
 );
 
 export const HighlightCommon = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   color: z.string().optional(),
   backgroundColor: z.string(),
   textShadow: z.string().optional(),
