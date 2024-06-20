@@ -1,4 +1,4 @@
-import { TagType } from './app/tags-reducer';
+import { TagSchema, TagType } from './schemas/tag-schemas';
 import { HighlightStyle } from './schemas/style-schemas';
 
 function unCamelize(str: string) {
@@ -6,7 +6,7 @@ function unCamelize(str: string) {
     return '-' + word.toLowerCase();
   });
 }
-export function Tag(tags: (TagType & { style?: HighlightStyle })[]) {
+export function Tag(tags: TagType[]) {
   if (typeof CSS.highlights !== 'undefined') {
     const body = document.getElementsByTagName('body')[0];
     const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
@@ -24,6 +24,13 @@ export function Tag(tags: (TagType & { style?: HighlightStyle })[]) {
 
     const rangesToHighlight: Range[] = [];
     tags.forEach((tag) => {
+      try {
+        TagSchema.parse(tag);
+      } catch (e) {
+        console.log('Errored tag: ', tag);
+        console.error(e);
+      }
+
       const testStr = tag.text.toLowerCase();
       const ranges = allTextNodes
         .map((el) => {
