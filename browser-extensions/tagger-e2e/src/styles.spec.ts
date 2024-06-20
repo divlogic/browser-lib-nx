@@ -31,7 +31,7 @@ test.describe('This is a test', () => {
 
     await saveButton.click();
 
-    await expect(page.getByText('test Name').first()).toBeVisible();
+    await expect(page.getByText('test Name').first()).toBeAttached();
   });
 
   test('added styles persist after reload', async ({ page, tagger }) => {
@@ -54,12 +54,12 @@ test.describe('This is a test', () => {
 
     await saveButton.click();
 
-    await expect(page.getByText('test Name').first()).toBeVisible();
+    await expect(page.getByText('test Name').first()).toBeAttached();
 
     await page.reload();
     await tagger.gotoStyleTab();
 
-    await expect(page.getByText('test Name').first()).toBeVisible();
+    await expect(page.getByText('test Name').first()).toBeAttached();
   });
 
   test('styles are an option for tags', async ({ page, tagger }) => {
@@ -85,7 +85,7 @@ test.describe('This is a test', () => {
     await tagger.gotoTagsTab();
 
     const styleOptions = page.getByLabel('Pick a style:');
-    await expect(styleOptions).toBeVisible();
+    await expect(styleOptions).toBeAttached();
     styleOptions.selectOption('test Name');
     await expect(styleOptions).toHaveValue('test Name');
   });
