@@ -1,8 +1,4 @@
-export type TagType = {
-  id?: number;
-  text: string;
-  color?: string;
-};
+import { TagType } from '../schemas/tag-schemas';
 
 export type TagState = {
   loaded: boolean;

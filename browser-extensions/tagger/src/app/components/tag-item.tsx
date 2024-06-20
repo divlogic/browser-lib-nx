@@ -1,5 +1,6 @@
 import { Dispatch, useState } from 'react';
-import { Action, TagType } from '../tags-reducer';
+import { Action } from '../tags-reducer';
+import { TagType } from '../../schemas/tag-schemas';
 import {
   Container,
   FormControl,

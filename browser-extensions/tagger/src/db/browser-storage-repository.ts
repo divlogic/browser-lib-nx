@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { TagType } from '../app/tags-reducer';
 import { Repository } from './repository';
 
 type HasId = unknown & {
@@ -28,7 +27,7 @@ export default class BrowserStorageRepository extends Repository {
      *
      * These repository classes need more work as an API.
      */
-    items.map((item: TagType, index: number) => {
+    items.map((item: { [key: string]: unknown }, index: number) => {
       item.id = index;
       return item;
     });
