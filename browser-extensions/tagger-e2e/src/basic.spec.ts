@@ -60,6 +60,7 @@ test.describe('This is a test', () => {
       });
 
       await initialTagger.goto();
+      await initialTagger.addStyle();
       await initialTagger.addTag({ text: testString });
 
       await expect(page.getByText(testString).first()).toBeVisible();
@@ -162,8 +163,9 @@ test.describe('This is a test', () => {
 
   test('Added tags add a specific style tag', async ({ page, tagger }) => {
     await tagger.goto();
-
+    await tagger.addStyle();
     await tagger.addTag({ text: 'testing' });
+
     await expect(page.locator(styleTagId)).toHaveCount(1);
     const tagName = await page.locator(styleTagId).evaluate((item) => {
       return item.tagName;
@@ -173,16 +175,24 @@ test.describe('This is a test', () => {
 
   test('Can add tags with color', async ({ page, tagger }) => {
     await tagger.goto();
-    const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
+    await tagger.addStyle();
+    const tag = { text: 'test' };
     await tagger.addTag(tag);
 
     const highlights = await tagger.getHighlightRegistryTextContents();
     await expect(page.locator(styleTagId)).toHaveCount(1);
 
     expect(highlights).toContain('test');
-    await expect(page.getByText('test')).toHaveCount(1);
     await expect(page.locator(styleTagId)).toContainText(
-      `background-color: ${tag.color};`,
+      `background-color: ${tagger.defaults.style.backgroundColor};`,
+      {
+        ignoreCase: true,
+        useInnerText: true,
+      }
+    );
+
+    await expect(page.locator(styleTagId)).toContainText(
+      `color: ${tagger.defaults.style.color};`,
       {
         ignoreCase: true,
         useInnerText: true,
