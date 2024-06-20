@@ -8,6 +8,11 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { RepositoryFactory } from './db';
 import { StyleModel, TagModel } from './app';
 
+declare const window: {
+  tag: TagModel;
+  styleModel: StyleModel;
+};
+
 async function initializeDB() {
   const tagRepository = await RepositoryFactory('tags');
   const tagModel = new TagModel(tagRepository);
@@ -34,7 +39,22 @@ async function initializeReact() {
   }
 }
 async function initializeContentScript() {
-  const tags = await new TagModel().get();
+  let tags = await new TagModel().get();
+  const styles = await new StyleModel().get();
+  if (Array.isArray(tags)) {
+    tags = tags.map((tag) => {
+      const style = styles?.find((style) => {
+        return style.name === tag.style;
+      });
+      if (style) {
+        tag.style = style;
+      }
+
+      return tag;
+    });
+  }
+  console.log('tags is: ', tags);
+
   try {
     if (Array.isArray(tags)) {
       Tag(tags);
