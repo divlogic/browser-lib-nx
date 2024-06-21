@@ -16,7 +16,7 @@ import {
 import { Dispatch, useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Action } from '../tags-reducer';
-import { tag } from '../models/tag';
+import { tagModel } from '../models/tag';
 import { StylesContext } from '../providers';
 
 type Inputs = {

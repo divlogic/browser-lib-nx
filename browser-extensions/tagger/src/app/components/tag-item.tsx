@@ -9,7 +9,7 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { tag } from '../models/tag';
+import { tagModel } from '../models/tag';
 import EditTagForm from './edit-tag-form';
 
 /* eslint-disable-next-line */

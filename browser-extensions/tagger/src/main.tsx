@@ -9,7 +9,7 @@ import { RepositoryFactory } from './db';
 import { StyleModel, TagModel } from './app';
 
 declare const window: {
-  tag: TagModel;
+  tagModel: TagModel;
   styleModel: StyleModel;
 };
 
@@ -17,7 +17,7 @@ async function initializeDB() {
   const tagRepository = await RepositoryFactory('tags');
   const tagModel = new TagModel(tagRepository);
 
-  window.tag = tagModel;
+  window.tagModel = tagModel;
 
   const styleRepository = await RepositoryFactory('styles');
   window.styleModel = new StyleModel(styleRepository);
@@ -53,7 +53,6 @@ async function initializeContentScript() {
       return tag;
     });
   }
-  console.log('tags is: ', tags);
 
   try {
     if (Array.isArray(tags)) {

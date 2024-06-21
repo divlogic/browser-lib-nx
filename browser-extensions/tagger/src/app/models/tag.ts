@@ -5,4 +5,4 @@ export class TagModel extends StoreModel<TagType> {
   ['constructor']!: typeof TagModel & typeof StoreModel;
 }
 
-export const tag = new TagModel();
+export const tagModel = new TagModel();

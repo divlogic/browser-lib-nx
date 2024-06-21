@@ -2,7 +2,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useEffect, useReducer } from 'react';
 import { tagsReducer } from './tags-reducer';
-import { tag } from './models/tag';
 import { Tag } from '../tagger';
 import MainPage from './pages/main-page';
 import StylesPage from './pages/styles-page';
