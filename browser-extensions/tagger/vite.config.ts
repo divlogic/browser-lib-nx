@@ -1,8 +1,10 @@
 /// <reference types='vitest' />
-import { defineConfig } from 'vite';
+import { PluginOption, defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import { exec } from 'child_process';
+import path from 'path';
+import fs from 'fs';
 
 function postBuild() {
   return {
@@ -14,6 +16,22 @@ function postBuild() {
     },
   };
 }
+
+function manifestJSON(): PluginOption {
+  let isWatching = false;
+  return {
+    name: 'manifest-json',
+    buildStart() {
+      if (!isWatching) {
+        const absPackagePath = path.resolve('public', 'manifest.json');
+        const realPackagePath = fs.realpathSync(absPackagePath);
+        this.addWatchFile(realPackagePath);
+        isWatching = true;
+      }
+    },
+  };
+}
+
 export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/tagger',
@@ -27,7 +45,7 @@ export default defineConfig({
     host: 'localhost',
   },
 
-  plugins: [react(), nxViteTsPaths(), postBuild()],
+  plugins: [react(), nxViteTsPaths(), postBuild(), manifestJSON()],
 
   // Uncomment this if you are using workers.
   // worker: {
@@ -41,6 +59,7 @@ export default defineConfig({
     commonjsOptions: {
       transformMixedEsModules: true,
     },
+
     rollupOptions: {
       output: {
         entryFileNames: 'main.js',
