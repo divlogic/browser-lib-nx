@@ -21,7 +21,7 @@ import { StylesContext } from '../providers';
 
 type Inputs = {
   text: string;
-  style: string;
+  style_name: string;
 };
 
 export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
@@ -41,9 +41,9 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
   });
   const onSubmit: SubmitHandler<Inputs> = async (data: {
     text: string;
-    style?: string;
+    style_name: string;
   }) => {
-    const result = (await tag.add(data)) as number;
+    const result = (await tagModel.add(data)) as number;
     dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
     reset();
   };
@@ -68,9 +68,13 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
             </FormControl>
             <FormControl>
               <FormLabel>Pick a style:</FormLabel>
-              <Select placeholder="placeholder" {...register('style')}>
-                {styles.map((style) => {
-                  return <option value={style.name}>{style.name}</option>;
+              <Select placeholder="placeholder" {...register('style_name')}>
+                {styles.map((style, index) => {
+                  return (
+                    <option key={index} value={style.name}>
+                      {style.name}
+                    </option>
+                  );
                 })}
               </Select>
               <Flex m={2}>

@@ -1,6 +1,6 @@
 import { Dispatch } from 'react';
 import { Action } from '../tags-reducer';
-import { TagType } from '../../schemas/tag-schemas';
+import { TagModelType } from '../../schemas/tag-schemas';
 import {
   Button,
   Card,
@@ -17,13 +17,13 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { TagModel } from '../models/tag';
+import { Tag } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
-  tag: TagType;
+  tag: TagModelType;
   dispatch: Dispatch<Action>;
 }
 
@@ -41,13 +41,13 @@ export function EditTagForm(props: EditTagFormProps) {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const model = new TagModel();
+    const model = new Tag();
 
-    const updatedTag = { ...tag, color: data.color };
-    await model.update(updatedTag);
+    const updatedTagModel = { ...tag, color: data.color };
+    await model.update(updatedTagModel);
     dispatch({
       type: 'edited',
-      payload: { data: updatedTag },
+      payload: { data: updatedTagModel },
     });
     reset();
   };

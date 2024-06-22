@@ -2,25 +2,23 @@ import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
 import App from './app/app';
-import { Tag } from './tagger';
+import { HighlightTags } from './tagger';
 import { theme } from './theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import { RepositoryFactory } from './db';
-import { StyleModel, TagModel } from './app';
+import { Style, Tag } from './app';
 
 declare const window: {
-  tagModel: TagModel;
-  styleModel: StyleModel;
+  tagModel: Tag;
+  styleModel: Style;
 };
 
 async function initializeDB() {
   const tagRepository = await RepositoryFactory('tags');
-  const tagModel = new TagModel(tagRepository);
-
-  window.tagModel = tagModel;
-
+  const tagModel = new Tag(tagRepository);
   const styleRepository = await RepositoryFactory('styles');
-  window.styleModel = new StyleModel(styleRepository);
+  window.styleModel = new Style(styleRepository);
+  window.tagModel = tagModel;
 }
 
 async function initializeReact() {
@@ -39,8 +37,8 @@ async function initializeReact() {
   }
 }
 async function initializeContentScript() {
-  let tags = await new TagModel().get();
-  const styles = await new StyleModel().get();
+  let tags = await new Tag().get();
+  const styles = await new Style().get();
   if (Array.isArray(tags)) {
     tags = tags.map((tag) => {
       const style = styles?.find((style) => {
@@ -56,7 +54,7 @@ async function initializeContentScript() {
 
   try {
     if (Array.isArray(tags)) {
-      Tag(tags);
+      HighlightTags(tags);
     }
   } catch (e) {
     console.error(e);

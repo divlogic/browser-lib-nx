@@ -2,7 +2,8 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import { useEffect, useReducer } from 'react';
 import { tagsReducer } from './tags-reducer';
-import { Tag } from '../tagger';
+import { HighlightTags } from '../tagger';
+import { tagModel } from './models';
 import MainPage from './pages/main-page';
 import StylesPage from './pages/styles-page';
 import { StylesProvider } from './providers';
@@ -14,14 +15,14 @@ export function App() {
   });
 
   useEffect(() => {
-    tag.get()?.then((tags) => {
+    tagModel.get()?.then((tags) => {
       dispatch({ type: 'loaded', payload: { data: tags || [] } });
     });
   }, []);
 
   useEffect(() => {
     try {
-      Tag(tags.data);
+      HighlightTags(tags.data);
     } catch (e) {
       // console.error(e);
     }

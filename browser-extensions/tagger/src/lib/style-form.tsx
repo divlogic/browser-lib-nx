@@ -1,4 +1,4 @@
-import { Tag } from '../tagger';
+import { HighlightTags } from '../tagger';
 import {
   Button,
   Card,
@@ -80,7 +80,7 @@ export function StyleForm(props: StyleFormProps) {
     return { text: word, style: style };
   });
   useEffect(() => {
-    Tag(tags);
+    HighlightTags(tags);
   });
   return (
     <Container>
