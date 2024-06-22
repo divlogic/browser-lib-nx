@@ -5,6 +5,13 @@ export class TaggerDevPage {
   readonly page: Page;
   readonly extensionId?: string | null;
   readonly storage: 'indexeddb' | 'browser.storage.local';
+  readonly defaults = {
+    style: {
+      name: 'defaultTestStyle',
+      color: 'white',
+      backgroundColor: '#a32929',
+    },
+  };
   constructor(config: {
     page: Page;
     extensionId?: string;
@@ -24,7 +31,6 @@ export class TaggerDevPage {
   }
 
   async gotoStyleTab() {
-    console.log('Navigating to styles tab');
     await this.goto();
     const stylesTab = this.page.getByRole('tab', {
       name: 'Styles',
@@ -51,58 +57,53 @@ export class TaggerDevPage {
     });
   }
 
-  async addTag(tag: { text: string; color?: string }) {
+  async addTag({ text = 'defaultTestTag', style = 'defaultTestStyle' }) {
     await this.gotoTagsTab();
     await this.page.getByLabel('Add tag:').click();
-    await this.page.getByLabel('Add tag:').fill(tag.text);
+    await this.page.getByLabel('Add tag:').fill(text);
 
-    if (typeof tag.color === 'string') {
-      await this.page.getByLabel('Pick a color:').click();
-      await this.page.getByLabel('Pick a color').fill(tag.color);
-    }
+    const styleOptions = this.page.getByLabel('Pick a style:');
+    styleOptions.selectOption(style);
     await this.page.getByLabel('Add tag:').press('Enter');
   }
 
-  async addStyle(props: HighlightStyle) {
+  async addStyle(style: HighlightStyle = this.defaults.style) {
     await this.gotoStyleTab();
 
     await this.page.getByLabel('Name of the style:').click();
-    await this.page.getByLabel('Name of the style:').fill(props.name);
+    await this.page.getByLabel('Name of the style:').fill(style.name);
 
-    if (typeof props.color === 'string') {
-      await this.page.getByLabel('Text Color').click();
-      await this.page.getByLabel('Text Color').fill(props.color);
-    }
-    if (typeof props.backgroundColor === 'string') {
-      await this.page.getByLabel('Highlight Color').click();
-      await this.page.getByLabel('Highlight Color').fill(props.backgroundColor);
-    }
+    await this.page.getByLabel('Text Color').click();
+    await this.page.getByLabel('Text Color').fill(style.color);
 
-    if ('textDecorationLine' in props) {
-      for (const item of props.textDecorationLine) {
+    await this.page.getByLabel('Highlight Color').click();
+    await this.page.getByLabel('Highlight Color').fill(style.backgroundColor);
+
+    if ('textDecorationLine' in style) {
+      for (const item of style.textDecorationLine) {
         await this.page
           .getByLabel(item, { exact: false })
           .check({ timeout: 3000, force: true });
       }
     }
 
-    if ('textDecorationStyle' in props) {
+    if ('textDecorationStyle' in style) {
       await this.page
-        .getByLabel(props.textDecorationStyle, { exact: false })
+        .getByLabel(style.textDecorationStyle, { exact: false })
         .click({ timeout: 3000, force: true });
     }
 
-    if ('textDecorationThickness' in props) {
+    if ('textDecorationThickness' in style) {
       await this.page.getByLabel('Text Decoration Thickness').click();
       await this.page
         .getByLabel('Text Decoration Thickness')
-        .fill(props.textDecorationThickness);
+        .fill(style.textDecorationThickness);
     }
-    if ('textDecorationColor' in props) {
+    if ('textDecorationColor' in style) {
       await this.page.getByLabel('Text Decoration Color').click();
       await this.page
         .getByLabel('Text Decoration Color')
-        .fill(props.textDecorationColor);
+        .fill(style.textDecorationColor);
     }
 
     await this.page.getByRole('button', { name: 'Save' }).click();
