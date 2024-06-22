@@ -6,7 +6,7 @@ function unCamelize(str: string) {
     return '-' + word.toLowerCase();
   });
 }
-export function Tag(tags: TagType[]) {
+export function HighlightTags(tags: TagType[]) {
   if (typeof CSS.highlights !== 'undefined') {
     const body = document.getElementsByTagName('body')[0];
     const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
