@@ -33,7 +33,11 @@ export abstract class StoreModel<T> {
   }
 
   async set(values: T[]) {
-    return this.repository.set(this.key, values);
+    if ('set' in this.repository) {
+      return this.repository.set(this.key, values);
+    } else {
+      throw new Error('function not yet supported by repository');
+    }
   }
 
   async add(item: T) {
