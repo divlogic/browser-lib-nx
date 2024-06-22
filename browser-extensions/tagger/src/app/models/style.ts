@@ -1,8 +1,8 @@
 import { StoreModel } from '../../db/store-model';
 import { HighlightStyle } from '../../schemas';
-export class StyleModel extends StoreModel<HighlightStyle> {
-  ['constructor']!: typeof StyleModel & typeof StoreModel;
-  public static key = 'styles';
+export class Style extends StoreModel<HighlightStyle> {
+  ['constructor']!: typeof Style & typeof StoreModel;
+  public static key = 'style';
 }
 
-export const styleModel = new StyleModel();
+export const styleModel = new Style();
