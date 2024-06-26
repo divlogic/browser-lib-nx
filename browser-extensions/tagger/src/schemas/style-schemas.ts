@@ -16,7 +16,12 @@ export const TextDecorationLineSchema = z.optional(
 );
 
 export const HighlightCommon = z.object({
-  name: z.string().optional(),
+  name: z
+    .string()
+    .regex(
+      /^[-_a-zA-Z0-9]+$/,
+      'The style name must be limited to letters, numbers, underscores and hyphens.'
+    ),
   color: z.string().optional(),
   backgroundColor: z.string(),
   textShadow: z.string().optional(),
@@ -42,7 +47,7 @@ export const HighlightGranular = HighlightCommon.extend({
 
 export type HighlightGranularStyle = z.infer<typeof HighlightGranular>;
 
-export const StyleFormSchema = HighlightGranular.extend({ name: z.string() });
+export const StyleFormSchema = HighlightGranular;
 
 export type StyleFormFields = z.infer<typeof StyleFormSchema>;
 
