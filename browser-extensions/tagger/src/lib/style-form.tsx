@@ -76,12 +76,6 @@ export function StyleForm(props: StyleFormProps) {
 
   const style = watch();
 
-  const tags = randomWords.map((word, index) => {
-    return { text: word, style: style };
-  });
-  useEffect(() => {
-    HighlightTags(tags);
-  });
   return (
     <Container>
       <Card>
