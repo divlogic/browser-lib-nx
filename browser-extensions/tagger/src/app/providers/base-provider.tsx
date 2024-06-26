@@ -2,10 +2,10 @@ import {
   Dispatch,
   PropsWithChildren,
   createContext,
+  useContext,
   useEffect,
   useReducer,
 } from 'react';
-import { HighlightStyle } from '../../schemas';
 import { StoreModel } from '../../db';
 
 type BaseArrayGroupActions<T> = {
@@ -45,11 +45,13 @@ function generateContext<T>() {
   return BaseArrayContext;
 }
 
-export function generateBaseArrayProvider<T>(model: typeof StoreModel<T>) {
+export type BaseArrayDispatch<T> = Dispatch<BaseArrayActions<T>>;
+
+export function generateBaseArrayProvider<T>(model: StoreModel<T>) {
   const ArrayContext = generateContext<T>();
-  const BaseArrayDispatchContext = createContext<Dispatch<
-    BaseArrayActions<T>
-  > | null>(null);
+  const BaseArrayDispatchContext = createContext<BaseArrayDispatch<T> | null>(
+    null
+  );
   return {
     provider: function BaseArrayProvider({ children }: PropsWithChildren) {
       const [items, dispatch] = useReducer(BaseArrayReducer<T>, []);
@@ -67,7 +69,18 @@ export function generateBaseArrayProvider<T>(model: typeof StoreModel<T>) {
         </ArrayContext.Provider>
       );
     },
-    itemContext: ArrayContext,
-    dispatchContext: BaseArrayDispatchContext,
+    useArrayDispatch: function useArrayDispatch(): Dispatch<
+      BaseArrayActions<T>
+    > {
+      const dispatch = useContext(BaseArrayDispatchContext);
+      if (dispatch === null) {
+        throw new Error('Dispatch not defined');
+      }
+
+      return dispatch;
+    },
+    useArrayData: function useArrayData() {
+      return useContext(ArrayContext);
+    },
   };
 }
