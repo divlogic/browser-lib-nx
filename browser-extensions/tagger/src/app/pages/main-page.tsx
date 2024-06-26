@@ -3,12 +3,9 @@ import { AddTagForm } from '../components/add-tag-form';
 import TagList from '../components/tag-list';
 
 /* eslint-disable-next-line */
-export interface MainPageProps {
-  dispatch: any;
-  tags: any;
-}
+export interface MainPageProps {}
 
-export function MainPage({ dispatch, tags }: MainPageProps) {
+export function MainPage() {
   return (
     <Container>
       <Heading m={2}>tagger</Heading>
@@ -16,9 +13,9 @@ export function MainPage({ dispatch, tags }: MainPageProps) {
         tagger is a tool intended to help you more efficiently work through
         data.
       </Text>
-      <AddTagForm dispatcher={dispatch}></AddTagForm>
+      <AddTagForm></AddTagForm>
       <Text fontWeight="bold">Current Tags:</Text>
-      <TagList tags={tags.data} dispatch={dispatch} />
+      <TagList />
     </Container>
   );
 }

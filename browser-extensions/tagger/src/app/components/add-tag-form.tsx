@@ -13,17 +13,16 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { tagModel } from '../models/tag';
-import { TagDispatch, useStylesData, useTagsDispatch } from '../providers';
+import { useStylesData, useTagsDispatch } from '../providers';
 
 type Inputs = {
   text: string;
   style_name: string;
 };
 
-export function AddTagForm(props: { dispatcher: TagDispatch }) {
+export function AddTagForm() {
   const styles = useStylesData();
   const dispatch = useTagsDispatch();
 
