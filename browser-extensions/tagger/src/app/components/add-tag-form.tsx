@@ -13,20 +13,19 @@ import {
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { Dispatch, useContext } from 'react';
+import { useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Action } from '../tags-reducer';
 import { tagModel } from '../models/tag';
-import { StylesContext } from '../providers';
+import { StylesContext, TagDispatch, useTagsDispatch } from '../providers';
 
 type Inputs = {
   text: string;
   style_name: string;
 };
 
-export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
+export function AddTagForm(props: { dispatcher: TagDispatch }) {
   const styles = useContext(StylesContext);
-  const dispatch = props.dispatcher;
+  const dispatch = useTagsDispatch();
 
   const {
     register,
@@ -44,7 +43,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
     style_name: string;
   }) => {
     const result = (await tagModel.add(data)) as number;
-    dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
+    dispatch({ type: 'added', payload: { id: result, ...data } });
     reset();
   };
 

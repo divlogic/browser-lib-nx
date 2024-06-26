@@ -1,6 +1,3 @@
-import { Dispatch } from 'react';
-import { Action } from '../tags-reducer';
-import { TagModelType } from '../../schemas/tag-schemas';
 import {
   Button,
   Card,
@@ -8,31 +5,39 @@ import {
   CardFooter,
   CardHeader,
   Container,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
   HStack,
   Highlight,
   Input,
+  Select,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react';
 import { Tag } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
+import { StylesContext, TagDispatch } from '../providers';
+import { TagType } from '../../schemas/tag-schemas';
+import { HighlightStyle } from '../../schemas';
+import { useContext } from 'react';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
-  tag: TagModelType;
-  dispatch: Dispatch<Action>;
+  tag: TagType;
+  dispatch: TagDispatch;
 }
 
 type Inputs = {
-  color: string;
+  style_name: string;
 };
 
 export function EditTagForm(props: EditTagFormProps) {
   const { tag, dispatch } = props;
+  const styles = useContext(StylesContext);
   const {
     register,
     handleSubmit,
@@ -43,11 +48,11 @@ export function EditTagForm(props: EditTagFormProps) {
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const model = new Tag();
 
-    const updatedTagModel = { ...tag, color: data.color };
+    const updatedTagModel = { ...tag, color: data.style_name };
     await model.update(updatedTagModel);
     dispatch({
       type: 'edited',
-      payload: { data: updatedTagModel },
+      payload: updatedTagModel,
     });
     reset();
   };
@@ -64,15 +69,20 @@ export function EditTagForm(props: EditTagFormProps) {
             </FormControl>
           </CardHeader>
           <CardBody>
-            <FormControl isInvalid={!!errors?.color}>
-              <FormLabel>Color:</FormLabel>
-              <Input
-                defaultValue={tag.color}
-                {...register('color', {
-                  required: 'The color field is required.',
+            <FormControl>
+              <FormLabel>Pick a style:</FormLabel>
+              <Select placeholder="placeholder" {...register('style_name')}>
+                {styles.map((style, index) => {
+                  return (
+                    <option key={index} value={style.name}>
+                      {style.name}
+                    </option>
+                  );
                 })}
-              />
-              <FormErrorMessage>{errors?.color?.message}</FormErrorMessage>
+              </Select>
+              <Flex m={2}>
+                <Spacer></Spacer>
+              </Flex>
             </FormControl>
           </CardBody>
           <CardFooter>

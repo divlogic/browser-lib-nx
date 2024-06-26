@@ -16,7 +16,7 @@ type BaseArrayGroupActions<T> = {
 type BaseArrayActions<T> =
   | BaseArrayGroupActions<T>
   | {
-      type: 'added' | 'removed';
+      type: 'added' | 'removed' | 'edited';
       payload: T;
     };
 
@@ -25,12 +25,21 @@ function BaseArrayReducer<T = { id: number }>(
   action: BaseArrayActions<T>,
   key = 'id' as keyof T
 ) {
+  const newState = [...data];
   switch (action.type) {
     case 'added': {
       return [...data, action.payload];
     }
     case 'removed': {
       return data.filter((data) => action.payload[key] !== data[key]);
+    }
+    case 'edited': {
+      return newState.map((item: T) => {
+        if (item[key] === action.payload[key]) {
+          item = action.payload;
+        }
+        return item;
+      });
     }
     case 'loaded': {
       return action.payload;

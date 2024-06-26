@@ -1,5 +1,5 @@
 import { Dispatch, useState } from 'react';
-import { Action } from '../tags-reducer';
+import { Action } from '../tags-reducer.OLD';
 import { TagType } from '../../schemas/tag-schemas';
 import {
   Container,
@@ -47,7 +47,7 @@ export function TagItem(props: TagItemProps) {
             e.preventDefault();
             console.log('EditTagForm props: ', props);
             if (typeof props.tag.id === 'number') {
-              await tag.remove(props.tag.id);
+              await tagModel.remove(props.tag.id);
               props.dispatch({
                 type: 'removed',
                 payload: { data: props.tag },
