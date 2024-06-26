@@ -7,7 +7,6 @@ import {
   Container,
   Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   HStack,
   Highlight,
@@ -22,7 +21,6 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
 import { StylesContext, TagDispatch } from '../providers';
 import { TagType } from '../../schemas/tag-schemas';
-import { HighlightStyle } from '../../schemas';
 import { useContext } from 'react';
 
 /* eslint-disable-next-line */

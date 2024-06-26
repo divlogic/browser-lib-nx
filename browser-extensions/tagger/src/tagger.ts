@@ -6,7 +6,11 @@ function unCamelize(str: string) {
     return '-' + word.toLowerCase();
   });
 }
-export function HighlightTags(tags: TagType[]) {
+export function HighlightTags(
+  tags: TagType[],
+  styles: { [key: string]: HighlightStyle }
+) {
+  const stylesInUse: { [key: string]: Range[] } = {};
   if (typeof CSS.highlights !== 'undefined') {
     const body = document.getElementsByTagName('body')[0];
     const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
@@ -22,7 +26,6 @@ export function HighlightTags(tags: TagType[]) {
       console.error('CSS Custom Highlight API not supported');
     }
 
-    const rangesToHighlight: Range[] = [];
     tags.forEach((tag) => {
       try {
         TagSchema.parse(tag);
@@ -62,39 +65,40 @@ export function HighlightTags(tags: TagType[]) {
         .flat()
         .filter((item): item is Range => item instanceof Range);
 
-      rangesToHighlight.push(...filteredRanges);
-    });
-    if (rangesToHighlight.length > 0) {
-      const searchResultsHighlight = new Highlight(...rangesToHighlight);
-
-      CSS.highlights.set('search-results', searchResultsHighlight);
-    }
-  } else {
-    console.error('CSS custom highlights API not available');
-  }
-  let css = '';
-  if (tags[0] && tags[0].style) {
-    const style = tags[0].style;
-
-    css = `
-    ::highlight(search-results) {`;
-
-    Object.keys(style).forEach((key) => {
-      if (typeof style === 'object' && key in style) {
-        css += `${unCamelize(key)}: ${style[key as keyof HighlightStyle]};\n`;
+      if (Array.isArray(stylesInUse[tag.style_name])) {
+        stylesInUse[tag.style_name].push(...filteredRanges);
+      } else {
+        stylesInUse[tag.style_name] = [];
+        stylesInUse[tag.style_name].push(...filteredRanges);
       }
     });
 
-    css += `
-      }`;
-  }
+    let css = '';
+    for (const [style, ranges] of Object.entries(stylesInUse)) {
+      if (ranges.length > 0) {
+        const searchResultsHighlight = new Highlight(...ranges);
 
-  const head = document.getElementsByTagName('head')[0];
-  let styleElement = document.getElementById('styled-by-tagger');
-  if (styleElement == null) {
-    styleElement = document.createElement('style');
-    styleElement.setAttribute('id', 'styled-by-tagger');
-    head.appendChild(styleElement);
+        CSS.highlights.set(style, searchResultsHighlight);
+
+        css += `::highlight(${style}) {\n`;
+        Object.keys(styles[style]).forEach((key) => {
+          css += `${unCamelize(key)}: ${
+            styles[style][key as keyof HighlightStyle]
+          };\n`;
+        });
+
+        css += `}\n`;
+      }
+    }
+    const head = document.getElementsByTagName('head')[0];
+    let styleElement = document.getElementById('styled-by-tagger');
+    if (styleElement == null) {
+      styleElement = document.createElement('style');
+      styleElement.setAttribute('id', 'styled-by-tagger');
+      head.appendChild(styleElement);
+    }
+    styleElement.innerHTML = css;
+  } else {
+    console.error('CSS custom highlights API not available');
   }
-  styleElement.innerHTML = css;
 }

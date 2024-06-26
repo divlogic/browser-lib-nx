@@ -7,6 +7,7 @@ import { theme } from './theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import { RepositoryFactory } from './db';
 import { Style, Tag } from './app';
+import { HighlightStyle } from './schemas';
 
 declare const window: {
   tagModel: Tag;
@@ -37,24 +38,16 @@ async function initializeReact() {
   }
 }
 async function initializeContentScript() {
-  let tags = await new Tag().get();
-  const styles = await new Style().get();
-  if (Array.isArray(tags)) {
-    tags = tags.map((tag) => {
-      const style = styles?.find((style) => {
-        return style.name === tag.style;
-      });
-      if (style) {
-        tag.style = style;
-      }
+  const tags = await new Tag().get();
+  const styles: { [key: string]: HighlightStyle } = {};
 
-      return tag;
-    });
-  }
+  (await new Style().get())?.forEach((style: HighlightStyle) => {
+    styles[style.name] = style;
+  });
 
   try {
     if (Array.isArray(tags)) {
-      HighlightTags(tags);
+      HighlightTags(tags, styles);
     }
   } catch (e) {
     console.error(e);
