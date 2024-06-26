@@ -16,7 +16,7 @@ import {
 import { useContext } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { tagModel } from '../models/tag';
-import { StylesContext, TagDispatch, useTagsDispatch } from '../providers';
+import { TagDispatch, useStylesData, useTagsDispatch } from '../providers';
 
 type Inputs = {
   text: string;
@@ -24,7 +24,7 @@ type Inputs = {
 };
 
 export function AddTagForm(props: { dispatcher: TagDispatch }) {
-  const styles = useContext(StylesContext);
+  const styles = useStylesData();
   const dispatch = useTagsDispatch();
 
   const {

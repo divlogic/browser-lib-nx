@@ -7,11 +7,10 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { HighlightSchema, HighlightStyle } from '../schemas/style-schemas';
-import { useContext } from 'react';
-import { StylesContext } from '../app/providers';
+import { useStylesData } from '../app/providers';
 
 export function StyleList() {
-  const styles = useContext<HighlightStyle[]>(StylesContext);
+  const styles = useStylesData();
   return (
     <Container>
       <Heading m="2">current styles</Heading>

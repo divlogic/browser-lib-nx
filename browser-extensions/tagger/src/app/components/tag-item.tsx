@@ -1,5 +1,4 @@
-import { Dispatch, useState } from 'react';
-import { Action } from '../tags-reducer.OLD';
+import { useState } from 'react';
 import { TagType } from '../../schemas/tag-schemas';
 import {
   Container,
@@ -11,11 +10,12 @@ import {
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { tagModel } from '../models/tag';
 import EditTagForm from './edit-tag-form';
+import { TagDispatch } from '../providers';
 
 /* eslint-disable-next-line */
 export interface TagItemProps {
   tag: TagType;
-  dispatch: Dispatch<Action>;
+  dispatch: TagDispatch;
   index: number;
 }
 
@@ -50,7 +50,7 @@ export function TagItem(props: TagItemProps) {
               await tagModel.remove(props.tag.id);
               props.dispatch({
                 type: 'removed',
-                payload: { data: props.tag },
+                payload: props.tag,
               });
             } else {
               throw new Error('unexpected situation: id is not a number');

@@ -1,4 +1,3 @@
-import { HighlightTags } from '../tagger';
 import {
   Button,
   Card,
@@ -20,11 +19,10 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Dispatch, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { StyleFormFields, StyleFormSchema } from '../schemas/style-schemas';
-import { StylesDispatchContext, StylesActions } from '../app/providers';
+import { useStylesDispatch } from '../app/providers';
 import { styleModel } from '../app/models';
 
 /* eslint-disable-next-line */
@@ -57,7 +55,7 @@ export function pickRandomWords(input: string) {
 }
 
 export function StyleForm(props: StyleFormProps) {
-  const dispatch = useContext<Dispatch<StylesActions>>(StylesDispatchContext);
+  const dispatch = useStylesDispatch();
   const {
     register,
     watch,
@@ -72,7 +70,8 @@ export function StyleForm(props: StyleFormProps) {
     resolver: zodResolver(StyleFormSchema),
   });
 
-  const randomWords = pickRandomWords(textSample);
+  // const randomWords = pickRandomWords(textSample);
+  // To properly demo it, will need re-add in a HighlightTags in some way.
 
   const style = watch();
 

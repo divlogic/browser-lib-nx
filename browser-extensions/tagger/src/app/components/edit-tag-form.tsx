@@ -19,9 +19,8 @@ import {
 import { Tag } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
-import { StylesContext, TagDispatch } from '../providers';
+import { TagDispatch, useStylesData } from '../providers';
 import { TagType } from '../../schemas/tag-schemas';
-import { useContext } from 'react';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
@@ -35,7 +34,7 @@ type Inputs = {
 
 export function EditTagForm(props: EditTagFormProps) {
   const { tag, dispatch } = props;
-  const styles = useContext(StylesContext);
+  const styles = useStylesData();
   const {
     register,
     handleSubmit,
@@ -86,9 +85,8 @@ export function EditTagForm(props: EditTagFormProps) {
           <CardFooter>
             <VStack>
               <Text>
-                <Highlight styles={{ bg: tag.color }} query="test">
-                  Highlight Example: test
-                </Highlight>
+                {/* TODO: Provide a proper example */}
+                <Highlight query="test">Highlight Example: test</Highlight>
               </Text>
               <Button type="submit" bgColor={'green.300'}>
                 <HStack>
