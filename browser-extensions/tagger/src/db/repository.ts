@@ -10,4 +10,5 @@ export abstract class Repository {
   public abstract add(key: string, item: unknown): Promise<unknown>;
   public abstract update<T>(key: string, item: T): Promise<unknown>;
   public abstract remove(key: string, index: number): Promise<void>;
+  public abstract set<T>(key: string, values: T[]): Promise<unknown>;
 }

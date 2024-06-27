@@ -52,4 +52,8 @@ export default class IndexedDBRepository extends Repository {
     await Engine.delete(this.config.dbName, this.config.storeName, index);
     return;
   }
+
+  async set(key: string, values: unknown[]): Promise<void> {
+    throw new Error('Function not implemented yet.');
+  }
 }
