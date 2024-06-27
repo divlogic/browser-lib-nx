@@ -21,9 +21,14 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { StyleFormFields, StyleFormSchema } from '../schemas/style-schemas';
+import {
+  HighlightSchema,
+  StyleFormFields,
+  StyleFormSchema,
+} from '../schemas/style-schemas';
 import { useStylesDispatch } from '../app/providers';
 import { styleModel } from '../app/models';
+import HighlightExample from './highlight-example';
 
 /* eslint-disable-next-line */
 export interface StyleFormProps {}
@@ -257,7 +262,14 @@ export function StyleForm(props: StyleFormProps) {
             <Heading as="h6" size="lg">
               Demo:
             </Heading>
-            <Text>{textSample}</Text>
+            <HighlightExample
+              tag={{ text: textSample, style_name: style.name }}
+              style={
+                style.name
+                  ? { [style.name]: HighlightSchema.parse(style) }
+                  : null
+              }
+            ></HighlightExample>
           </VStack>
         </CardFooter>
       </Card>

@@ -16,6 +16,8 @@ import {
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { tagModel } from '../models/tag';
 import { useStylesData, useTagsDispatch } from '../providers';
+import HighlightExample from '../../lib/highlight-example';
+import { HighlightStyle } from '../../schemas';
 
 type Inputs = {
   text: string;
@@ -25,7 +27,6 @@ type Inputs = {
 export function AddTagForm() {
   const styles = useStylesData();
   const dispatch = useTagsDispatch();
-
   const {
     register,
     handleSubmit,
@@ -46,6 +47,12 @@ export function AddTagForm() {
     reset();
   };
 
+  const currentStyle = styles.find(
+    (style) => style.name === watch('style_name')
+  );
+  const formattedStyleObj = { [watch('style_name')]: currentStyle } as {
+    [key: string]: HighlightStyle;
+  };
   return (
     <Container>
       <Card bgColor={'gray.50'}>
@@ -87,7 +94,17 @@ export function AddTagForm() {
               <Container>
                 <HStack justify={'center'}>
                   <Text>Example: </Text>
-                  <Text>{watch('text')}</Text>
+                  <HighlightExample
+                    tag={{
+                      text: watch('text'),
+                      style_name: watch('style_name'),
+                    }}
+                    style={
+                      typeof currentStyle !== 'undefined'
+                        ? formattedStyleObj
+                        : null
+                    }
+                  ></HighlightExample>
                 </HStack>
               </Container>
             </HStack>

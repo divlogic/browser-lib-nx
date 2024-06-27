@@ -1,19 +1,25 @@
 import { z } from 'zod';
 
-export const TextDecorationLineSchema = z.optional(
-  z.array(z.literal('none')).or(
-    z
-      .array(
-        z
-          .literal('underline')
-          .or(z.literal('overline'))
-          .or(z.literal('line-through'))
-      )
-      .refine((items) => new Set(items).size === items.length, {
-        message: 'must be an array of unique strings',
-      })
+export const TextDecorationLineSchema = z
+  .optional(
+    z.array(z.literal('none')).or(
+      z
+        .array(
+          z
+            .literal('underline')
+            .or(z.literal('overline'))
+            .or(z.literal('line-through'))
+        )
+        .refine((items) => new Set(items).size === items.length, {
+          message: 'must be an array of unique strings',
+        })
+    )
   )
-);
+  .transform((val) => {
+    if (Array.isArray(val)) {
+      return val.join(' ');
+    }
+  });
 
 export const HighlightCommon = z.object({
   name: z
