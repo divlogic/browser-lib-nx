@@ -11,6 +11,10 @@ test.describe('This is a test', () => {
     tagger.gotoStyleTab();
   });
 
+  test('There is a default style', async ({ page, tagger }) => {
+    await expect(page.getByText('default').first()).toBeAttached();
+  });
+
   test('added styles persist', async ({ page, tagger }) => {
     const nameInput = page.getByRole('textbox', {
       name: 'Name of the style',
