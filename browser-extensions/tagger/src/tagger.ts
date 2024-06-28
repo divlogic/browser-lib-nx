@@ -28,7 +28,7 @@ export function HighlightTags(
 
     tags.forEach((tag) => {
       try {
-        TagSchema.parse(tag);
+        TagSchema.omit({ id: true }).parse(tag);
       } catch (e) {
         console.log('Errored tag: ', tag);
         console.error(e);
