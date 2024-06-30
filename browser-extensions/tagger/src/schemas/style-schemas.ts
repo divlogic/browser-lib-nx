@@ -41,8 +41,6 @@ export const HighlightGranular = HighlightCommon.extend({
 
 export type HighlightGranularStyle = z.infer<typeof HighlightGranular>;
 
-export const StyleFormSchema = HighlightGranular;
-
 export type StyleFormFields = z.infer<typeof StyleFormSchema>;
 
 export const HighlightShorthand = HighlightCommon.merge(
