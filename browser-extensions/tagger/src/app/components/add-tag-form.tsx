@@ -14,8 +14,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { tagModel } from '../models/tag';
-import { useStylesData, useTagsDispatch } from '../providers';
+import { useStylesData, useTagActions, useTagsDispatch } from '../providers';
 import HighlightExample from '../../lib/highlight-example';
 import { HighlightStyle } from '../../schemas';
 
@@ -27,6 +26,7 @@ type Inputs = {
 export function AddTagForm() {
   const styles = useStylesData();
   const dispatch = useTagsDispatch();
+  const actions = useTagActions();
   const {
     register,
     handleSubmit,
@@ -42,7 +42,7 @@ export function AddTagForm() {
     text: string;
     style_name: string;
   }) => {
-    const result = (await tagModel.add(data)) as number;
+    const result = (await actions.add(data)) as number;
     dispatch({ type: 'added', payload: { id: result, ...data } });
     reset();
   };
