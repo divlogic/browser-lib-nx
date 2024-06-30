@@ -1,9 +1,9 @@
-import { z } from 'zod';
 import {
   HighlightGranular,
   HighlightSchema,
   TextDecorationLineSchema,
   TextDecorationStyleSchema,
+  UnsavedHighlightSchema,
 } from '../schemas/style-schemas';
 
 describe('TextDecorationLineSchema', () => {
@@ -113,6 +113,57 @@ describe('HighlightSchema', () => {
 
   it('It should allow granular configuration', () => {
     let instance = HighlightSchema.safeParse({
+      id: 1,
+      name: 'test_schema',
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+      textDecorationStyle: 'wavy',
+      textDecorationColor: 'green',
+      textDecorationThickness: '2px',
+    });
+    expect(instance.success).toBeTruthy();
+    expect(instance).toHaveProperty('data');
+    expect(instance.data).toHaveProperty('textDecorationStyle', 'wavy');
+    expect(instance.data).toHaveProperty('id', 1);
+    expect(instance.data).toHaveProperty('name', 'test_schema');
+
+    instance = HighlightSchema.safeParse({
+      id: 2,
+      name: 'test2',
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+      textDecorationStyle: '',
+      textDecorationColor: 'green',
+      textDecorationThickness: '2px',
+    });
+    expect(instance.success).toBeTruthy();
+  });
+});
+
+describe('Unsaved HighlightSchema', () => {
+  it('It should allow minimal configuration', () => {
+    const instance = HighlightSchema.safeParse({ backgroundColor: 'red' });
+    expect(instance).toBeTruthy();
+  });
+
+  it('It should use TextDecorationLineSchema', () => {
+    let instance = HighlightSchema.safeParse({
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+    });
+    expect(instance).toBeTruthy();
+
+    instance = HighlightSchema.safeParse({
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+    });
+    expect(instance).toBeTruthy();
+  });
+
+  it('It should allow granular configuration', () => {
+    let instance = HighlightSchema.safeParse({
+      id: 1,
+      name: 'test-NAME',
       backgroundColor: 'red',
       textDecorationLine: ['none'],
       textDecorationStyle: 'wavy',
@@ -124,6 +175,33 @@ describe('HighlightSchema', () => {
     expect(instance.data).toHaveProperty('textDecorationStyle', 'wavy');
 
     instance = HighlightSchema.safeParse({
+      id: 2,
+      name: 't3stname',
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+      textDecorationStyle: '',
+      textDecorationColor: 'green',
+      textDecorationThickness: '2px',
+    });
+    expect(instance.success).toBeTruthy();
+  });
+
+  it('UnsavedHighlightSchema should not require an id', () => {
+    let instance = UnsavedHighlightSchema.safeParse({
+      name: 'test-NAME',
+      backgroundColor: 'red',
+      textDecorationLine: ['none'],
+      textDecorationStyle: 'wavy',
+      textDecorationColor: 'green',
+      textDecorationThickness: '2px',
+    });
+    console.log(instance.error);
+    expect(instance.success).toBeTruthy();
+    expect(instance).toHaveProperty('data');
+    expect(instance.data).toHaveProperty('textDecorationStyle', 'wavy');
+
+    instance = UnsavedHighlightSchema.safeParse({
+      name: 't3stname',
       backgroundColor: 'red',
       textDecorationLine: ['none'],
       textDecorationStyle: '',
