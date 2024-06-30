@@ -40,7 +40,7 @@ export abstract class StoreModel<T> {
     }
   }
 
-  async add(item: T) {
+  async add(item: Omit<T, 'id'>) {
     return await this.repository.add(this.key, item);
   }
 
