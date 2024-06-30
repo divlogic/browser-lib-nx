@@ -7,6 +7,7 @@ import {
   useReducer,
 } from 'react';
 import { StoreModel } from '../../db';
+import { z } from 'zod';
 
 type BaseArrayGroupActions<T> = {
   type: 'loaded';
@@ -56,7 +57,10 @@ function generateContext<T>() {
 
 export type BaseArrayDispatch<T> = Dispatch<BaseArrayActions<T>>;
 
-export function generateBaseArrayProvider<T>(model: StoreModel<T>) {
+export function generateBaseArrayProvider<
+  T extends { [key: string]: unknown; id: number },
+  Schema extends z.ZodTypeAny
+>(model: StoreModel<T>, schema: Schema) {
   const ArrayContext = generateContext<T>();
   const BaseArrayDispatchContext = createContext<BaseArrayDispatch<T> | null>(
     null
@@ -81,6 +85,14 @@ export function generateBaseArrayProvider<T>(model: StoreModel<T>) {
     useArrayDispatch: function useArrayDispatch(): Dispatch<
       BaseArrayActions<T>
     > {
+      /**
+       * TODO:
+       * look into a way to minimize these function calls.
+       * It seems like dispatch should be able to either be defined
+       * or referenced in a way that doesn't add overhead.
+       *
+       * Or don't and not worry about the performance, that probably works fine too.
+       */
       const dispatch = useContext(BaseArrayDispatchContext);
       if (dispatch === null) {
         throw new Error('Dispatch not defined');
@@ -90,6 +102,32 @@ export function generateBaseArrayProvider<T>(model: StoreModel<T>) {
     },
     useArrayData: function useArrayData() {
       return useContext(ArrayContext);
+    },
+    useModelActions: () => {
+      const dispatch = useContext(BaseArrayDispatchContext);
+      if (dispatch === null) {
+        throw new Error('Dispatch not defined');
+      }
+      return {
+        add: async function add(data: Omit<T, 'id'>) {
+          const id = (await model.add(data)) as number;
+          const payload = schema.parse({ id: id, ...data });
+          dispatch({ type: 'added', payload });
+          return id;
+        },
+        remove: async (data: T) => {
+          await model.remove(data.id);
+          dispatch({ type: 'removed', payload: data });
+        },
+        edit: async (data: T) => {
+          await model.update(data);
+          dispatch({ type: 'edited', payload: data });
+        },
+        load: async () => {
+          const items = await model.get();
+          dispatch({ type: 'loaded', payload: items || [] });
+        },
+      };
     },
   };
 }
