@@ -1,33 +1,21 @@
 import { z } from 'zod';
 
-export const TextDecorationLineSchema = z
-  .optional(
-    z.array(z.literal('none')).or(
-      z
-        .array(
-          z
-            .literal('underline')
-            .or(z.literal('overline'))
-            .or(z.literal('line-through'))
-        )
-        .refine((items) => new Set(items).size === items.length, {
-          message: 'must be an array of unique strings',
-        })
-    )
+export const TextDecorationLineSchema = z.optional(
+  z.array(z.literal('none')).or(
+    z
+      .array(
+        z
+          .literal('underline')
+          .or(z.literal('overline'))
+          .or(z.literal('line-through'))
+      )
+      .refine((items) => new Set(items).size === items.length, {
+        message: 'must be an array of unique strings',
+      })
   )
-  .transform((val) => {
-    if (Array.isArray(val)) {
-      return val.join(' ');
-    }
-  });
+);
 
 export const HighlightCommon = z.object({
-  name: z
-    .string()
-    .regex(
-      /^[-_a-zA-Z0-9]+$/,
-      'The style name must be limited to letters, numbers, underscores and hyphens.'
-    ),
   color: z.string().optional(),
   backgroundColor: z.string(),
   textShadow: z.string().optional(),
@@ -63,7 +51,25 @@ export const HighlightShorthand = HighlightCommon.merge(
   })
 );
 
-export const HighlightSchema =
-  HighlightGranular.or(HighlightShorthand).or(HighlightCommon);
+// export const HighlightSchema =
+//   HighlightGranular.or(HighlightShorthand).or(HighlightCommon);
+
+const SavedObjectSchema = z.object({
+  id: z.number(),
+  name: z
+    .string()
+    .regex(
+      /^[-_a-zA-Z0-9]+$/,
+      'The style name must be limited to letters, numbers, underscores and hyphens.'
+    ),
+});
+
+export const HighlightSchema = HighlightGranular.extend(
+  SavedObjectSchema.shape
+);
+
+export const UnsavedHighlightSchema = HighlightSchema.omit({ id: true });
 
 export type HighlightStyle = z.infer<typeof HighlightSchema>;
+
+export type UnsavedHighlight = z.infer<typeof UnsavedHighlightSchema>;
