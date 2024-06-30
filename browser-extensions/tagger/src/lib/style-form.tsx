@@ -22,12 +22,10 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  HighlightSchema,
-  StyleFormFields,
-  StyleFormSchema,
+  UnsavedHighlight,
+  UnsavedHighlightSchema,
 } from '../schemas/style-schemas';
-import { useStylesDispatch } from '../app/providers';
-import { styleModel } from '../app/models';
+import { useStylesActions } from '../app/providers';
 import HighlightExample from './highlight-example';
 
 /* eslint-disable-next-line */
@@ -60,19 +58,19 @@ export function pickRandomWords(input: string) {
 }
 
 export function StyleForm(props: StyleFormProps) {
-  const dispatch = useStylesDispatch();
+  const { add } = useStylesActions();
   const {
     register,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<StyleFormFields>({
+  } = useForm<UnsavedHighlight>({
     defaultValues: {
       backgroundColor: 'yellow',
       color: 'black',
       textDecorationLine: ['none'],
     },
-    resolver: zodResolver(StyleFormSchema),
+    resolver: zodResolver(UnsavedHighlightSchema),
   });
 
   // const randomWords = pickRandomWords(textSample);
@@ -87,8 +85,7 @@ export function StyleForm(props: StyleFormProps) {
         <CardBody>
           <form
             onSubmit={handleSubmit(async (data) => {
-              const result = (await styleModel.add(data)) as number;
-              dispatch({ type: 'added', payload: data });
+              add(data);
             })}
           >
             <FormControl isInvalid={'name' in errors}>
@@ -266,7 +263,7 @@ export function StyleForm(props: StyleFormProps) {
               tag={{ text: textSample, style_name: style.name }}
               style={
                 style.name
-                  ? { [style.name]: HighlightSchema.parse(style) }
+                  ? { [style.name]: UnsavedHighlightSchema.parse(style) }
                   : null
               }
             ></HighlightExample>
