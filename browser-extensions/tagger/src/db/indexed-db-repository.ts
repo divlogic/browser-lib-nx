@@ -39,7 +39,7 @@ export default class IndexedDBRepository extends Repository {
     return request;
   }
 
-  async add(key: string, item: unknown): Promise<unknown> {
+  async add(key: string, item: unknown): Promise<number> {
     const result = await Engine.add(
       this.config.dbName,
       this.config.storeName,

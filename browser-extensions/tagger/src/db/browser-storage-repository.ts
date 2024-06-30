@@ -45,7 +45,7 @@ export default class BrowserStorageRepository extends Repository {
     return response;
   }
 
-  add(key: string, item: unknown) {
+  async add(key: string, item: unknown): Promise<number> {
     return this.get(key).then((items) => {
       if (typeof items === 'undefined') {
         items = [];
@@ -53,7 +53,9 @@ export default class BrowserStorageRepository extends Repository {
       if (typeof item === 'object' && item != null) {
         (item as HasId).id = items.length;
       }
-      return this.set(key, [...items, item]);
+      const id = items.length;
+      this.set(key, [...items, item]);
+      return id;
     });
   }
 
