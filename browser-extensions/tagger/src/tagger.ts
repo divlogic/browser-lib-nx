@@ -7,7 +7,7 @@ function unCamelize(str: string) {
   });
 }
 export function HighlightTags(
-  tags: TagType[],
+  tags: Omit<TagType, 'id'>[],
   styles: { [key: string]: HighlightStyle }
 ) {
   const stylesInUse: { [key: string]: Range[] } = {};
