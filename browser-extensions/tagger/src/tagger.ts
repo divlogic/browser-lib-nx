@@ -81,11 +81,17 @@ export function HighlightTags(
         CSS.highlights.set(style, searchResultsHighlight);
 
         css += `::highlight(${style}) {\n`;
-        Object.keys(styles[style]).forEach((key) => {
-          css += `${unCamelize(key)}: ${
-            styles[style][key as keyof HighlightStyle]
-          };\n`;
-        });
+        if (style in styles) {
+          css += Object.keys(styles[style])
+            .map((key) => {
+              return `${unCamelize(key)}: ${
+                styles[style][key as keyof HighlightStyle]
+              };\n`;
+            })
+            .join('');
+        } else {
+          console.error(`style: ${style} not in styles`);
+        }
 
         css += `}\n`;
       }
