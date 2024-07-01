@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { HighlightSchema, HighlightStyle } from '../schemas/style-schemas';
 import { useStylesData } from '../app/providers';
+import HighlightExample from './highlight-example';
 
 export function StyleList() {
   const styles = useStylesData();
@@ -18,26 +19,26 @@ export function StyleList() {
         {styles.map((style, index) => {
           const parsed = HighlightSchema.safeParse(style);
           if (parsed.success === false) {
+            console.log('style is: ', style);
             console.error('Unsuccessful parse for: ', parsed, parsed.error);
-            console.log('error data is: ', parsed.data);
+            console.log('error data is: ', parsed.error.flatten());
             return null;
           } else {
             const keys = Object.keys(parsed.data) as (keyof HighlightStyle)[];
             keys.forEach((key: keyof HighlightStyle) => {
-              const item = style[key];
-              if (Array.isArray(item)) {
-                style[key] = item.join(' ');
-              }
+              // const item = style[key];
+              // This is causing a bug because changing the reference
+              // is modifying the state in the reducer/context
+              // if (Array.isArray(item)) {
+              //   style[key] = item.join(' ');
+              // }
             });
             return (
               <ListItem key={index}>
-                <Text
-                  // This is a problem area. When passing it in directly, it accepts a string, but for some reason it doesn't accept a string
-                  {...(style as Omit<HighlightStyle, 'textDecorationStyle'>)}
-                  width={'min-content'}
-                >
-                  {style.name}
-                </Text>
+                <HighlightExample
+                  tag={{ text: style.name, style_name: style.name }}
+                  style={{ [style.name]: style }}
+                />
               </ListItem>
             );
           }

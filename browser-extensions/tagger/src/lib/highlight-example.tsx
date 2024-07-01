@@ -6,7 +6,7 @@ import { Text } from '@chakra-ui/react';
 
 /* eslint-disable-next-line */
 export interface HighlightExampleProps {
-  tag: TagType;
+  tag: Omit<TagType, 'id'>;
   style: { [key: string]: HighlightStyle } | null;
 }
 export function HighlightExample({ tag, style }: HighlightExampleProps) {
