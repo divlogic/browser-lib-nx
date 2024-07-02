@@ -1,4 +1,4 @@
-import { StyleModel, TagModel } from '@browser-lib-nx/tagger';
+import { Style, Tag } from '@browser-lib-nx/tagger';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 
@@ -8,18 +8,29 @@ const styleTagId = '#styled-by-tagger';
 
 // This might change from time to time in the early stages.
 test.describe('This is a test', () => {
-  test('Example test', async ({ page, tagger }) => {
+  test('App loads successfully', async ({ page, tagger }) => {
     await tagger.goto();
     await expect(page).toHaveTitle('Tagger');
   });
 
-  test('Can add tags', async ({ tagger }) => {
+  test('Can add tags', async ({ tagger, page }) => {
     await tagger.goto();
     await tagger.addTag({ text: 'test' });
 
     const highlights = await tagger.getHighlightRegistryTextContents();
 
     expect(highlights).toContain('test');
+  });
+
+  test('tag form requires a style be selected to submit the form', async ({
+    tagger,
+    page,
+  }) => {
+    await tagger.goto();
+    await page.getByLabel('Add tag:').click();
+    await page.getByLabel('Add tag:').fill('testTag');
+    const button = page.getByRole('button', { name: 'Add' });
+    await expect(button).toBeDisabled();
   });
 
   test('Added tags persist', async ({ extensionId, context, storage }) => {
@@ -269,19 +280,19 @@ test.describe('This is a test', () => {
     });
 
     const tags = await page.evaluate(async () => {
-      if ('tag' in window) {
-        return await (window.tag as TagModel).get();
+      if ('tagModel' in window) {
+        return await (window.tagModel as Tag).get();
       } else {
         throw new Error('tag not in window');
       }
     });
 
     expect(tags.length).toBe(1);
-    expect(tags[0]).toMatchObject({ text: 'testTag', color: 'yellow' });
+    expect(tags[0]).toMatchObject({ text: 'testTag', style: 'testStyle' });
 
     const styles = await page.evaluate(async () => {
       if ('styleModel' in window) {
-        return await (window.styleModel as StyleModel).get();
+        return await (window.styleModel as Style).get();
       } else {
         throw new Error('styleModel not in window');
       }
