@@ -20,6 +20,8 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
 import { useStylesData, useTagActions } from '../providers';
 import { TagType } from '../../schemas/tag-schemas';
+import HighlightExample from '../../lib/highlight-example';
+import { HighlightStyle } from '../../schemas';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
@@ -38,6 +40,7 @@ export function EditTagForm(props: EditTagFormProps) {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -48,6 +51,12 @@ export function EditTagForm(props: EditTagFormProps) {
   };
   console.log('Errors is: ', errors);
 
+  const currentStyle = styles.find(
+    (style) => style.name === watch('style_name')
+  );
+  const formattedStyleObj = { [watch('style_name')]: currentStyle } as {
+    [key: string]: HighlightStyle;
+  };
   return (
     <Container>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -61,7 +70,7 @@ export function EditTagForm(props: EditTagFormProps) {
           <CardBody>
             <FormControl>
               <FormLabel>Pick a style:</FormLabel>
-              <Select placeholder="placeholder" {...register('style_name')}>
+              <Select {...register('style_name')}>
                 {styles.map((style, index) => {
                   return (
                     <option key={index} value={style.name}>
@@ -78,8 +87,12 @@ export function EditTagForm(props: EditTagFormProps) {
           <CardFooter>
             <VStack>
               <Text>
-                {/* TODO: Provide a proper example */}
-                <Highlight query="test">Highlight Example: test</Highlight>
+                {currentStyle && (
+                  <HighlightExample
+                    tag={{ text: tag.text, style_name: currentStyle.name }}
+                    style={formattedStyleObj}
+                  ></HighlightExample>
+                )}
               </Text>
               <Button type="submit" bgColor={'green.300'}>
                 <HStack>

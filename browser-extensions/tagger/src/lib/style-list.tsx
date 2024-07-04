@@ -1,14 +1,17 @@
 /* eslint-disable-next-line */
 import {
   Container,
+  HStack,
   Heading,
+  IconButton,
   ListItem,
-  Text,
   UnorderedList,
 } from '@chakra-ui/react';
 import { HighlightSchema, HighlightStyle } from '../schemas/style-schemas';
-import { useStylesData } from '../app/providers';
+import { useStylesActions, useStylesData } from '../app/providers';
 import HighlightExample from './highlight-example';
+import { useState } from 'react';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 
 export function StyleList() {
   const styles = useStylesData();
@@ -35,10 +38,7 @@ export function StyleList() {
             });
             return (
               <ListItem key={index}>
-                <HighlightExample
-                  tag={{ text: style.name, style_name: style.name }}
-                  style={{ [style.name]: style }}
-                />
+                <StyleItem style={style}></StyleItem>
               </ListItem>
             );
           }
@@ -49,3 +49,38 @@ export function StyleList() {
 }
 
 export default StyleList;
+
+interface StyleItemProps {
+  style: HighlightStyle;
+}
+function StyleItem({ style }: StyleItemProps) {
+  const styleActions = useStylesActions();
+  const [editing, setEditing] = useState(false);
+  return (
+    <HStack>
+      <HighlightExample
+        tag={{ text: style.name, style_name: style.name }}
+        style={{ [style.name]: style }}
+        id={style.name}
+      />
+      <IconButton
+        aria-label="edit"
+        size="sm"
+        onClick={async (e) => {
+          e.preventDefault();
+          setEditing(!editing);
+        }}
+        icon={<EditIcon />}
+      />
+      <IconButton
+        aria-label="delete"
+        size="sm"
+        onClick={async (e) => {
+          e.preventDefault();
+          await styleActions.remove(style);
+        }}
+        icon={<DeleteIcon />}
+      />
+    </HStack>
+  );
+}

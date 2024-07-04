@@ -8,16 +8,17 @@ import { Text } from '@chakra-ui/react';
 export interface HighlightExampleProps {
   tag: Omit<TagType, 'id'>;
   style: { [key: string]: HighlightStyle } | null;
+  id?: string;
 }
-export function HighlightExample({ tag, style }: HighlightExampleProps) {
+export function HighlightExample({ tag, style, id }: HighlightExampleProps) {
   useEffect(() => {
-    if (tag && style) {
-      HighlightTags([tag], style);
+    if (tag && tag.text.length > 0 && style) {
+      HighlightTags([tag], style, id);
     }
-  }, [tag, style]);
+  }, [tag, style, id]);
   return (
     <Text id="example" as="span">
-      {tag.text}
+      {tag.text || 'input text will be highlighted'}
     </Text>
   );
 }
