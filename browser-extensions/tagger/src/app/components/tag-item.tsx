@@ -8,19 +8,18 @@ import {
   IconButton,
 } from '@chakra-ui/react';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { tagModel } from '../models/tag';
 import EditTagForm from './edit-tag-form';
-import { TagDispatch } from '../providers';
+import { useTagActions } from '../providers';
 
 /* eslint-disable-next-line */
 export interface TagItemProps {
   tag: TagType;
-  dispatch: TagDispatch;
   index: number;
 }
 
 export function TagItem(props: TagItemProps) {
   const [editing, setEditing] = useState(false);
+  const tagActions = useTagActions();
   return (
     <Container>
       <HStack>
@@ -46,15 +45,7 @@ export function TagItem(props: TagItemProps) {
           onClick={async (e) => {
             e.preventDefault();
             console.log('EditTagForm props: ', props);
-            if (typeof props.tag.id === 'number') {
-              await tagModel.remove(props.tag.id);
-              props.dispatch({
-                type: 'removed',
-                payload: props.tag,
-              });
-            } else {
-              throw new Error('unexpected situation: id is not a number');
-            }
+            await tagActions.remove(props.tag);
           }}
           icon={<DeleteIcon />}
         />

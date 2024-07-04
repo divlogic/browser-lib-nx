@@ -16,16 +16,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { Tag } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
-import { TagDispatch, useStylesData } from '../providers';
+import { useStylesData, useTagActions } from '../providers';
 import { TagType } from '../../schemas/tag-schemas';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
   tag: TagType;
-  dispatch: TagDispatch;
 }
 
 type Inputs = {
@@ -33,8 +31,9 @@ type Inputs = {
 };
 
 export function EditTagForm(props: EditTagFormProps) {
-  const { tag, dispatch } = props;
+  const { tag } = props;
   const styles = useStylesData();
+  const actions = useTagActions();
   const {
     register,
     handleSubmit,
@@ -43,14 +42,8 @@ export function EditTagForm(props: EditTagFormProps) {
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const model = new Tag();
-
     const updatedTagModel = { ...tag, color: data.style_name };
-    await model.update(updatedTagModel);
-    dispatch({
-      type: 'edited',
-      payload: updatedTagModel,
-    });
+    await actions.edit(updatedTagModel);
     reset();
   };
   console.log('Errors is: ', errors);
