@@ -6,14 +6,34 @@ function unCamelize(str: string) {
     return '-' + word.toLowerCase();
   });
 }
+/**
+ * Performs the actual highlighting
+ *
+ * TODO: Decide on how precedence should be handled.
+ * ex: tags: test, test1, testabc
+ * If they have different styles, should test's cover
+ * the test in test1 and testabc, leaving the remainder to be
+ * in the new style?
+ *
+ * @param tags
+ * @param styles
+ * @param elementId
+ */
 export function HighlightTags(
   tags: Omit<TagType, 'id'>[],
-  styles: { [key: string]: HighlightStyle }
+  styles: { [key: string]: HighlightStyle },
+  elementId?: string
 ) {
   const stylesInUse: { [key: string]: Range[] } = {};
   if (typeof CSS.highlights !== 'undefined') {
+    const element = elementId
+      ? document.getElementById(elementId)
+      : document.getElementsByTagName('body')[0];
     const body = document.getElementsByTagName('body')[0];
-    const treeWalker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+    const treeWalker = document.createTreeWalker(
+      element || body,
+      NodeFilter.SHOW_TEXT
+    );
 
     const allTextNodes: Node[] = [];
     let currentNode = treeWalker.nextNode();
@@ -35,6 +55,9 @@ export function HighlightTags(
       }
 
       const testStr = tag.text.toLowerCase();
+      if (testStr.length < 1) {
+        throw new Error('Invalid tag text, cannot use empty string.');
+      }
       const ranges = allTextNodes
         .map((el) => {
           return { el, text: el.textContent?.toLowerCase() };
@@ -90,17 +113,17 @@ export function HighlightTags(
             })
             .join('');
         } else {
-          console.error(`style: ${style} not in styles`);
+          console.error(`style: ${style} not in styles`, styles);
         }
 
         css += `}\n`;
       }
     }
     const head = document.getElementsByTagName('head')[0];
-    let styleElement = document.getElementById('styled-by-tagger');
+    let styleElement = document.getElementById('styled-by-tagger' + elementId);
     if (styleElement == null) {
       styleElement = document.createElement('style');
-      styleElement.setAttribute('id', 'styled-by-tagger');
+      styleElement.setAttribute('id', 'styled-by-tagger' + elementId);
       head.appendChild(styleElement);
     }
     styleElement.innerHTML = css;
