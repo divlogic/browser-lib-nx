@@ -15,6 +15,24 @@ function unCamelize(str: string) {
  * the test in test1 and testabc, leaving the remainder to be
  * in the new style?
  *
+ * Bug: creates too many new ranges.
+ * Bug: Maybe related to above, but new function calls break old highlights.
+ *
+ * It seems that using element specific selection is doing too much work.
+ * Can I make this work without:
+ * 1. Relying on iterating over the style object keys and manually setting props
+ * 2. Spamming ranges that will actually wind up out of date upon minor changes, if I understand what a Range is.
+ *
+ * It seems like I should be applying some kind of debounce and maybe just calling the function after typing is done
+ * Or possibly having the function manage the Ranges and delete the old ones.
+ *
+ * possible solutions
+ * - debounce
+ * - event listener for changes
+ * - singleton, add/delete ranges each time, possibly with granularity
+ *
+ *
+ *
  * @param tags
  * @param styles
  * @param elementId
@@ -22,8 +40,11 @@ function unCamelize(str: string) {
 export function HighlightTags(
   tags: Omit<TagType, 'id'>[],
   styles: { [key: string]: HighlightStyle },
-  elementId?: string
+  elementId = ''
 ) {
+  window.Highlighter = Highlighter;
+  Highlighter.counter += 1;
+  console.log('Highlighter counter: ', Highlighter.counter);
   const stylesInUse: { [key: string]: Range[] } = {};
   if (typeof CSS.highlights !== 'undefined') {
     const element = elementId
@@ -97,23 +118,24 @@ export function HighlightTags(
     });
 
     let css = '';
-    for (const [style, ranges] of Object.entries(stylesInUse)) {
+    for (const [styleName, ranges] of Object.entries(stylesInUse)) {
       if (ranges.length > 0) {
+        Highlighter.ranges.push(...ranges);
         const searchResultsHighlight = new Highlight(...ranges);
 
-        CSS.highlights.set(style, searchResultsHighlight);
+        CSS.highlights.set(styleName + elementId, searchResultsHighlight);
 
-        css += `::highlight(${style}) {\n`;
-        if (style in styles) {
-          css += Object.keys(styles[style])
+        css += `::highlight(${styleName + elementId}) {\n`;
+        if (styleName in styles) {
+          css += Object.keys(styles[styleName])
             .map((key) => {
               return `${unCamelize(key)}: ${
-                styles[style][key as keyof HighlightStyle]
+                styles[styleName][key as keyof HighlightStyle]
               };\n`;
             })
             .join('');
         } else {
-          console.error(`style: ${style} not in styles`, styles);
+          console.error(`styleName: ${styleName} not in styles`, styles);
         }
 
         css += `}\n`;
@@ -130,4 +152,10 @@ export function HighlightTags(
   } else {
     console.error('CSS custom highlights API not available');
   }
+}
+
+export class Highlighter {
+  static counter = 0;
+  static ranges = [];
+  static HighlightTags = HighlightTags;
 }

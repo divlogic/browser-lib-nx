@@ -2,7 +2,7 @@ import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 
 import App from './app/app';
-import { HighlightTags } from './tagger';
+import { HighlightTags, Highlighter } from './tagger';
 import { theme } from './theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import { RepositoryFactory } from './db';
@@ -47,11 +47,26 @@ async function initializeContentScript() {
 
   try {
     if (Array.isArray(tags)) {
-      HighlightTags(tags, styles);
+      Highlighter.HighlightTags(tags, styles);
     }
   } catch (e) {
     console.error(e);
   }
+
+  const targetNode = document.getElementsByTagName('body')[0];
+  const config: MutationObserverInit = {
+    subtree: true,
+    childList: true,
+    characterData: true,
+  };
+
+  const observer: MutationObserver = new MutationObserver(
+    (mutationList, Observer) => {
+      console.log('mutationList', mutationList);
+    }
+  );
+
+  observer.observe(targetNode, config);
 }
 
 async function initialization() {
