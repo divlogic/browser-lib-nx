@@ -11,7 +11,7 @@ test.describe('This is a test', () => {
     tagger.gotoStyleTab();
   });
 
-  test('There is a default style', async ({ page, tagger }) => {
+  test('There is a default style on the first load', async ({ page }) => {
     await expect(page.getByText('default').first()).toBeAttached();
   });
 
