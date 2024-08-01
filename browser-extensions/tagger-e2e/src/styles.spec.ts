@@ -21,8 +21,7 @@ test.describe('This is a test', () => {
     const nameInput = page.getByRole('textbox', {
       name: 'Name of the style',
     });
-    await nameInput.fill('test Name');
-
+    await nameInput.fill('test_name');
     const textColorInput = page.getByRole('textbox', {
       name: 'Text Color',
     });
@@ -37,14 +36,14 @@ test.describe('This is a test', () => {
 
     await saveButton.click();
 
-    await expect(page.getByText('test Name').first()).toBeAttached();
+    await expect(page.getByText('test_name').first()).toBeAttached();
   });
 
   test('added styles persist after reload', async ({ page, tagger }) => {
     const nameInput = page.getByRole('textbox', {
       name: 'Name of the style',
     });
-    await nameInput.fill('test Name');
+    await nameInput.fill('test_name');
 
     const textColorInput = page.getByRole('textbox', {
       name: 'Text Color',
@@ -60,19 +59,19 @@ test.describe('This is a test', () => {
 
     await saveButton.click();
 
-    await expect(page.getByText('test Name').first()).toBeAttached();
+    await expect(page.getByText('test_name').first()).toBeAttached();
 
     await page.reload();
     await tagger.gotoStyleTab();
 
-    await expect(page.getByText('test Name').first()).toBeAttached();
+    await expect(page.getByText('test_name').first()).toBeAttached();
   });
 
   test('styles are an option for tags', async ({ page, tagger }) => {
     const nameInput = page.getByRole('textbox', {
       name: 'Name of the style',
     });
-    await nameInput.fill('test Name');
+    await nameInput.fill('test_name');
     const textColorInput = page.getByRole('textbox', {
       name: 'Text Color',
     });
@@ -83,16 +82,16 @@ test.describe('This is a test', () => {
     highlightColorInput.fill('orange');
     const saveButton = page.getByRole('button', { name: 'Save' });
     await saveButton.click();
-    await expect(page.getByText('test Name').first()).toBeAttached();
+    await expect(page.getByText('test_name').first()).toBeAttached();
     await page.reload();
     await tagger.gotoStyleTab();
-    await expect(page.getByText('test Name').first()).toBeAttached();
+    await expect(page.getByText('test_name').first()).toBeAttached();
 
     await tagger.gotoTagsTab();
 
     const styleOptions = page.getByLabel('Pick a style:');
     await expect(styleOptions).toBeAttached();
-    styleOptions.selectOption('test Name');
-    await expect(styleOptions).toHaveValue('test Name');
+    styleOptions.selectOption('test_name');
+    await expect(styleOptions).toHaveValue('test_name');
   });
 });
