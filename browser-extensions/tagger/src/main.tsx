@@ -6,7 +6,7 @@ import { HighlightTags, Highlighter } from './tagger';
 import { theme } from './theme';
 import { ChakraProvider } from '@chakra-ui/react';
 import { RepositoryFactory } from './db';
-import { Style, Tag } from './app';
+import { defaultStyle, Style, styleModel, Tag } from './app';
 import { HighlightStyle } from './schemas';
 
 declare const window: {
@@ -19,6 +19,10 @@ async function initializeDB() {
   const tagModel = new Tag(tagRepository);
   const styleRepository = await RepositoryFactory('styles');
   window.styleModel = new Style(styleRepository);
+  const styles = await styleModel.get();
+  if (!styles || styles?.length === 0) {
+    await styleModel.add(defaultStyle);
+  }
   window.tagModel = tagModel;
 }
 
