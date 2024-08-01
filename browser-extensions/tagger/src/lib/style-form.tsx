@@ -65,6 +65,7 @@ export function StyleForm(props: StyleFormProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<UnsavedHighlight>({
+    mode: 'all',
     defaultValues: {
       backgroundColor: 'yellow',
       color: 'black',
@@ -263,7 +264,9 @@ export function StyleForm(props: StyleFormProps) {
               tag={{ text: textSample, style_name: style.name }}
               style={
                 style.name
-                  ? { [style.name]: UnsavedHighlightSchema.parse(style) }
+                  ? {
+                      [style.name]: style,
+                    }
                   : null
               }
             ></HighlightExample>
