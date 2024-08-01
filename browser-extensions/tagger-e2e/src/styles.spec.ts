@@ -12,7 +12,9 @@ test.describe('This is a test', () => {
   });
 
   test('There is a default style on the first load', async ({ page }) => {
-    await expect(page.getByText('default').first()).toBeAttached();
+    await expect(page.getByText('default').first()).toBeAttached({
+      timeout: 1000,
+    });
   });
 
   test('added styles persist', async ({ page, tagger }) => {
