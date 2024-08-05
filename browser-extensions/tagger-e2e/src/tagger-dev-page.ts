@@ -57,7 +57,7 @@ export class TaggerDevPage {
     });
   }
 
-  async addTag({ text = 'defaultTestTag', style = 'defaultTestStyle' }) {
+  async addTag({ text = 'defaultTestTag', style = 'default' }) {
     await this.gotoTagsTab();
     await this.page.getByLabel('Add tag:').click();
     await this.page.getByLabel('Add tag:').fill(text);
@@ -109,13 +109,13 @@ export class TaggerDevPage {
     await this.page.getByRole('button', { name: 'Save' }).click();
   }
 
-  async getHighlightRegistryTextContents() {
-    return this.page.evaluate(() => {
-      const highlights = [...CSS.highlights.get('search-results').entries()];
+  async getHighlightRegistryTextContents(name: string) {
+    return this.page.evaluate((name) => {
+      const highlights = [...CSS.highlights.get(name).entries()];
       const ranges = highlights.flat();
       return ranges.map(
         (range: Range) => range.commonAncestorContainer.textContent
       );
-    });
+    }, name);
   }
 }
