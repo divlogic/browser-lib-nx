@@ -20,6 +20,7 @@ import { HighlightStyle } from '../../schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UnsavedTagSchema } from '../../schemas/tag-schemas';
 import { useState } from 'react';
+import { Highlighter } from '../../tagger';
 
 type Inputs = {
   text: string;
@@ -54,6 +55,7 @@ export function AddTagForm() {
   }) => {
     await actions.add(data);
     reset();
+    Highlighter.highlightFromDb();
   };
 
   const currentStyle = styles.find(
