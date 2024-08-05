@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { HighlightStyle } from '../schemas';
 import { TagType } from '../schemas/tag-schemas';
-import { HighlightTags, Highlighter } from '../tagger';
+import { Highlighter } from '../tagger';
 import { Text } from '@chakra-ui/react';
 
 /* eslint-disable-next-line */
