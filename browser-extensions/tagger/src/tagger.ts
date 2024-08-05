@@ -1,5 +1,6 @@
 import { TagSchema, TagType } from './schemas/tag-schemas';
 import { HighlightStyle } from './schemas/style-schemas';
+import { styleModel, tagModel } from './app';
 
 function unCamelize(str: string) {
   return str.replace(/([A-Z][a-z]+)/g, function (word: string) {
@@ -158,4 +159,19 @@ export class Highlighter {
   static counter = 0;
   static ranges = [];
   static HighlightTags = HighlightTags;
+
+  static async highlightFromDb() {
+    const tags = await tagModel.get();
+    const styles = await styleModel.get();
+    const formattedStyles: { [key: string]: HighlightStyle } = {};
+    if (styles) {
+      styles.forEach((style) => {
+        formattedStyles[style.name] = style;
+      });
+    }
+
+    if (tags && styles && formattedStyles) {
+      Highlighter.HighlightTags(tags, formattedStyles);
+    }
+  }
 }
