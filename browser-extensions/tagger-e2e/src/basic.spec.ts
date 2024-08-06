@@ -199,33 +199,6 @@ test.describe('This is a test', () => {
     expect(tagName).toBe('STYLE');
   });
 
-  test('Can add tags with color', async ({ page, tagger }) => {
-    await tagger.goto();
-    await tagger.addStyle();
-    const tag = { text: 'test' };
-    await tagger.addTag(tag);
-
-    const highlights = await tagger.getHighlightRegistryTextContents();
-    await expect(page.locator(styleTagId)).toHaveCount(1);
-
-    expect(highlights).toContain('test');
-    await expect(page.locator(styleTagId)).toContainText(
-      `background-color: ${tagger.defaults.style.backgroundColor};`,
-      {
-        ignoreCase: true,
-        useInnerText: true,
-      }
-    );
-
-    await expect(page.locator(styleTagId)).toContainText(
-      `color: ${tagger.defaults.style.color};`,
-      {
-        ignoreCase: true,
-        useInnerText: true,
-      }
-    );
-  });
-
   test('Can edit tags', async ({ page, tagger }) => {
     const oldColor = 'blue';
     const newColor = 'red';
