@@ -1,8 +1,9 @@
 import { Repository } from './repository';
 
 export abstract class StoreModel<T> {
-  private static repositoryCache: Repository;
-  abstract key: string;
+  protected static repositoryCache: Repository;
+  public static key: string;
+  ['constructor']!: typeof StoreModel;
 
   /**
    *
@@ -10,12 +11,16 @@ export abstract class StoreModel<T> {
    */
   constructor(repository?: Repository) {
     if (typeof repository !== 'undefined') {
-      StoreModel.repositoryCache = repository;
+      this.constructor.repositoryCache = repository;
     }
   }
 
+  get key() {
+    return this.constructor.key;
+  }
+
   get repository() {
-    return StoreModel.repositoryCache;
+    return this.constructor.repositoryCache;
   }
 
   async get(): Promise<T[] | null> {
@@ -28,10 +33,14 @@ export abstract class StoreModel<T> {
   }
 
   async set(values: T[]) {
-    return this.repository.set(this.key, values);
+    if ('set' in this.repository) {
+      return this.repository.set(this.key, values);
+    } else {
+      throw new Error('function not yet supported by repository');
+    }
   }
 
-  async add(item: T) {
+  async add(item: Omit<T, 'id'>) {
     return await this.repository.add(this.key, item);
   }
 

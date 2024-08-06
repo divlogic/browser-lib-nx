@@ -1,11 +1,11 @@
 import browser from 'webextension-polyfill';
-import { TagModel } from './app/models/tag';
+import { Tag } from './app/models/tag';
 import BrowserStorageRepository from './db/browser-storage-repository';
 
 async function initializeDB() {
   const repository = new BrowserStorageRepository();
   await repository.initialize();
-  new TagModel(repository);
+  new Tag(repository);
 }
 initializeDB().then(() => {
   browser.runtime.onInstalled.addListener(async () => {
@@ -17,14 +17,14 @@ initializeDB().then(() => {
     });
     browser.contextMenus.onClicked.addListener(async (info) => {
       if (typeof info.selectionText === 'string') {
-        const task = new CreateTag(info.selectionText, 'yellow');
+        const task = new CreateTagModel(info.selectionText, 'yellow');
         await task.run();
       }
     });
   });
 });
 
-class CreateTag {
+class CreateTagModel {
   text: string;
   color: string;
   constructor(text: string, color: string) {
@@ -33,9 +33,9 @@ class CreateTag {
   }
 
   async run() {
-    const tag = new TagModel();
-    const id = await tag.add({ text: this.text, color: this.color });
+    const tag = new Tag();
+    const id = await tag.add({ text: this.text });
 
-    console.log('Tag added');
+    console.log('TagModel added');
   }
 }

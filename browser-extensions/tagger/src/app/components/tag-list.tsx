@@ -1,21 +1,15 @@
-import { Dispatch } from 'react';
-import { Action, TagType } from '../form-reducer';
 import TagItem from './tag-item';
+import { useTagsData } from '../providers';
 
 /* eslint-disable-next-line */
-export interface TagListProps {
-  tags: TagType[];
-  dispatch: Dispatch<Action>;
-}
+export interface TagListProps {}
 
-export function TagList(props: TagListProps) {
-  const { tags, dispatch } = props;
+export function TagList() {
+  const tags = useTagsData();
   return (
     <>
       {tags.map((tag, index) => {
-        return (
-          <TagItem tag={tag} dispatch={dispatch} index={index} key={index} />
-        );
+        return <TagItem tag={tag} index={index} key={index} />;
       })}
     </>
   );

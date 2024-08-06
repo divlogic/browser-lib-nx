@@ -1,4 +1,4 @@
-import { pageAction } from 'webextension-polyfill';
+import { Style, Tag } from '@browser-lib-nx/tagger';
 import { test } from './fixtures';
 import { TaggerDevPage } from './tagger-dev-page';
 
@@ -8,18 +8,40 @@ const styleTagId = '#styled-by-tagger';
 
 // This might change from time to time in the early stages.
 test.describe('This is a test', () => {
-  test('Example test', async ({ page, tagger }) => {
+  test('App loads successfully', async ({ page, tagger }) => {
     await tagger.goto();
     await expect(page).toHaveTitle('Tagger');
   });
 
   test('Can add tags', async ({ tagger, page }) => {
+    // Failing because there currently isn't a proper trigger to highlight again
     await tagger.goto();
     await tagger.addTag({ text: 'test' });
 
-    const highlights = await tagger.getHighlightRegistryTextContents();
+    const highlights = await tagger.getHighlightRegistryTextContents('default');
 
     expect(highlights).toContain('test');
+  });
+
+  test('tag form requires a style be selected to submit the form', async ({
+    tagger,
+    page,
+  }) => {
+    await tagger.gotoStyleTab();
+    await page.getByLabel('delete').click();
+
+    // This test specifically applies the click instead of the helper method
+    // because the helper method reloads the app which involves adding in the default style.
+    await page
+      .getByRole('tab', {
+        name: 'tags',
+      })
+      .click();
+
+    await page.getByLabel('Add tag:').click();
+    await page.getByLabel('Add tag:').fill('testTag');
+    const button = page.getByRole('button', { name: 'Add' });
+    await expect(button).toBeDisabled({ timeout: 2000 });
   });
 
   test('Added tags persist', async ({ extensionId, context, storage }) => {
@@ -60,6 +82,7 @@ test.describe('This is a test', () => {
       });
 
       await initialTagger.goto();
+      await initialTagger.addStyle();
       await initialTagger.addTag({ text: testString });
 
       await expect(page.getByText(testString).first()).toBeVisible();
@@ -72,7 +95,9 @@ test.describe('This is a test', () => {
         storage: 'browser.storage.local',
       });
 
-      const highlights = await tagger.getHighlightRegistryTextContents();
+      const highlights = await tagger.getHighlightRegistryTextContents(
+        'default'
+      );
       expect(highlights).toContain(testString);
     }
   );
@@ -142,7 +167,9 @@ test.describe('This is a test', () => {
         storage: 'browser.storage.local',
       });
 
-      const highlights = await tagger.getHighlightRegistryTextContents();
+      const highlights = await tagger.getHighlightRegistryTextContents(
+        'default'
+      );
       expect(highlights).toContain(testString);
 
       await tagger.goto();
@@ -152,7 +179,7 @@ test.describe('This is a test', () => {
 
       await newPage.goto('https://google.com');
       const searchResults = await newPage.evaluate(() => {
-        const searchResults = CSS.highlights.get('search-results');
+        const searchResults = CSS.highlights.get('default');
         return searchResults;
       });
 
@@ -162,8 +189,9 @@ test.describe('This is a test', () => {
 
   test('Added tags add a specific style tag', async ({ page, tagger }) => {
     await tagger.goto();
-
+    await tagger.addStyle();
     await tagger.addTag({ text: 'testing' });
+
     await expect(page.locator(styleTagId)).toHaveCount(1);
     const tagName = await page.locator(styleTagId).evaluate((item) => {
       return item.tagName;
@@ -171,31 +199,22 @@ test.describe('This is a test', () => {
     expect(tagName).toBe('STYLE');
   });
 
-  test('Can add tags with color', async ({ page, tagger }) => {
-    await tagger.goto();
-    const tag = { text: 'test', color: 'hsl(135.19 33.143% 41.424%)' };
-    await tagger.addTag(tag);
-
-    const highlights = await tagger.getHighlightRegistryTextContents();
-    await expect(page.locator(styleTagId)).toHaveCount(1);
-
-    expect(highlights).toContain('test');
-    await expect(page.getByText('test')).toHaveCount(1);
-    await expect(page.locator(styleTagId)).toContainText(
-      `background-color: ${tag.color};`,
-      {
-        ignoreCase: true,
-        useInnerText: true,
-      }
-    );
-  });
-
   test('Can edit tags', async ({ page, tagger }) => {
     const oldColor = 'blue';
     const newColor = 'red';
     await tagger.goto();
+    await tagger.addStyle({
+      backgroundColor: oldColor,
+      name: 'oldStyle',
+      color: 'black',
+    });
+    await tagger.addStyle({
+      backgroundColor: newColor,
+      name: 'newStyle',
+      color: 'black',
+    });
 
-    await tagger.addTag({ text: 'item1', color: oldColor });
+    await tagger.addTag({ text: 'item1', style: 'oldStyle' });
 
     await expect(page.getByText('item1')).toBeVisible();
     await expect(page.locator(styleTagId)).toContainText(
@@ -207,10 +226,10 @@ test.describe('This is a test', () => {
     );
 
     await page.getByRole('button', { name: 'edit' }).first().click();
-    await expect(page.getByLabel('Color:').nth(1)).toBeVisible();
-    await page.getByLabel('Color:').nth(1).click();
-    await page.getByLabel('Color:').nth(1).fill(newColor);
-    await page.getByLabel('Color:').nth(1).press('Enter');
+    await expect(page.getByLabel('').nth(1)).toBeVisible();
+    await page.getByLabel('Pick a style:').nth(1).selectOption('newStyle');
+    await page.getByRole('button', { name: 'Save' }).click();
+
     await expect(page.locator(styleTagId)).toContainText(
       `background-color: ${newColor};`,
       {
@@ -220,43 +239,64 @@ test.describe('This is a test', () => {
     );
   });
 
-  test('Editing tags requires color', async ({ page, tagger }) => {
-    const oldColor = 'blue';
+  /**
+   * TODO: Add a check where deleting a style is prevented if any tags use it.
+   */
+
+  test('tags and styles use separate stores', async ({ tagger, page }) => {
     await tagger.goto();
 
-    await tagger.addTag({ text: 'item1', color: oldColor });
+    await tagger.addStyle({
+      name: 'testStyle',
+      backgroundColor: 'orange',
+      color: 'white',
+      textDecorationStyle: 'wavy',
+      textDecorationLine: ['underline', 'overline'],
+      textDecorationColor: 'green',
+      textDecorationThickness: '1em',
+    });
 
-    await expect(page.getByText('item1')).toBeVisible();
-    await expect(page.locator(styleTagId)).toContainText(
-      `background-color: ${oldColor};`,
-      {
-        ignoreCase: true,
-        useInnerText: true,
+    await tagger.addTag({ text: 'testTag', style: 'testStyle' });
+
+    const tags = await page.evaluate(async () => {
+      if ('tagModel' in window) {
+        return await (window.tagModel as Tag).get();
+      } else {
+        throw new Error('tag not in window');
       }
-    );
+    });
 
-    const colorLocator = page.getByText('Color: ').nth(1);
-    await page.getByRole('button', { name: 'edit' }).first().click();
-    await expect(colorLocator).toBeVisible();
-    await colorLocator.click();
-    await colorLocator.fill('');
-    await colorLocator.press('Enter');
-    await expect(page.getByText('The color field is required.')).toBeVisible();
+    expect(tags.length).toBe(1);
+    expect(tags[0]).toMatchObject({ text: 'testTag', style_name: 'testStyle' });
+
+    const styles = await page.evaluate(async () => {
+      if ('styleModel' in window) {
+        return await (window.styleModel as Style).get();
+      } else {
+        throw new Error('styleModel not in window');
+      }
+    });
+
+    // There currently will always be a default style.
+    expect(styles.length).toBe(2);
+    expect(styles[1]).toMatchObject({
+      name: 'testStyle',
+      backgroundColor: 'orange',
+      color: 'white',
+      textDecorationStyle: 'wavy',
+      textDecorationLine: ['underline', 'overline'],
+      textDecorationColor: 'green',
+      textDecorationThickness: '1em',
+    });
   });
 
   /**
- * TESTS TODO:
- * 1. Can input a color when creating a tag
- * 2. Can input a color when editing a tag
-//  * 3. There is only one css style tag added
- * 4. There is a validation that predefined styles are mapped to the style tag
- * 5. When appropriate, the style tag will have multiple highlight selectors
- * 6. (maybe)
- * 7. What happens if a highlight is cread but the relevant dom is updated?
- * a. Text inserted inside?
- * b. Dom node removed somehow
- * c. Dom node added
- * d. Dom node + text added? 
- * 7 might be more of a stretch goal thing depending on how far I want to go with this. 
- */
+   * TESTS TODO:
+   * 7. What happens if a highlight is cread but the relevant dom is updated?
+   * a. Text inserted inside?
+   * b. Dom node removed somehow
+   * c. Dom node added
+   * d. Dom node + text added?
+   * 7 might be more of a stretch goal thing depending on how far I want to go with this.
+   */
 });

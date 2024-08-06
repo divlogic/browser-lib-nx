@@ -2,33 +2,49 @@ import { test as base, chromium, type BrowserContext } from '@playwright/test';
 import * as path from 'path';
 import { TaggerDevPage } from './tagger-dev-page';
 
-const extensionContext = async ({}, use, workerInfo) => {
-  const storage = workerInfo.project.use.storage;
-  const extensionName = 'tagger';
-  const pathToExtension = path.join(
-    path.resolve(),
-    '../../dist/browser-extensions/',
-    extensionName
+export const extensionName = 'tagger';
+export const pathToExtension = path.join(
+  path.resolve(),
+  '../../dist/browser-extensions/',
+  extensionName
+);
+
+export function generate_config(storage = 'browser.storage.local', input = {}) {
+  console.log('The path to the extension being used is: ', pathToExtension);
+  const config = Object.assign(
+    {
+      devtools: true,
+      headless: false,
+    },
+    input
   );
-  // Pasing in an empty string as the first arg allows parallel testing
-  // With a named dir, it will break.
-  // This needs some figuring out because some things might be useful in one context, but not in another.
-  const config = {
-    devtools: true,
-    viewport: { height: 1000, width: 1000 },
-    headless: false,
-  };
   if (storage === 'browser.storage.local') {
     config['args'] = [
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ];
   }
+  return config;
+}
+
+export async function generate_context(chromium, config) {
   const context = await chromium.launchPersistentContext(
     process.env.USER_DATA_DIR || '',
     config
   );
+  return context;
+}
+
+export const extensionContext = async ({}, use, workerInfo) => {
+  const storage = workerInfo.project.use.storage;
+  // Pasing in an empty string as the first arg allows parallel testing
+  // With a named dir, it will break.
+  // This needs some figuring out because some things might be useful in one context, but not in another.
+  const config = generate_config(storage);
+  const context = await generate_context(chromium, config);
+
   await use(context);
+
   await context.close();
 };
 

@@ -1,4 +1,4 @@
-import { Engine } from '@browser-lib-nx/index';
+import { Engine } from '@browser-lib-nx/db';
 import { Repository } from './repository';
 
 export default class IndexedDBRepository extends Repository {
@@ -39,7 +39,7 @@ export default class IndexedDBRepository extends Repository {
     return request;
   }
 
-  async add(key: string, item: unknown): Promise<unknown> {
+  async add(key: string, item: unknown): Promise<number> {
     const result = await Engine.add(
       this.config.dbName,
       this.config.storeName,
@@ -51,5 +51,9 @@ export default class IndexedDBRepository extends Repository {
   async remove(key: string, index: number) {
     await Engine.delete(this.config.dbName, this.config.storeName, index);
     return;
+  }
+
+  async set(key: string, values: unknown[]): Promise<void> {
+    throw new Error('Function not implemented yet.');
   }
 }

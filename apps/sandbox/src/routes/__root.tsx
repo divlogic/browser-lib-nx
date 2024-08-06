@@ -36,6 +36,12 @@ const RootComponent = () => {
               Color Generator
             </BreadcrumbLink>
           </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/color-demo">Color Demo</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbItem>
+            <BreadcrumbLink to="/highlight-demo">Highlight Demo</BreadcrumbLink>
+          </BreadcrumbItem>
         </Breadcrumb>
       </Container>
       <Divider />

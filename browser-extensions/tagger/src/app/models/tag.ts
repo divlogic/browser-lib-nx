@@ -1,7 +1,8 @@
 import { StoreModel } from '../../db/store-model';
-import { TagType } from '../form-reducer';
-export class TagModel extends StoreModel<TagType> {
-  key = 'tags';
+import { TagType } from '../../schemas/tag-schemas';
+export class Tag extends StoreModel<TagType> {
+  public static key = 'tag';
+  ['constructor']!: typeof Tag & typeof StoreModel;
 }
 
-export const tag = new TagModel();
+export const tagModel = new Tag();

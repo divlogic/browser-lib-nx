@@ -34,13 +34,14 @@ export function ColorGenerator({
     onChange([hue, saturation, lightness]);
   }, [hue, saturation, lightness]);
   return (
-    <Card variant="outline" maxWidth="sm">
+    <Card variant="outline" maxWidth="sm" width="100%">
       <CardHeader borderTopRadius={'inherit'}>
         <Text>{title}</Text>
+        <Text backgroundColor={'white'}>Hex: {colorHex}</Text>
       </CardHeader>
       <CardBody>
         <FormControl>
-          <FormLabel>Hue</FormLabel>
+          <FormLabel marginBottom={'2em'}>Hue</FormLabel>
           <Slider
             defaultValue={hue}
             min={0}
@@ -59,7 +60,7 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
         <FormControl>
-          <FormLabel>Saturation</FormLabel>
+          <FormLabel marginBottom={'2em'}>Saturation</FormLabel>
           <Slider
             defaultValue={saturation}
             min={0}
@@ -83,7 +84,7 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
         <FormControl>
-          <FormLabel>Lightness</FormLabel>
+          <FormLabel marginBottom={'2em'}>Lightness</FormLabel>
           <Slider
             defaultValue={lightness}
             min={0}
@@ -102,9 +103,11 @@ export function ColorGenerator({
           </Slider>
         </FormControl>
       </CardBody>
-      <CardFooter backgroundColor={colorHex} borderBottomRadius={'inherit'}>
-        <Text>Hex: {colorHex}</Text>
-      </CardFooter>
+      <CardFooter
+        backgroundColor={colorHex}
+        borderBottomRadius={'inherit'}
+        height={'4rem'}
+      ></CardFooter>
     </Card>
   );
 }

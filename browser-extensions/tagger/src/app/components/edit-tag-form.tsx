@@ -1,5 +1,3 @@
-import { Dispatch } from 'react';
-import { Action, TagType } from '../form-reducer';
 import {
   Button,
   Card,
@@ -7,51 +5,58 @@ import {
   CardFooter,
   CardHeader,
   Container,
+  Flex,
   FormControl,
-  FormErrorMessage,
   FormLabel,
   HStack,
   Highlight,
   Input,
+  Select,
+  Spacer,
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { TagModel } from '../models/tag';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CheckIcon } from '@chakra-ui/icons';
+import { useStylesData, useTagActions } from '../providers';
+import { TagType } from '../../schemas/tag-schemas';
+import HighlightExample from '../../lib/highlight-example';
+import { HighlightStyle } from '../../schemas';
 
 /* eslint-disable-next-line */
 export interface EditTagFormProps {
   tag: TagType;
-  dispatch: Dispatch<Action>;
 }
 
 type Inputs = {
-  color: string;
+  style_name: string;
 };
 
 export function EditTagForm(props: EditTagFormProps) {
-  const { tag, dispatch } = props;
+  const { tag } = props;
+  const styles = useStylesData();
+  const actions = useTagActions();
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const model = new TagModel();
-
-    const updatedTag = { ...tag, color: data.color };
-    await model.update(updatedTag);
-    dispatch({
-      type: 'edited',
-      payload: { data: updatedTag },
-    });
+    const updatedTagModel = { ...tag, color: data.style_name };
+    await actions.edit(updatedTagModel);
     reset();
   };
   console.log('Errors is: ', errors);
 
+  const currentStyle = styles.find(
+    (style) => style.name === watch('style_name')
+  );
+  const formattedStyleObj = { [watch('style_name')]: currentStyle } as {
+    [key: string]: HighlightStyle;
+  };
   return (
     <Container>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -63,23 +68,31 @@ export function EditTagForm(props: EditTagFormProps) {
             </FormControl>
           </CardHeader>
           <CardBody>
-            <FormControl isInvalid={!!errors?.color}>
-              <FormLabel>Color:</FormLabel>
-              <Input
-                defaultValue={tag.color}
-                {...register('color', {
-                  required: 'The color field is required.',
+            <FormControl>
+              <FormLabel>Pick a style:</FormLabel>
+              <Select {...register('style_name')}>
+                {styles.map((style, index) => {
+                  return (
+                    <option key={index} value={style.name}>
+                      {style.name}
+                    </option>
+                  );
                 })}
-              />
-              <FormErrorMessage>{errors?.color?.message}</FormErrorMessage>
+              </Select>
+              <Flex m={2}>
+                <Spacer></Spacer>
+              </Flex>
             </FormControl>
           </CardBody>
           <CardFooter>
             <VStack>
               <Text>
-                <Highlight styles={{ bg: tag.color }} query="test">
-                  Highlight Example: test
-                </Highlight>
+                {currentStyle && (
+                  <HighlightExample
+                    tag={{ text: tag.text, style_name: currentStyle.name }}
+                    style={formattedStyleObj}
+                  ></HighlightExample>
+                )}
               </Text>
               <Button type="submit" bgColor={'green.300'}>
                 <HStack>

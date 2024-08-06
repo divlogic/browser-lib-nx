@@ -6,9 +6,12 @@
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts",
-      "vite/client"
-    ]
+      "vite/client",
+      "../../packages/browser-types/src/index.d.ts"
+    ],
+    "declaration": true
   },
+  "ts-node": { "files": true },
   "exclude": [
     "src/**/*.spec.ts",
     "src/**/*.test.ts",

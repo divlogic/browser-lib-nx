@@ -1,4 +1,3 @@
-import Color from 'colorjs.io';
 import {
   Button,
   Card,
@@ -10,52 +9,60 @@ import {
   FormLabel,
   HStack,
   Input,
+  Select,
   Spacer,
   Text,
 } from '@chakra-ui/react';
-import { Dispatch, useMemo } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Action } from '../form-reducer';
-import { tag } from '../models/tag';
+import { useStylesData, useTagActions } from '../providers';
+import HighlightExample from '../../lib/highlight-example';
+import { HighlightStyle } from '../../schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { UnsavedTagSchema } from '../../schemas/tag-schemas';
+import { useState } from 'react';
+import { Highlighter } from '../../tagger';
+
 type Inputs = {
   text: string;
-  color: string;
+  style_name: string;
 };
-function getRandomArbitrary(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
 
-export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
-  const dispatch = props.dispatcher;
-  const defaultColor = useMemo(() => {
-    const bgColor = new Color('hsl', [
-      getRandomArbitrary(0, 360),
-      getRandomArbitrary(0, 100),
-      getRandomArbitrary(0, 100),
-    ]);
-    const bgColorString = bgColor.toString();
-    return bgColorString;
-  }, []);
+export function AddTagForm() {
+  const [stylesLength, setStylesLength] = useState(0);
+  const styles = useStylesData();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<Inputs>({
+  const actions = useTagActions();
+  const defaultStyleName = styles[0]?.name;
+  const { register, handleSubmit, watch, reset, formState } = useForm<Inputs>({
+    mode: 'all',
     defaultValues: {
       text: '',
-      color: defaultColor,
     },
+    resolver: zodResolver(UnsavedTagSchema),
   });
+  if (styles.length !== stylesLength) {
+    reset(
+      { text: '', style_name: defaultStyleName },
+      { keepDirtyValues: true, keepDirty: true }
+    );
+    setStylesLength(styles.length);
+  }
+  const { errors, isValid } = formState;
+
   const onSubmit: SubmitHandler<Inputs> = async (data: {
     text: string;
-    color?: string;
+    style_name: string;
   }) => {
-    const result = (await tag.add(data)) as number;
-    dispatch({ type: 'added', payload: { data: { id: result, ...data } } });
+    await actions.add(data);
     reset();
+    Highlighter.highlightFromDb();
+  };
+
+  const currentStyle = styles.find(
+    (style) => style.name === watch('style_name')
+  );
+  const formattedStyleObj = { [watch('style_name')]: currentStyle } as {
+    [key: string]: HighlightStyle;
   };
 
   return (
@@ -65,10 +72,7 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormControl isInvalid={!!errors.text}>
               <FormLabel>Add tag:</FormLabel>
-              <Input
-                type="text"
-                {...register('text', { required: true })}
-              ></Input>
+              <Input type="text" {...register('text')}></Input>
               <FormErrorMessage>
                 {errors?.text?.type === 'required' && 'Some text is required.'}
               </FormErrorMessage>
@@ -77,20 +81,39 @@ export function AddTagForm(props: { dispatcher: Dispatch<Action> }) {
               </Flex>
             </FormControl>
             <FormControl>
-              <FormLabel>Pick a color:</FormLabel>
-              <Input type="text" {...register('color')}></Input>
+              <FormLabel>Pick a style:</FormLabel>
+              <Select {...register('style_name')}>
+                {styles.map((style, index) => {
+                  return (
+                    <option key={index} value={style.name}>
+                      {style.name}
+                    </option>
+                  );
+                })}
+              </Select>
               <Flex m={2}>
                 <Spacer></Spacer>
               </Flex>
             </FormControl>
+
             <HStack justify={'start'}>
-              <Button bgColor="green.300" type="submit">
+              <Button bgColor="green.300" type="submit" isDisabled={!isValid}>
                 Add
               </Button>
               <Container>
                 <HStack justify={'center'}>
                   <Text>Example: </Text>
-                  <Text bgColor={watch('color')}>{watch('text')}</Text>
+                  <HighlightExample
+                    tag={{
+                      text: watch('text'),
+                      style_name: watch('style_name'),
+                    }}
+                    style={
+                      typeof currentStyle !== 'undefined'
+                        ? formattedStyleObj
+                        : null
+                    }
+                  ></HighlightExample>
                 </HStack>
               </Container>
             </HStack>
