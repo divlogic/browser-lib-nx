@@ -203,8 +203,18 @@ test.describe('This is a test', () => {
     const oldColor = 'blue';
     const newColor = 'red';
     await tagger.goto();
+    await tagger.addStyle({
+      backgroundColor: oldColor,
+      name: 'oldStyle',
+      color: 'black',
+    });
+    await tagger.addStyle({
+      backgroundColor: newColor,
+      name: 'newStyle',
+      color: 'black',
+    });
 
-    await tagger.addTag({ text: 'item1', color: oldColor });
+    await tagger.addTag({ text: 'item1', style: 'oldStyle' });
 
     await expect(page.getByText('item1')).toBeVisible();
     await expect(page.locator(styleTagId)).toContainText(
@@ -216,10 +226,10 @@ test.describe('This is a test', () => {
     );
 
     await page.getByRole('button', { name: 'edit' }).first().click();
-    await expect(page.getByLabel('Color:').nth(1)).toBeVisible();
-    await page.getByLabel('Color:').nth(1).click();
-    await page.getByLabel('Color:').nth(1).fill(newColor);
-    await page.getByLabel('Color:').nth(1).press('Enter');
+    await expect(page.getByLabel('').nth(1)).toBeVisible();
+    await page.getByLabel('Pick a style:').nth(1).selectOption('newStyle');
+    await page.getByRole('button', { name: 'Save' }).click();
+
     await expect(page.locator(styleTagId)).toContainText(
       `background-color: ${newColor};`,
       {
