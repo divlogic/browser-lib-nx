@@ -8,10 +8,14 @@ const styleTagId = '#styled-by-tagger';
 // This might change from time to time in the early stages.
 test.describe('This is a test', () => {
   test.beforeEach(async ({ page, tagger }) => {
-    tagger.gotoStyleTab();
+    await tagger.gotoStyleTab();
   });
 
-  test('There is a default style on the first load', async ({ page }) => {
+  test('There is a default style on the first load', async ({
+    page,
+    tagger,
+  }) => {
+    await tagger.gotoTagsTab();
     await expect(page.getByText('default').first()).toBeAttached({
       timeout: 2000,
     });
