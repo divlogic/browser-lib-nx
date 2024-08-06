@@ -291,18 +291,12 @@ test.describe('This is a test', () => {
   });
 
   /**
- * TESTS TODO:
- * 1. Can input a color when creating a tag
- * 2. Can input a color when editing a tag
-//  * 3. There is only one css style tag added
- * 4. There is a validation that predefined styles are mapped to the style tag
- * 5. When appropriate, the style tag will have multiple highlight selectors
- * 6. (maybe)
- * 7. What happens if a highlight is cread but the relevant dom is updated?
- * a. Text inserted inside?
- * b. Dom node removed somehow
- * c. Dom node added
- * d. Dom node + text added? 
- * 7 might be more of a stretch goal thing depending on how far I want to go with this. 
- */
+   * TESTS TODO:
+   * 7. What happens if a highlight is cread but the relevant dom is updated?
+   * a. Text inserted inside?
+   * b. Dom node removed somehow
+   * c. Dom node added
+   * d. Dom node + text added?
+   * 7 might be more of a stretch goal thing depending on how far I want to go with this.
+   */
 });
