@@ -14,10 +14,11 @@ test.describe('This is a test', () => {
   });
 
   test('Can add tags', async ({ tagger, page }) => {
+    // Failing because there currently isn't a proper trigger to highlight again
     await tagger.goto();
     await tagger.addTag({ text: 'test' });
 
-    const highlights = await tagger.getHighlightRegistryTextContents();
+    const highlights = await tagger.getHighlightRegistryTextContents('default');
 
     expect(highlights).toContain('test');
   });
@@ -26,11 +27,21 @@ test.describe('This is a test', () => {
     tagger,
     page,
   }) => {
-    await tagger.goto();
+    await tagger.gotoStyleTab();
+    await page.getByLabel('delete').click();
+
+    // This test specifically applies the click instead of the helper method
+    // because the helper method reloads the app which involves adding in the default style.
+    await page
+      .getByRole('tab', {
+        name: 'tags',
+      })
+      .click();
+
     await page.getByLabel('Add tag:').click();
     await page.getByLabel('Add tag:').fill('testTag');
     const button = page.getByRole('button', { name: 'Add' });
-    await expect(button).toBeDisabled();
+    await expect(button).toBeDisabled({ timeout: 2000 });
   });
 
   test('Added tags persist', async ({ extensionId, context, storage }) => {
@@ -84,7 +95,9 @@ test.describe('This is a test', () => {
         storage: 'browser.storage.local',
       });
 
-      const highlights = await tagger.getHighlightRegistryTextContents();
+      const highlights = await tagger.getHighlightRegistryTextContents(
+        'default'
+      );
       expect(highlights).toContain(testString);
     }
   );
@@ -154,7 +167,9 @@ test.describe('This is a test', () => {
         storage: 'browser.storage.local',
       });
 
-      const highlights = await tagger.getHighlightRegistryTextContents();
+      const highlights = await tagger.getHighlightRegistryTextContents(
+        'default'
+      );
       expect(highlights).toContain(testString);
 
       await tagger.goto();
@@ -164,7 +179,7 @@ test.describe('This is a test', () => {
 
       await newPage.goto('https://google.com');
       const searchResults = await newPage.evaluate(() => {
-        const searchResults = CSS.highlights.get('search-results');
+        const searchResults = CSS.highlights.get('default');
         return searchResults;
       });
 
