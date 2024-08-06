@@ -239,33 +239,12 @@ test.describe('This is a test', () => {
     );
   });
 
-  test('Editing tags requires color', async ({ page, tagger }) => {
-    const oldColor = 'blue';
-    await tagger.goto();
-
-    await tagger.addTag({ text: 'item1', color: oldColor });
-
-    await expect(page.getByText('item1')).toBeVisible();
-    await expect(page.locator(styleTagId)).toContainText(
-      `background-color: ${oldColor};`,
-      {
-        ignoreCase: true,
-        useInnerText: true,
-      }
-    );
-
-    const colorLocator = page.getByText('Color: ').nth(1);
-    await page.getByRole('button', { name: 'edit' }).first().click();
-    await expect(colorLocator).toBeVisible();
-    await colorLocator.click();
-    await colorLocator.fill('');
-    await colorLocator.press('Enter');
-    await expect(page.getByText('The color field is required.')).toBeVisible();
-  });
+  /**
+   * TODO: Add a check where deleting a style is prevented if any tags use it.
+   */
 
   test('tags and styles use separate stores', async ({ tagger, page }) => {
     await tagger.goto();
-    await tagger.addTag({ text: 'testTag', color: 'yellow' });
 
     await tagger.addStyle({
       name: 'testStyle',
@@ -277,6 +256,8 @@ test.describe('This is a test', () => {
       textDecorationThickness: '1em',
     });
 
+    await tagger.addTag({ text: 'testTag', style: 'testStyle' });
+
     const tags = await page.evaluate(async () => {
       if ('tagModel' in window) {
         return await (window.tagModel as Tag).get();
@@ -286,7 +267,7 @@ test.describe('This is a test', () => {
     });
 
     expect(tags.length).toBe(1);
-    expect(tags[0]).toMatchObject({ text: 'testTag', style: 'testStyle' });
+    expect(tags[0]).toMatchObject({ text: 'testTag', style_name: 'testStyle' });
 
     const styles = await page.evaluate(async () => {
       if ('styleModel' in window) {
@@ -295,8 +276,10 @@ test.describe('This is a test', () => {
         throw new Error('styleModel not in window');
       }
     });
-    expect(styles.length).toBe(1);
-    expect(styles[0]).toMatchObject({
+
+    // There currently will always be a default style.
+    expect(styles.length).toBe(2);
+    expect(styles[1]).toMatchObject({
       name: 'testStyle',
       backgroundColor: 'orange',
       color: 'white',
