@@ -20,7 +20,6 @@ export function generate_config(storage = 'browser.storage.local', input = {}) {
   );
   if (storage === 'browser.storage.local') {
     config['args'] = [
-      // `--headless=new`,
       `--disable-extensions-except=${pathToExtension}`,
       `--load-extension=${pathToExtension}`,
     ];
