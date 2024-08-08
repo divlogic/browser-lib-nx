@@ -13,10 +13,6 @@ test.describe('This is a test', () => {
     await expect(page).toHaveTitle('Tagger');
   });
 
-  test('failing test test', async ({ page, tagger }) => {
-    expect(true).toBe(false);
-  });
-
   test('Can add tags', async ({ tagger, page }) => {
     // Failing because there currently isn't a proper trigger to highlight again
     await tagger.goto();
