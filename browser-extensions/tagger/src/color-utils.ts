@@ -110,7 +110,7 @@ export function generateAccessibleColors(textColor: string): string[] {
      * 2. Darken
      * 3. Cycle through
      */
-    let color = new Color('hsluv', [
+    const color = new Color('hsluv', [
       basicHues[colorName as keyof typeof basicHues],
       100,
       50,

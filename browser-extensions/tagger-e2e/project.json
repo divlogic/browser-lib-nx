@@ -10,6 +10,13 @@
         "cwd": "{projectRoot}",
         "command": "ts-node --project tsconfig.json src/open-in-browser"
       }
+    },
+    "e2e-ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "playwright test --project='chromium browser.storage.local'"
+      }
     }
   },
   "implicitDependencies": ["tagger"]
