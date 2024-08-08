@@ -86,8 +86,7 @@ export function StyleForm(props: StyleFormProps) {
         <CardBody>
           <form
             onSubmit={handleSubmit(async (data) => {
-              // Intentional test failure
-              // add(data);
+              add(data);
             })}
           >
             <FormControl isInvalid={'name' in errors}>
