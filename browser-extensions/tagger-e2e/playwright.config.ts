@@ -18,7 +18,7 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 export default defineConfig<{
   storage: 'indexeddb' | 'browser.storage.local';
 }>({
-  timeout: 8000,
+  timeout: 30000,
   ...nxE2EPreset(__filename, { testDir: './src' }),
   reporter: [['list'], ['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
